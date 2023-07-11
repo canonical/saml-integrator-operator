@@ -5,96 +5,63 @@
 
 """Module defining the CharmState class which represents the state of the SAML Integrator charm."""
 
-from pydantic import AnyHttpUrl, BaseModel, Extra, Field
-from typing import List, Optional
+import itertools
+from typing import TYPE_CHECKING
+
+from pydantic import AnyHttpUrl, BaseModel, Field, ValidationError
 
 KNOWN_CHARM_CONFIG = (
     "entity_id",
     "metadata_url",
 )
 
-class SamlConfig(BaseModel):  # pylint: disable=too-few-public-methods
+if TYPE_CHECKING:  # pragma: nocover
+    from charm import SamlIntegratorOperatorCharm
+
+
+class SamlIntegratorConfig(BaseModel):  # pylint: disable=too-few-public-methods
     """Represent charm builtin configuration values.
 
     Attrs:
-        server_name: server_name config.
-        report_stats: report_stats config.
+        entity_id: Entity ID.
+        metadata_url: Metadata URL.
     """
 
-    entity_id: str | None = Field(..., min_length=2)
-    metadata_url: str | None = AnyHttpUrl(None)
+    entity_id: str = Field(..., min_length=1)
+    metadata_url: AnyHttpUrl
 
-    class Config:  # pylint: disable=too-few-public-methods
-        """Config class.
 
-        Attrs:
-            extra: extra configuration.
-        """
-
-        extra = Extra.allow
-
-class Service:
-    """Represents the URL and schema for SAML URLs.
+class CharmConfigInvalidError(Exception):
+    """Exception raised when a charm configuration is found to be invalid.
 
     Attrs:
-        url: The SAML target URL.
-        binding: SAML protocol binding to be used."
+        msg (str): Explanation of the error.
     """
 
-    def __init__(
-        self,
-        url: AnyHttpUrl,
-        binding: str
-    ):
-        """Initialize a new instance of the Service class.
+    def __init__(self, msg: str):
+        """Initialize a new instance of the CharmConfigInvalidError exception.
 
         Args:
-            url: The SAML URL.
-            binding: The SAML binding.
+            msg (str): Explanation of the error.
         """
-        self.url = url
-        self.binding = binding
+        self.msg = msg
 
 
 class CharmState:
     """Represents the state of the SAML Integrator charm.
 
     Attrs:
-        single_sign_on_service_redirect: Target of the IdP where the Authentication REDIRECT Request Message will be sent.
-        single_sign_on_service_post: Target of the IdP where the Authentication POST Request Message will be sent.
-        single_logout_service_url: URL location where the <LogoutRequest> from the IdP will be sent (IdP-initiated logout).
-        single_logout_service_response_redirect: Location where the REDIRECT <LogoutResponse> from the IdP will sent (SP-initiated logout, reply): only present if different from url parameter.
-        single_logout_service_response_post:  Location where the POST <LogoutResponse> from the IdP will sent (SP-initiated logout, reply): only present if different from url parameter.
-        x509certs: List of of public X.509 certificates of the IdP.
+        entity_id: Entity ID for SAML.
+        metadata_url: URL for the SAML metadata.
     """
 
-    def __init__(
-        self,
-        saml_config: SamlConfig,
-        single_sign_on_service_redirect: Optional[Service],
-        single_sign_on_service_post: Optional[Service],
-        single_logout_service_url: Optional[str],
-        single_logout_service_response_redirect: Optional[Service],
-        single_logout_service_response_post: Optional[Service],
-        x509certs: List[str]
-    ):
+    def __init__(self, *, saml_integrator_config: SamlIntegratorConfig):
         """Initialize a new instance of the CharmState class.
 
         Args:
-            single_sign_on_service_redirect: Target of the IdP where the Authentication REDIRECT Request Message will be sent.
-            single_sign_on_service_post: Target of the IdP where the Authentication POST Request Message will be sent.
-            single_logout_service_url: URL location where the <LogoutRequest> from the IdP will be sent (IdP-initiated logout).
-            single_logout_service_response_redirect: Location where the REDIRECT <LogoutResponse> from the IdP will sent (SP-initiated logout, reply): only present if different from url parameter.
-            single_logout_service_response_post:  Location where the POST <LogoutResponse> from the IdP will sent (SP-initiated logout, reply): only present if different from url parameter.
-            x509certs: List of of public X.509 certificates of the IdP.
+            saml_integrator_config: SAML Integrator configuration.
         """
-        self._saml_config = saml_config
-        self.single_sign_on_service_redirect = single_sign_on_service_redirect
-        self.single_sign_on_service_post = single_sign_on_service_post
-        self.single_logout_service_url = single_logout_service_url
-        self.single_logout_service_response_redirect = single_logout_service_response_redirect
-        self.single_logout_service_response_post = single_logout_service_response_post
-        self.x509certs=x509certs
+        self._saml_integrator_config = saml_integrator_config
 
     @property
     def entity_id(self) -> str:
@@ -103,7 +70,7 @@ class CharmState:
         Returns:
             str: entity_id config.
         """
-        return self._saml_config.entity_id
+        return self._saml_integrator_config.entity_id
 
     @property
     def metadata_url(self) -> str:
@@ -112,5 +79,28 @@ class CharmState:
         Returns:
             str: metadata_url config.
         """
-        return self._saml_config.metadata_url
+        return self._saml_integrator_config.metadata_url
 
+    @classmethod
+    def from_charm(cls, charm: "SamlIntegratorOperatorCharm") -> "CharmState":
+        """Initialize a new instance of the CharmState class from the associated charm.
+
+        Args:
+            charm: The charm instance associated with this state.
+
+        Return:
+            The CharmState instance created by the provided charm.
+
+        Raises:
+            CharmConfigInvalidError: if the charm configuration is invalid.
+        """
+        config = {k: v for k, v in charm.config.items() if k in KNOWN_CHARM_CONFIG}
+        try:
+            valid_config = SamlIntegratorConfig(**config)  # type: ignore
+        except ValidationError as exc:
+            error_fields = set(
+                itertools.chain.from_iterable(error["loc"] for error in exc.errors())
+            )
+            error_field_str = " ".join(f"{f}" for f in error_fields)
+            raise CharmConfigInvalidError(f"invalid configuration: {error_field_str}") from exc
+        return cls(saml_integrator_config=valid_config)

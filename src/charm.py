@@ -5,17 +5,17 @@
 
 """SAML Integrator Charm service."""
 import logging
-import urllib
-from lxml import etree
-from ops import BlockedStatus, CharmBase, ConfigChangedEvent, RelationCreatedEvent, StoredState
+from typing import Dict
+import ops
+import re
+from charm_state import CharmConfigInvalidError, CharmState
+from saml import SamlIntegrator
 
 logger = logging.getLogger(__name__)
 
 
-class SAMLIntegratorOperatorCharm(CharmBase):
+class SamlIntegratorOperatorCharm(ops.CharmBase):  # pylint: disable=too-few-public-methods
     """Charm for SAML Integrator on kubernetes."""
-
-    _stored = StoredState()
 
     def __init__(self, *args):
         """Construct.
@@ -24,51 +24,56 @@ class SAMLIntegratorOperatorCharm(CharmBase):
             args: Arguments passed to the CharmBase parent constructor.
         """
         super().__init__(*args)
-
         self.framework.observe(self.on.config_changed, self._on_config_changed)
-        self.framework.observe(self.on_saml_relation_created, self._on_saml_relation_created)
+        self.framework.observe(self.on.saml_relation_created, self._on_relation_created)
 
-    def _on_config_changed(self, event: ConfigChangedEvent) -> None:
-        """Handle changes in configuration.
-
-        Args:
-            event: Event triggering the configuration change handler.
-        """
-        raise Exception()
-        logger.error("ENTRO")
-        logger.error(event)
-        if not event.metadata_url or not event.entity_id:
-            self.unit.status = BlockedStatus(
-                "Configuration fields metadata_url and entity_id must be provided."
-            )
-            return
-        metadata_url = event.metadata_url
-
+    def _on_config_changed(self, _) -> None:
+        """Handle changes in configuration."""
+        self.unit.status = ops.MaintenanceStatus("Configuring charm")
         try:
-            with urllib.request.urlopen(metadata_url) as resource:  # nosec
-                raw_data = resource.read().decode("utf-8")
-                etree.fromstring(raw_data)
-                entity_node = tree.xpath(f"//md:EntityDescriptor[@entityID='{entity_id}']", namespaces=tree.nsmap)[0]
-                xpath_service = lambda node_name, binding: entity_node.xpath(f"//md:{node_name}[@Binding='{binding}']", namespaces=tree.nsmap)
-                sso_service_redirect=xpath_service("SingleSignOnService", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect")[0]
-                sso_service_redirect=xpath_service("SingleLogoutService", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect")[0]
-                sso_service_post=xpath_service("SingleSignOnService", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Post")[0]
-                sso_service_post=xpath_service("SingleLogoutService", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Post")[0]
-                certificates=[node.text for node in entity_node.xpath('.//md:KeyDescriptor//ds:X509Certificate', namespaces=tree.nsmap)]
+            self._charm_state = CharmState.from_charm(charm=self)
+            self._saml_integrator = SamlIntegrator(charm_state=self._charm_state)
+        except CharmConfigInvalidError as exc:
+            self.model.unit.status = ops.BlockedStatus(exc.msg)
+            return
+        if self.model.unit.is_leader():
+            for relation in self.model.relations["saml"]:
+                relation.data[self.model.app].update(self.dump_saml_data())
+        self.unit.status = ops.ActiveStatus()
 
-                
+    def dump_saml_data(self) -> Dict[str, str]:
+        """Dump the charm state in the format expected by the relation.
 
+        Returns:
+            Dict containing the IdP details.
+        """
+        result = {
+            "entity_id": self._saml_integrator.entity_id,
+            "metadata_url": self._saml_integrator.metadata_url,
+            "x509certs": ",".join(self._saml_integrator.certificates),
+        }
+        for endpoint in self._saml_integrator.endpoints:
+            http_method = endpoint.binding.split(":")[-1].split("-")[-1].lower()
+            lowercase_name = re.sub(r"(?<!^)(?=[A-Z])", "_", endpoint.name).lower()
+            prefix = f"{lowercase_name}_{http_method}_"
+            result[f"{prefix}url"] = endpoint.url
+            result[f"{prefix}binding"] = endpoint.binding
+            if endpoint.response_url:
+                result[f"{prefix}response_url"] = endpoint.response_url
+        return result
 
-                logger.error(data)
-        except urllib.URLError as ex:
-            logger.error(ex)
-            self.unit.status = BlockedStatus(
-                "Invalid metadata_url option provided or service not available."
-            )
+    def _on_relation_created(self, event: ops.RelationCreatedEvent):
+        """Handle a change to the saml relation.
 
-    def _on_saml_relation_created(self, events: RelationCreatedEvent) -> None:
-        """Handle the relation created event populating the relation data.
+        Populate the event data.
 
         Args:
-            events: Event triggering the configuration handler.
+            event: Event triggering the relation-created hook for the relation.
         """
+        if not self.model.unit.is_leader():
+            return
+        event.relation.data[self.model.app].update(self.dump_saml_data())
+
+
+if __name__ == "__main__":  # pragma: nocover
+    ops.main(SamlIntegratorOperatorCharm)
