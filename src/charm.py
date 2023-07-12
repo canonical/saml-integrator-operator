@@ -27,6 +27,8 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
             args: Arguments passed to the CharmBase parent constructor.
         """
         super().__init__(*args)
+        self._charm_state = None
+        self._saml_integrator = None
         self.framework.observe(self.on.config_changed, self._on_config_changed)
         self.framework.observe(self.on.saml_relation_created, self._on_saml_relation_created)
 
