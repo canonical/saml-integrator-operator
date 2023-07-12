@@ -5,13 +5,12 @@
 import logging
 import urllib
 from functools import cached_property
-from typing import List, Set, Optional
+from typing import List, Optional, Set
 
 from lxml import etree  # nosec
+from pydantic import AnyHttpUrl, BaseModel, Field
 
 from charm_state import CharmConfigInvalidError, CharmState
-
-from pydantic import AnyHttpUrl, BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +31,7 @@ class SamlEndpoint(BaseModel):  # pylint: disable=too-few-public-methods
     response_url: Optional[AnyHttpUrl]
 
 
-class SamlIntegrator:  # pylint: disable=too-few-public-methods
+class SamlIntegrator:
     """A class representing the SAML Integrator application.
 
     Attrs:
@@ -101,7 +100,7 @@ class SamlIntegrator:  # pylint: disable=too-few-public-methods
         Returns:
             List of certificates.
         """
-        return set([
+        return {
             node.text
             for node in self._tree.xpath(
                 (
@@ -110,8 +109,7 @@ class SamlIntegrator:  # pylint: disable=too-few-public-methods
                 ),
                 namespaces=self._tree.nsmap,
             )
-        ])
-        return self._certificates
+        }
 
     @cached_property
     def endpoints(self) -> List[SamlEndpoint]:

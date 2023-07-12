@@ -2,11 +2,12 @@
 # See LICENSE file for licensing details.
 
 """SAML Integrator Charm unit tests."""
-from charm import SamlIntegratorOperatorCharm
-from mock import MagicMock, patch
-from ops.testing import Harness
 import ops
 import pytest
+from mock import MagicMock, patch
+from ops.testing import Harness
+
+from charm import SamlIntegratorOperatorCharm
 
 
 def test_misconfigured_charm_reaches_blocked_status():
@@ -18,15 +19,11 @@ def test_misconfigured_charm_reaches_blocked_status():
     harness = Harness(SamlIntegratorOperatorCharm)
     harness.begin()
     entity_id = "https://login.staging.ubuntu.com"
-    harness.update_config(
-        {
-            "entity_id": entity_id
-        }
-    )
+    harness.update_config({"entity_id": entity_id})
     harness.model.unit.status == ops.BlockedStatus()
 
 
-@patch('urllib.request.urlopen')
+@patch("urllib.request.urlopen")
 def test_charm_reaches_active_status(mock_urlopen):
     """
     arrange: set up a charm and mock HTTP requests.
@@ -53,11 +50,8 @@ def test_charm_reaches_active_status(mock_urlopen):
         harness.model.unit.status == ops.ActiveStatus()
 
 
-@patch('urllib.request.urlopen')
-@pytest.mark.parametrize("metadata_file", [
-    ("metadata_1.xml"),
-    ("metadata_2.xml")
-])
+@patch("urllib.request.urlopen")
+@pytest.mark.parametrize("metadata_file", [("metadata_1.xml"), ("metadata_2.xml")])
 def test_relation_joined_when_leader(mock_urlopen, metadata_file):
     """
     arrange: set up a configured charm and set leadership for the unit.
@@ -89,7 +83,9 @@ def test_relation_joined_when_leader(mock_urlopen, metadata_file):
         assert data["x509certs"] == ",".join(harness.charm._saml_integrator.certificates)
         endpoints = harness.charm._saml_integrator.endpoints
         sl_re = [
-            ep for ep in endpoints if ep.name == "SingleLogoutService"
+            ep
+            for ep in endpoints
+            if ep.name == "SingleLogoutService"
             and ep.binding == "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
         ]
         if sl_re:
@@ -98,7 +94,9 @@ def test_relation_joined_when_leader(mock_urlopen, metadata_file):
             if sl_re[0].response_url:
                 assert data["single_logout_service_redirect_response_url"] == sl_re[0].response_url
         sl_post = [
-            ep for ep in endpoints if ep.name == "SingleLogoutService"
+            ep
+            for ep in endpoints
+            if ep.name == "SingleLogoutService"
             and ep.binding == "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Post"
         ]
         if sl_post:
@@ -107,14 +105,18 @@ def test_relation_joined_when_leader(mock_urlopen, metadata_file):
             if sl_post[0].response_url:
                 assert data["single_logout_service_post_response_url"] == sl_post[0].response_url
         sso_re = [
-            ep for ep in endpoints if ep.name == "SingleSignOnService"
+            ep
+            for ep in endpoints
+            if ep.name == "SingleSignOnService"
             and ep.binding == "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
         ]
         if sso_re:
             assert data["single_sign_on_service_redirect_url"] == sso_re[0].url
             assert data["single_sign_on_service_redirect_binding"] == sso_re[0].binding
         sso_post = [
-            ep for ep in endpoints if ep.name == "SingleSignOnService"
+            ep
+            for ep in endpoints
+            if ep.name == "SingleSignOnService"
             and ep.binding == "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Post"
         ]
         if sso_post:
@@ -122,7 +124,7 @@ def test_relation_joined_when_leader(mock_urlopen, metadata_file):
             assert data["single_sign_on_service_post_binding"] == sso_post[0].binding
 
 
-@patch('urllib.request.urlopen')
+@patch("urllib.request.urlopen")
 def test_relation_joined_when_not_leader(mock_urlopen):
     """
     arrange: set up a charm and unset leadership for the unit.
@@ -152,7 +154,7 @@ def test_relation_joined_when_not_leader(mock_urlopen):
         assert data == {}
 
 
-@patch('urllib.request.urlopen')
+@patch("urllib.request.urlopen")
 def test_charm_propagates_config_change(mock_urlopen):
     """
     arrange: set up a charm and mock HTTP requests.

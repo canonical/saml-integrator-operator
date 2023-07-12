@@ -5,16 +5,19 @@
 
 """SAML Integrator Charm service."""
 import logging
-from typing import Dict
-import ops
 import re
+from typing import Dict
+
+import ops
+from ops.main import main
+
 from charm_state import CharmConfigInvalidError, CharmState
 from saml import SamlIntegrator
 
 logger = logging.getLogger(__name__)
 
 
-class SamlIntegratorOperatorCharm(ops.CharmBase):  # pylint: disable=too-few-public-methods
+class SamlIntegratorOperatorCharm(ops.CharmBase):
     """Charm for SAML Integrator on kubernetes."""
 
     def __init__(self, *args):
@@ -25,7 +28,7 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):  # pylint: disable=too-few-pub
         """
         super().__init__(*args)
         self.framework.observe(self.on.config_changed, self._on_config_changed)
-        self.framework.observe(self.on.saml_relation_created, self._on_relation_created)
+        self.framework.observe(self.on.saml_relation_created, self._on_saml_relation_created)
 
     def _on_config_changed(self, _) -> None:
         """Handle changes in configuration."""
@@ -62,7 +65,7 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):  # pylint: disable=too-few-pub
                 result[f"{prefix}response_url"] = endpoint.response_url
         return result
 
-    def _on_relation_created(self, event: ops.RelationCreatedEvent):
+    def _on_saml_relation_created(self, event: ops.RelationCreatedEvent):
         """Handle a change to the saml relation.
 
         Populate the event data.
@@ -76,4 +79,4 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):  # pylint: disable=too-few-pub
 
 
 if __name__ == "__main__":  # pragma: nocover
-    ops.main(SamlIntegratorOperatorCharm)
+    main(SamlIntegratorOperatorCharm)

@@ -18,7 +18,7 @@ async def test_active(app: ops.Application):
     # Application actually does have units
     entity_id = "https://login.staging.ubuntu.com"
     metadata_url = "https://login.staging.ubuntu.com/saml/metadata"
-    app.set_config(
+    app.set_config(  # type: ignore[attr-defined]
         {
             "entity_id": entity_id,
             "metadata_url": metadata_url,

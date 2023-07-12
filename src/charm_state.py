@@ -6,17 +6,14 @@
 """Module defining the CharmState class which represents the state of the SAML Integrator charm."""
 
 import itertools
-from typing import TYPE_CHECKING
 
+import ops
 from pydantic import AnyHttpUrl, BaseModel, Field, ValidationError
 
 KNOWN_CHARM_CONFIG = (
     "entity_id",
     "metadata_url",
 )
-
-if TYPE_CHECKING:  # pragma: nocover
-    from charm import SamlIntegratorOperatorCharm
 
 
 class SamlIntegratorConfig(BaseModel):  # pylint: disable=too-few-public-methods
@@ -82,7 +79,7 @@ class CharmState:
         return self._saml_integrator_config.metadata_url
 
     @classmethod
-    def from_charm(cls, charm: "SamlIntegratorOperatorCharm") -> "CharmState":
+    def from_charm(cls, charm: "ops.CharmBase") -> "CharmState":
         """Initialize a new instance of the CharmState class from the associated charm.
 
         Args:
@@ -96,6 +93,7 @@ class CharmState:
         """
         config = {k: v for k, v in charm.config.items() if k in KNOWN_CHARM_CONFIG}
         try:
+            # Incompatible with pydantic.AnyHttpUrl
             valid_config = SamlIntegratorConfig(**config)  # type: ignore
         except ValidationError as exc:
             error_fields = set(

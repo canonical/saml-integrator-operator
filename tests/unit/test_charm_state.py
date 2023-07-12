@@ -4,10 +4,10 @@
 """CharmState unit tests."""
 
 import yaml
+from ops.testing import Harness
 
 from charm import SamlIntegratorOperatorCharm
-from charm_state import CharmConfigInvalidError, CharmState, KNOWN_CHARM_CONFIG
-from ops.testing import Harness
+from charm_state import KNOWN_CHARM_CONFIG, CharmConfigInvalidError, CharmState
 
 
 def test_known_charm_config():

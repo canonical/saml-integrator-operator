@@ -3,15 +3,17 @@
 
 """SAML Integrator unit tests."""
 import urllib
+
 import pytest
 from mock import MagicMock, patch
+from ops.testing import Harness
+
 from charm import SamlIntegratorOperatorCharm
 from charm_state import CharmConfigInvalidError, CharmState
 from saml import SamlIntegrator
-from ops.testing import Harness
 
 
-@patch('urllib.request.urlopen')
+@patch("urllib.request.urlopen")
 def test_saml_with_invalid_metadata(mock_urlopen):
     """
     arrange: mock the metadata contents so that they are invalid.
@@ -52,7 +54,7 @@ def test_saml_with_invalid_metadata(mock_urlopen):
         assert True
 
 
-@patch.object(urllib.request, 'urlopen', side_effect=urllib.error.URLError("Error"))
+@patch.object(urllib.request, "urlopen", side_effect=urllib.error.URLError("Error"))
 def test_saml_with_invalid_url(mock_urlopen):
     """
     arrange: mock the HTTP request for the metadata so that it fails.
@@ -87,11 +89,14 @@ def test_saml_with_invalid_url(mock_urlopen):
         assert True
 
 
-@patch('urllib.request.urlopen')
-@pytest.mark.parametrize("metadata_file,binding", [
-    ("metadata_1.xml", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"),
-    ("metadata_2.xml", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Post")
-])
+@patch("urllib.request.urlopen")
+@pytest.mark.parametrize(
+    "metadata_file,binding",
+    [
+        ("metadata_1.xml", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"),
+        ("metadata_2.xml", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Post"),
+    ],
+)
 def test_saml_with_valid_metadata(mock_urlopen, metadata_file, binding):
     """
     arrange: mock the metadata contents so that they invalid.

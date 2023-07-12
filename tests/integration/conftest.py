@@ -3,10 +3,11 @@
 
 """Fixtures for the SAML Integrator charm integration tests."""
 
+from pathlib import Path
+
 import ops
 import pytest_asyncio
 import yaml
-from pathlib import Path
 from pytest import fixture
 from pytest_operator.plugin import OpsTest
 
@@ -36,5 +37,6 @@ async def app(ops_test: OpsTest, app_name: str):
         application_name=app_name,
         series="focal",
     )
-    await ops_test.model.wait_for_idle(status=ops.BlockedStatus.name, raise_on_error=False)
+    status_name = ops.BlockedStatus.name  # type: ignore[has-type]
+    await ops_test.model.wait_for_idle(status=status_name, raise_on_error=False)
     yield application
