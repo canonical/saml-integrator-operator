@@ -3,7 +3,7 @@
 
 name: saml-integrator
 display-name: SAML Integrator
-summary: SAML Integrator to abstract SAML IdP details from requirer charms acting as SPs.
+summary: SAML Integrator to abstract SAML IdP details.
 description: |
   A [Juju](https://juju.is/) [charm](https://juju.is/docs/olm/charmed-operators)
   deploying and managing a SAML Integrator on Kubernetes. SAML s an XML-based
