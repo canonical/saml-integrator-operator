@@ -2,6 +2,7 @@
 # See LICENSE file for licensing details.
 
 """SAML Integrator unit tests."""
+import ssl
 import urllib
 
 import pytest
@@ -155,3 +156,76 @@ def test_saml_with_valid_metadata(mock_urlopen, metadata_file, binding):
         assert endpoints[1].binding == binding
         assert endpoints[1].url == "https://login.staging.ubuntu.com/saml/"
         assert endpoints[1].response_url is None
+
+
+@patch.object(ssl, "get_server_certificate", return_value="somecert")
+def test_saml_with_invalid_certificate(mock_get_server_certificate):
+    """
+    arrange: mock certificate retrieved from the metadata URL.
+    act: access the metadata properties.
+    assert: a CharmConfigInvalidError exception is raised when validating
+        the certificate.
+    """
+
+    harness = Harness(SamlIntegratorOperatorCharm)
+    harness.begin()
+    harness.disable_hooks()
+    entity_id = "https://login.staging.ubuntu.com"
+    metadata_url = "https://login.staging.ubuntu.com/saml/metadata"
+    harness.update_config(
+        {
+            "entity_id": entity_id,
+            "metadata_url": metadata_url,
+            "certificate": "someothercert",
+        }
+    )
+    charm_state = CharmState.from_charm(harness.charm)
+    saml_integrator = SamlIntegrator(charm_state=charm_state)
+    assert saml_integrator.entity_id == entity_id
+    assert saml_integrator.metadata_url == metadata_url
+    try:
+        saml_integrator.certificates
+        assert False
+    except CharmConfigInvalidError:
+        assert True
+    try:
+        saml_integrator.endpoints
+        assert False
+    except CharmConfigInvalidError:
+        assert True
+
+
+@patch("urllib.request.urlopen")
+@patch.object(ssl, "get_server_certificate", return_value="somecert")
+def test_saml_with_valid_certificate(mock_urlopen, mock_get_server_certificate):
+    """
+    arrange: mock certificate retrieved from the metadata URL and rhe metadata contents.
+    act: access the metadata properties.
+    assert: Metadata is parsed.
+    """
+
+    with open(f"tests/unit/files/metadata_1.xml", "rb") as metadata:
+        # cm = MagicMock()
+        # cm.getcode.return_value = 200
+        # cm.read.return_value = metadata.read()
+        # cm.__enter__.return_value = cm
+        # mock_urlopen.return_value = cm
+
+        harness = Harness(SamlIntegratorOperatorCharm)
+        harness.begin()
+        harness.disable_hooks()
+        entity_id = "https://login.staging.ubuntu.com"
+        metadata_url = "https://login.staging.ubuntu.com/saml/metadata"
+        harness.update_config(
+            {
+                "entity_id": entity_id,
+                "metadata_url": metadata_url,
+                "certificate": "somecert",
+            }
+        )
+        charm_state = CharmState.from_charm(harness.charm)
+        saml_integrator = SamlIntegrator(charm_state=charm_state)
+        assert saml_integrator.entity_id == entity_id
+        assert saml_integrator.metadata_url == metadata_url
+        assert saml_integrator.certificates
+        assert saml_integrator.endpoints

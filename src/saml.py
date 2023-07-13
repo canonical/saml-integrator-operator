@@ -3,8 +3,11 @@
 
 """Provide the SamlApp class to encapsulate the business logic."""
 import logging
+import ssl
 import urllib
+from contextlib import nullcontext
 from functools import cached_property
+from tempfile import NamedTemporaryFile
 from typing import List, Optional, Set
 
 from pydantic import AnyHttpUrl, BaseModel, Field
@@ -80,6 +83,15 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         from lxml import etree  # nosec
 
         try:
+            if self._charm_state.certificate:
+                url = urllib.parse.urlparse(self._charm_state.metadata_url)
+                certificate = ssl.get_server_certificate(
+                    (url.hostname, url.port if url.port else 443)
+                ).replace("\n", "")
+                print(certificate)
+                print(self._charm_state.certificate)
+                if certificate != self._charm_state.certificate:
+                    raise CharmConfigInvalidError("Invalid certificate")
             with urllib.request.urlopen(
                 self._charm_state.metadata_url, timeout=10
             ) as resource:  # nosec

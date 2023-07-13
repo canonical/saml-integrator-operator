@@ -8,3 +8,6 @@ options:
   metadata_url:
     type: string
     description: URL to the IdP's metadata
+  certificate:
+    type: string
+    description: Public certificate for the metadata URL validation
