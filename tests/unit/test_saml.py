@@ -166,7 +166,6 @@ def test_saml_with_invalid_certificate(mock_get_server_certificate):
     assert: a CharmConfigInvalidError exception is raised when validating
         the certificate.
     """
-
     harness = Harness(SamlIntegratorOperatorCharm)
     harness.begin()
     harness.disable_hooks()
@@ -197,19 +196,18 @@ def test_saml_with_invalid_certificate(mock_get_server_certificate):
 
 @patch("urllib.request.urlopen")
 @patch.object(ssl, "get_server_certificate", return_value="somecert")
-def test_saml_with_valid_certificate(mock_urlopen, mock_get_server_certificate):
+def test_saml_with_valid_certificate(mock_get_server_certificate, mock_urlopen):
     """
     arrange: mock certificate retrieved from the metadata URL and rhe metadata contents.
     act: access the metadata properties.
     assert: Metadata is parsed.
     """
-
-    with open(f"tests/unit/files/metadata_1.xml", "rb") as metadata:
-        # cm = MagicMock()
-        # cm.getcode.return_value = 200
-        # cm.read.return_value = metadata.read()
-        # cm.__enter__.return_value = cm
-        # mock_urlopen.return_value = cm
+    with open("tests/unit/files/metadata_1.xml", "rb") as metadata:
+        cm = MagicMock()
+        cm.getcode.return_value = 200
+        cm.read.return_value = metadata.read()
+        cm.__enter__.return_value = cm
+        mock_urlopen.return_value = cm
 
         harness = Harness(SamlIntegratorOperatorCharm)
         harness.begin()

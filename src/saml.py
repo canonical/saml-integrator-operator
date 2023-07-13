@@ -5,9 +5,7 @@
 import logging
 import ssl
 import urllib
-from contextlib import nullcontext
 from functools import cached_property
-from tempfile import NamedTemporaryFile
 from typing import List, Optional, Set
 
 from pydantic import AnyHttpUrl, BaseModel, Field

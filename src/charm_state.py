@@ -75,7 +75,7 @@ class CharmState:
         return self._saml_integrator_config.entity_id
 
     @property
-    def certificate(self) -> str:
+    def certificate(self) -> Optional[str]:
         """Return certificate config.
 
         Returns:
