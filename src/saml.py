@@ -46,8 +46,18 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
 
         Args:
             charm_state: The state of the charm that the Saml instance belongs to.
+
+        Raises:
+            CharmConfigInvalidError: if the certificate validation fails.
         """
         self._charm_state = charm_state
+        if not self._is_certificate_valid:
+            raise CharmConfigInvalidError(
+                (
+                    f"The certificate from {self._charm_state.metadata_url} "
+                    "doesn't match the provided certificate"
+                )
+            )
 
     @property
     def entity_id(self) -> str:
@@ -68,6 +78,21 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         return self._charm_state.metadata_url
 
     @cached_property
+    def _is_certificate_valid(self):
+        """Validate the public certificate for the metadata URL.
+
+        Returns:
+            True if the certificate matches the one provided.
+        """
+        if self._charm_state.certificate:
+            url = urllib.parse.urlparse(self._charm_state.metadata_url)
+            certificate = ssl.get_server_certificate(
+                (url.hostname, url.port if url.port else 443)
+            ).replace("\n", "")
+            return certificate == self._charm_state.certificate
+        return True
+
+    @cached_property
     def _tree(self) -> "etree.ElementTree":  # type: ignore
         """Fetch metadata contents.
 
@@ -81,15 +106,6 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         from lxml import etree  # nosec
 
         try:
-            if self._charm_state.certificate:
-                url = urllib.parse.urlparse(self._charm_state.metadata_url)
-                certificate = ssl.get_server_certificate(
-                    (url.hostname, url.port if url.port else 443)
-                ).replace("\n", "")
-                print(certificate)
-                print(self._charm_state.certificate)
-                if certificate != self._charm_state.certificate:
-                    raise CharmConfigInvalidError("Invalid certificate")
             with urllib.request.urlopen(
                 self._charm_state.metadata_url, timeout=10
             ) as resource:  # nosec
