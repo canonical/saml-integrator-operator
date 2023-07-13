@@ -24,4 +24,6 @@ async def test_active(app: ops.Application):
             "metadata_url": metadata_url,
         }
     )
+    status_name = ops.ActiveStatus.name
+    await ops_test.model.wait_for_idle(status=status_name, raise_on_error=True)
     assert app.units[0].workload_status == ops.ActiveStatus.name  # type: ignore
