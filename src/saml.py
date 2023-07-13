@@ -77,7 +77,7 @@ class SamlIntegrator:
             CharmConfigInvalidError: if the metadata URL can't be parsed.
         """
         # Lazy importing. Required deb packages won't be present on charm startup
-        from lxml import etree
+        from lxml import etree  # nosec
 
         try:
             with urllib.request.urlopen(
@@ -121,7 +121,7 @@ class SamlIntegrator:
             List of endpoints.
         """
         # Lazy importing. Required deb packages won't be present on charm startup
-        from lxml import etree
+        from lxml import etree  # nosec
 
         results = self._tree.xpath(
             (
