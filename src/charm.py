@@ -9,10 +9,10 @@ import re
 from typing import Dict
 
 import ops
+from charms.operator_libs_linux.v0 import apt
 from ops.main import main
 
 from charm_state import CharmConfigInvalidError, CharmState
-from charms.operator_libs_linux.v0 import apt
 from saml import SamlIntegrator
 
 logger = logging.getLogger(__name__)
