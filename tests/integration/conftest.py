@@ -12,15 +12,10 @@ from pytest import fixture
 from pytest_operator.plugin import OpsTest
 
 
-@fixture(scope="module", name="metadata")
-def metadata_fixture():
-    """Provide charm metadata."""
-    yield yaml.safe_load(Path("./metadata.yaml").read_text("utf-8"))
-
-
 @fixture(scope="module", name="app_name")
-def app_name_fixture(metadata):
+def app_name_fixture():
     """Provide app name from the metadata."""
+    metadata = yaml.safe_load(Path("./metadata.yaml").read_text("utf-8"))
     yield metadata["name"]
 
 

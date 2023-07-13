@@ -30,7 +30,7 @@ class SamlEndpoint(BaseModel):  # pylint: disable=too-few-public-methods
     response_url: Optional[AnyHttpUrl]
 
 
-class SamlIntegrator:
+class SamlIntegrator:  # pylint: disable=import-outside-toplevel
     """A class representing the SAML Integrator application.
 
     Attrs:
