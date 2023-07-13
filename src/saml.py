@@ -7,7 +7,6 @@ import urllib
 from functools import cached_property
 from typing import List, Optional, Set
 
-from lxml import etree  # nosec
 from pydantic import AnyHttpUrl, BaseModel, Field
 
 from charm_state import CharmConfigInvalidError, CharmState
@@ -68,7 +67,7 @@ class SamlIntegrator:
         return self._charm_state.metadata_url
 
     @cached_property
-    def _tree(self) -> etree.ElementTree:
+    def _tree(self) -> "etree.ElementTree":  # type: ignore
         """Fetch metadata contents.
 
         Returns:
@@ -77,6 +76,9 @@ class SamlIntegrator:
         Raises:
             CharmConfigInvalidError: if the metadata URL can't be parsed.
         """
+        # Lazy importing. Required deb packages won't be present on charm startup
+        from lxml import etree
+
         try:
             with urllib.request.urlopen(
                 self._charm_state.metadata_url, timeout=10
@@ -118,6 +120,9 @@ class SamlIntegrator:
         Returns:
             List of endpoints.
         """
+        # Lazy importing. Required deb packages won't be present on charm startup
+        from lxml import etree
+
         results = self._tree.xpath(
             (
                 f"//md:EntityDescriptor[@entityID='{self._charm_state.entity_id}']"

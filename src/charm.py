@@ -12,6 +12,7 @@ import ops
 from ops.main import main
 
 from charm_state import CharmConfigInvalidError, CharmState
+from charms.operator_libs_linux.v0 import apt
 from saml import SamlIntegrator
 
 logger = logging.getLogger(__name__)
@@ -30,7 +31,14 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
         self._charm_state = None
         self._saml_integrator = None
         self.framework.observe(self.on.config_changed, self._on_config_changed)
+        self.framework.observe(self.on.upgrade_charm, self._on_upgrade_charm)
         self.framework.observe(self.on.saml_relation_created, self._on_saml_relation_created)
+
+    def _on_upgrade_charm(self, _) -> None:
+        """Install needed apt packages."""
+        self.unit.status = ops.MaintenanceStatus("Installing packages")
+        apt.update()
+        apt.add_package(["libxml2"])
 
     def _on_config_changed(self, _) -> None:
         """Handle changes in configuration."""
