@@ -32,6 +32,4 @@ async def app(ops_test: OpsTest, app_name: str):
         application_name=app_name,
         series="focal",
     )
-    status_name = ops.WaitingStatus.name  # type: ignore[has-type]
-    await ops_test.model.wait_for_idle(status=status_name, raise_on_error=False)
     yield application
