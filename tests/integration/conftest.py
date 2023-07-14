@@ -5,7 +5,6 @@
 
 from pathlib import Path
 
-import ops
 import pytest_asyncio
 import yaml
 from pytest import fixture
