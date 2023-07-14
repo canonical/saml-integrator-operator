@@ -10,6 +10,7 @@ from typing import Dict
 
 import ops
 from charms.operator_libs_linux.v0 import apt
+from charms.saml_integrator.vo import SamlProvides
 from ops.main import main
 
 from charm_state import CharmConfigInvalidError, CharmState
@@ -30,6 +31,7 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
         super().__init__(*args)
         self._charm_state = None
         self._saml_integrator = None
+        self_saml_provides = SamlProvides(relation_name="saml")
         self.framework.observe(self.on.config_changed, self._on_config_changed)
         self.framework.observe(self.on.upgrade_charm, self._on_upgrade_charm)
         self.framework.observe(self.on.saml_relation_created, self._on_saml_relation_created)
@@ -53,39 +55,6 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
             for relation in self.model.relations["saml"]:
                 relation.data[self.model.app].update(self.dump_saml_data())
         self.unit.status = ops.ActiveStatus()
-
-    def dump_saml_data(self) -> Dict[str, str]:
-        """Dump the charm state in the format expected by the relation.
-
-        Returns:
-            Dict containing the IdP details.
-        """
-        result = {
-            "entity_id": self._saml_integrator.entity_id,
-            "metadata_url": self._saml_integrator.metadata_url,
-            "x509certs": ",".join(self._saml_integrator.certificates),
-        }
-        for endpoint in self._saml_integrator.endpoints:
-            http_method = endpoint.binding.split(":")[-1].split("-")[-1].lower()
-            lowercase_name = re.sub(r"(?<!^)(?=[A-Z])", "_", endpoint.name).lower()
-            prefix = f"{lowercase_name}_{http_method}_"
-            result[f"{prefix}url"] = endpoint.url
-            result[f"{prefix}binding"] = endpoint.binding
-            if endpoint.response_url:
-                result[f"{prefix}response_url"] = endpoint.response_url
-        return result
-
-    def _on_saml_relation_created(self, event: ops.RelationCreatedEvent):
-        """Handle a change to the saml relation.
-
-        Populate the event data.
-
-        Args:
-            event: Event triggering the relation-created hook for the relation.
-        """
-        if not self.model.unit.is_leader():
-            return
-        event.relation.data[self.model.app].update(self.dump_saml_data())
 
 
 if __name__ == "__main__":  # pragma: nocover
