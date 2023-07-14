@@ -28,4 +28,4 @@ async def test_active(ops_test: OpsTest, app: ops.Application):
     status_name = ops.ActiveStatus.name  # type: ignore[has-type]
     assert ops_test.model
     await ops_test.model.wait_for_idle(status=status_name, raise_on_error=True)
-    assert app.units[0].workload_status == status_name
+    assert app.units[0].workload_status == status_name  # type: ignore
