@@ -19,7 +19,7 @@ async def test_active(ops_test: OpsTest, app: ops.Application):
     # Application actually does have units
     entity_id = "https://login.staging.ubuntu.com"
     metadata_url = "https://login.staging.ubuntu.com/saml/metadata"
-    app.set_config(  # type: ignore[attr-defined]
+    await app.set_config(  # type: ignore[attr-defined]
         {
             "entity_id": entity_id,
             "metadata_url": metadata_url,
@@ -28,4 +28,4 @@ async def test_active(ops_test: OpsTest, app: ops.Application):
     status_name = ops.ActiveStatus.name  # type: ignore[has-type]
     assert ops_test.model
     await ops_test.model.wait_for_idle(status=status_name, raise_on_error=True)
-    assert app.units[0].workload_status == ops.ActiveStatus.name  # type: ignore
+    assert app.units[0].workload_status == status_name
