@@ -87,7 +87,7 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         if self._charm_state.certificate:
             url = urllib.parse.urlparse(self._charm_state.metadata_url)
             certificate = ssl.get_server_certificate(
-                (url.hostname, url.port if url.port else 443)
+                (url.hostname, url.port if url.port else 443), timeout=10
             ).replace("\n", "")
             return certificate == self._charm_state.certificate
         return True

@@ -10,4 +10,4 @@ options:
     description: URL to the IdP's metadata
   certificate:
     type: string
-    description: Public certificate for the metadata URL validation
+    description: Public certificate for the metadata URL validation. If empty, no validation is performed
