@@ -10,32 +10,15 @@ from typing import List, Optional, Set
 from pydantic import AnyHttpUrl, BaseModel, Field
 
 from charm_state import CharmConfigInvalidError, CharmState
+from charms.saml_integrator.v0 import saml
 
 logger = logging.getLogger(__name__)
-
-
-class SamlEndpoint(BaseModel):  # pylint: disable=too-few-public-methods
-    """Represent a SAML endpoint.
-
-    Attrs:
-        name: Endpoint name.
-        url: Endpoint URL.
-        binding: Endpoint binding.
-        response_url: URL to address the response to.
-    """
-
-    name: str = Field(..., min_length=1)
-    url: AnyHttpUrl
-    binding: str = Field(..., min_length=1)
-    response_url: Optional[AnyHttpUrl]
 
 
 class SamlIntegrator:  # pylint: disable=import-outside-toplevel
     """A class representing the SAML Integrator application.
 
     Attrs:
-        entity_id: Entity ID for SAML.
-        metadata_url: URL for the SAML metadata.
         endpoints: SAML endpoints.
         certificates: Public certificates.
     """
@@ -47,24 +30,6 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
             charm_state: The state of the charm that the Saml instance belongs to.
         """
         self._charm_state = charm_state
-
-    @property
-    def entity_id(self) -> str:
-        """Return entity_id config.
-
-        Returns:
-            str: entity_id config.
-        """
-        return self._charm_state.entity_id
-
-    @property
-    def metadata_url(self) -> str:
-        """Return metadata_url config.
-
-        Returns:
-            str: metadata_url config.
-        """
-        return self._charm_state.metadata_url
 
     @cached_property
     def _tree(self) -> "etree.ElementTree":  # type: ignore
@@ -114,7 +79,7 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         }
 
     @cached_property
-    def endpoints(self) -> List[SamlEndpoint]:
+    def endpoints(self) -> List[saml.SamlEndpoint]:
         """Return endpoints defined in the metadata.
 
         Returns:
@@ -135,7 +100,7 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         endpoints = []
         for result in results:
             endpoints.append(
-                SamlEndpoint(
+                saml.SamlEndpoint(
                     name=etree.QName(result).localname,
                     url=result.get("Location"),
                     binding=result.get("Binding"),

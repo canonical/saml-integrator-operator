@@ -10,13 +10,15 @@ from typing import Dict
 
 import ops
 from charms.operator_libs_linux.v0 import apt
-from charms.saml_integrator.vo import SamlProvides
+from charms.saml_integrator.v0 import saml
 from ops.main import main
 
 from charm_state import CharmConfigInvalidError, CharmState
 from saml import SamlIntegrator
 
 logger = logging.getLogger(__name__)
+
+RELATION_NAME = "saml"
 
 
 class SamlIntegratorOperatorCharm(ops.CharmBase):
@@ -31,7 +33,7 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
         super().__init__(*args)
         self._charm_state = None
         self._saml_integrator = None
-        self_saml_provides = SamlProvides(relation_name="saml")
+        self._saml_provides = saml.SamlProvides(self, relation_name=RELATION_NAME)
         self.framework.observe(self.on.config_changed, self._on_config_changed)
         self.framework.observe(self.on.upgrade_charm, self._on_upgrade_charm)
         self.framework.observe(self.on.saml_relation_created, self._on_saml_relation_created)
@@ -52,9 +54,22 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
             self.model.unit.status = ops.BlockedStatus(exc.msg)
             return
         if self.model.unit.is_leader():
-            for relation in self.model.relations["saml"]:
-                relation.data[self.model.app].update(self.dump_saml_data())
+            for relation in self._saml_provides.relations:
+                self._saml_provides._update_relation_data(relation, self.get_saml_data())
         self.unit.status = ops.ActiveStatus()
+
+    def get_saml_data(self) -> saml.SamlRelationData:
+        """Get relation data.
+
+        Returns:
+            SamlRelationData containing the IdP details.
+        """
+        return SamlRelationData(
+            self.charm._charm_state.entity_id,
+            self.charm._charm_state.metadata_url,
+            self.charm._saml_integrator.certificates,
+            self.charm._saml_integrator.endpoints,
+        )
 
 
 if __name__ == "__main__":  # pragma: nocover
