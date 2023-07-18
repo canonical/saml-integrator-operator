@@ -8,6 +8,6 @@ options:
   metadata_url:
     type: string
     description: URL to the IdP's metadata
-  certificate:
+  fingerprint:
     type: string
-    description: Public certificate for the metadata URL validation. If empty, no validation is performed
+    description: Fingerprint to validate the metadata URL's public certificate. If empty, no validation is performed

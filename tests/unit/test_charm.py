@@ -24,7 +24,7 @@ def test_misconfigured_charm_reaches_blocked_status():
 
 
 @patch("urllib.request.urlopen")
-def test_charm_reaches_active_status(mock_urlopen):
+def test_charm_reaches_active_status(urlopen_mock):
     """
     arrange: set up a charm and mock HTTP requests.
     act: trigger a configuration change with the required configs.
@@ -35,7 +35,7 @@ def test_charm_reaches_active_status(mock_urlopen):
         cm.getcode.return_value = 200
         cm.read.return_value = metadata.read()
         cm.__enter__.return_value = cm
-        mock_urlopen.return_value = cm
+        urlopen_mock.return_value = cm
 
         harness = Harness(SamlIntegratorOperatorCharm)
         harness.begin()
@@ -52,7 +52,7 @@ def test_charm_reaches_active_status(mock_urlopen):
 
 @patch("urllib.request.urlopen")
 @pytest.mark.parametrize("metadata_file", [("metadata_1.xml"), ("metadata_2.xml")])
-def test_relation_joined_when_leader(mock_urlopen, metadata_file):
+def test_relation_joined_when_leader(urlopen_mock, metadata_file):
     """
     arrange: set up a configured charm and set leadership for the unit.
     act: add a relation.
@@ -63,7 +63,7 @@ def test_relation_joined_when_leader(mock_urlopen, metadata_file):
         cm.getcode.return_value = 200
         cm.read.return_value = metadata.read()
         cm.__enter__.return_value = cm
-        mock_urlopen.return_value = cm
+        urlopen_mock.return_value = cm
 
         harness = Harness(SamlIntegratorOperatorCharm)
         harness.begin()
@@ -125,7 +125,7 @@ def test_relation_joined_when_leader(mock_urlopen, metadata_file):
 
 
 @patch("urllib.request.urlopen")
-def test_relation_joined_when_not_leader(mock_urlopen):
+def test_relation_joined_when_not_leader(urlopen_mock):
     """
     arrange: set up a charm and unset leadership for the unit.
     act: add a relation.
@@ -136,7 +136,7 @@ def test_relation_joined_when_not_leader(mock_urlopen):
         cm.getcode.return_value = 200
         cm.read.return_value = metadata.read()
         cm.__enter__.return_value = cm
-        mock_urlopen.return_value = cm
+        urlopen_mock.return_value = cm
 
         harness = Harness(SamlIntegratorOperatorCharm)
         harness.begin()
@@ -155,7 +155,7 @@ def test_relation_joined_when_not_leader(mock_urlopen):
 
 
 @patch("urllib.request.urlopen")
-def test_charm_propagates_config_change(mock_urlopen):
+def test_charm_propagates_config_change(urlopen_mock):
     """
     arrange: set up a charm and mock HTTP requests.
     act: trigger a configuration change with the required configs.
@@ -166,7 +166,7 @@ def test_charm_propagates_config_change(mock_urlopen):
         cm.getcode.return_value = 200
         cm.read.return_value = metadata.read()
         cm.__enter__.return_value = cm
-        mock_urlopen.return_value = cm
+        urlopen_mock.return_value = cm
 
         harness = Harness(SamlIntegratorOperatorCharm)
         harness.begin()

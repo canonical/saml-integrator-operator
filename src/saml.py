@@ -2,7 +2,9 @@
 # See LICENSE file for licensing details.
 
 """Provide the SamlApp class to encapsulate the business logic."""
+import hashlib
 import logging
+import socket
 import ssl
 import urllib
 from functools import cached_property
@@ -51,13 +53,18 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
             CharmConfigInvalidError: if the certificate validation fails.
         """
         self._charm_state = charm_state
-        if not self._is_certificate_valid:
-            raise CharmConfigInvalidError(
-                (
-                    f"The certificate from {self._charm_state.metadata_url} "
-                    "doesn't match the provided certificate"
+        try:
+            if not self._is_certificate_valid:
+                raise CharmConfigInvalidError(
+                    (
+                        f"The certificate from {self._charm_state.metadata_url} "
+                        "doesn't match the provided fingerprint"
+                    )
                 )
-            )
+        except TimeoutError as ex:
+            raise CharmConfigInvalidError(
+                f"Error while validating certificate from {self._charm_state.metadata_url}"
+            ) from ex
 
     @property
     def entity_id(self) -> str:
@@ -83,13 +90,21 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
 
         Returns:
             True if the certificate matches the one provided.
+
+        Raises:
+            TimeoutError: if the connection can't be established.
         """
-        if self._charm_state.certificate:
+        if self._charm_state.fingerprint:
             url = urllib.parse.urlparse(self._charm_state.metadata_url)
-            certificate = ssl.get_server_certificate(
-                (url.hostname, url.port if url.port else 443), timeout=10
-            ).replace("\n", "")
-            return certificate == self._charm_state.certificate
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(1)
+            context = ssl.create_default_context()
+            with socket.create_connection((url.hostname, 443)) as sock:
+                with context.wrap_socket(sock, server_hostname=url.hostname) as wrapped_socket:
+                    der_cert = wrapped_socket.getpeercert(True)
+                    print(der_cert)
+                    print(hashlib.sha256(der_cert).hexdigest())
+                    return hashlib.sha256(der_cert).hexdigest() == self._charm_state.fingerprint
         return True
 
     @cached_property

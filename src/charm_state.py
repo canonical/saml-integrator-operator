@@ -14,7 +14,7 @@ from pydantic import AnyHttpUrl, BaseModel, Field, ValidationError
 KNOWN_CHARM_CONFIG = (
     "entity_id",
     "metadata_url",
-    "certificate",
+    "fingerprint",
 )
 
 
@@ -24,12 +24,12 @@ class SamlIntegratorConfig(BaseModel):  # pylint: disable=too-few-public-methods
     Attrs:
         entity_id: Entity ID.
         metadata_url: Metadata URL.
-        certificate: Public certificate for metadata URL validation.
+        fingerprint: Fingerprint to validate the metadata URL's certificate.
     """
 
     entity_id: str = Field(..., min_length=1)
     metadata_url: AnyHttpUrl
-    certificate: Optional[str] = Field()
+    fingerprint: Optional[str] = Field()
 
 
 class CharmConfigInvalidError(Exception):
@@ -54,7 +54,7 @@ class CharmState:
     Attrs:
         entity_id: Entity ID for SAML.
         metadata_url: URL for the SAML metadata.
-        certificate: Public certificate for metadata URL validation.
+        fingerprint: Fingerprint to validate the metadata URL's certificate.
     """
 
     def __init__(self, *, saml_integrator_config: SamlIntegratorConfig):
@@ -75,13 +75,13 @@ class CharmState:
         return self._saml_integrator_config.entity_id
 
     @property
-    def certificate(self) -> Optional[str]:
+    def fingerprint(self) -> Optional[str]:
         """Return certificate config.
 
         Returns:
             str: certificate config.
         """
-        return self._saml_integrator_config.certificate
+        return self._saml_integrator_config.fingerprint
 
     @property
     def metadata_url(self) -> str:
