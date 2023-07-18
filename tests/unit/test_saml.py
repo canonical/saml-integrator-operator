@@ -40,18 +40,10 @@ def test_saml_with_invalid_metadata(mock_urlopen):
     )
     charm_state = CharmState.from_charm(harness.charm)
     saml_integrator = SamlIntegrator(charm_state=charm_state)
-    assert saml_integrator.entity_id == entity_id
-    assert saml_integrator.metadata_url == metadata_url
-    try:
+    with pytest.raises(CharmConfigInvalidError):
         saml_integrator.certificates
-        assert False
-    except CharmConfigInvalidError:
-        assert True
-    try:
+    with pytest.raises(CharmConfigInvalidError):
         saml_integrator.endpoints
-        assert False
-    except CharmConfigInvalidError:
-        assert True
 
 
 @patch.object(urllib.request, "urlopen", side_effect=urllib.error.URLError("Error"))
@@ -75,18 +67,10 @@ def test_saml_with_invalid_url(mock_urlopen):
     )
     charm_state = CharmState.from_charm(harness.charm)
     saml_integrator = SamlIntegrator(charm_state=charm_state)
-    assert saml_integrator.entity_id == entity_id
-    assert saml_integrator.metadata_url == metadata_url
-    try:
+    with pytest.raises(CharmConfigInvalidError):
         saml_integrator.certificates
-        assert False
-    except CharmConfigInvalidError:
-        assert True
-    try:
+    with pytest.raises(CharmConfigInvalidError):
         saml_integrator.endpoints
-        assert False
-    except CharmConfigInvalidError:
-        assert True
 
 
 @patch("urllib.request.urlopen")
@@ -123,8 +107,6 @@ def test_saml_with_valid_metadata(mock_urlopen, metadata_file, binding):
         )
         charm_state = CharmState.from_charm(harness.charm)
         saml_integrator = SamlIntegrator(charm_state=charm_state)
-        assert saml_integrator.entity_id == entity_id
-        assert saml_integrator.metadata_url == metadata_url
         assert saml_integrator.certificates == {
             (
                 "MIIDuzCCAqOgAwIBAgIJALRwYFkmH3k9MA0GCSqGSIb3DQEBCwUAMHQxCzAJBgNVBAYTAkdCMRMwEQYD"

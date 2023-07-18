@@ -3,14 +3,13 @@
 
 """Provide the SamlApp class to encapsulate the business logic."""
 import logging
-import urllib
+import urllib.request
 from functools import cached_property
-from typing import List, Optional, Set
+from typing import List, Set
 
-from pydantic import AnyHttpUrl, BaseModel, Field
+from charms.saml_integrator.v0 import saml
 
 from charm_state import CharmConfigInvalidError, CharmState
-from charms.saml_integrator.v0 import saml
 
 logger = logging.getLogger(__name__)
 

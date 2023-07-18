@@ -36,16 +36,14 @@ LIBPATCH = 1
 
 PYDEPS = ["ops>=2.0.0", "pydantic==1.10.10"]
 
+# pylint: disable=wrong-import-position
+import re
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
+
+from ops import Object, RelationChangedEvent
 from pydantic import AnyHttpUrl, BaseModel, Field
-from ops import (
-    CharmBase,
-    Object,
-    Relation,
-    RelationCreatedEvent,
-    RelationChangedEvent,
-)
+from pydantic.tools import parse_obj_as
 
 
 class SamlEndpoint(BaseModel):
@@ -64,31 +62,46 @@ class SamlEndpoint(BaseModel):
     response_url: Optional[AnyHttpUrl]
 
     def to_relation_data(self) -> Dict[str, str]:
-        result = {}
-        http_method = endpoint.binding.split(":")[-1].split("-")[-1].lower()
-        lowercase_name = re.sub(r"(?<!^)(?=[A-Z])", "_", endpoint.name).lower()
+        """Convert an instance of SamlEndpoint to the relation representation.
+
+        Returns:
+            Dict containing the representation.
+        """
+        result: Dict[str, str] = {}
+        http_method = self.binding.split(":")[-1].split("-")[-1].lower()
+        lowercase_name = re.sub(r"(?<!^)(?=[A-Z])", "_", self.name).lower()
         prefix = f"{lowercase_name}_{http_method}_"
-        result[f"{prefix}url"] = endpoint.url
-        result[f"{prefix}binding"] = endpoint.binding
-        if endpoint.response_url:
-            result[f"{prefix}response_url"] = endpoint.response_url
+        result[f"{prefix}url"] = self.url
+        result[f"{prefix}binding"] = self.binding
+        if self.response_url:
+            result[f"{prefix}response_url"] = self.response_url
         return result
-    
+
     @classmethod
-    def from_relation_data(relation_data: Dict[str, str]) -> "SamlEndpoint":
+    def from_relation_data(cls, relation_data: Dict[str, str]) -> "SamlEndpoint":
+        """Initialize a new instance of the SamlEndpoint class from the relation data.
+
+        Args:
+            relation_data: the relation data.
+
+        Returns:
+            A SamlEndpoint instance.
+        """
         url_key = ""
-        for key, _ in relation_data.keys():
-            if key.endswith("_url"):
-                url_key = key 
-        lowercase_name = url_key.split("_")[:-2]
+        for key in relation_data:
+            if key.endswith("_redirect_url") or key.endswith("_post_url"):
+                url_key = key
+        lowercase_name = "_".join(url_key.split("_")[:-2])
         name = "".join(x.capitalize() for x in lowercase_name.split("_"))
         http_method = url_key.split("_")[-2]
         prefix = f"{lowercase_name}_{http_method}_"
         return cls(
-            name,
-            relation_data[f"{prefix}url"],
-            relation_data[f"{prefix}binding"],
-            relation_data[f"{prefix}response_url"] if f"{prefix}response_url" in relation_data.keys() else None,
+            name=name,
+            url=parse_obj_as(AnyHttpUrl, relation_data[f"{prefix}url"]),
+            binding=relation_data[f"{prefix}binding"],
+            response_url=parse_obj_as(AnyHttpUrl, relation_data[f"{prefix}response_url"])
+            if f"{prefix}response_url" in relation_data
+            else None,
         )
 
 
@@ -101,12 +114,18 @@ class SamlRelationData(BaseModel):
         certificates: List of SAML certificates.
         endpoints: List of SAML endpoints.
     """
+
     entity_id: str = Field(..., min_length=1)
     metadata_url: AnyHttpUrl
     certificates: List[str]
     endpoints: List[SamlEndpoint]
 
     def to_relation_data(self) -> Dict[str, str]:
+        """Convert an instance of SamlRelationData to the relation representation.
+
+        Returns:
+            Dict containing the representation.
+        """
         result = {
             "entity_id": self.entity_id,
             "metadata_url": self.metadata_url,
@@ -115,64 +134,58 @@ class SamlRelationData(BaseModel):
         for endpoint in self.endpoints:
             result = {**result, **endpoint.to_relation_data()}
         return result
-    
-    @classmethod
-    def from_relation_data(relation_data: Dict[str, str]) -> "SamlRelationData":
 
+    @classmethod
+    def from_relation_data(cls, relation_data: Dict[str, str]) -> "SamlRelationData":
+        """Initialize a new instance of the SamlRelationData class from the relation data.
+
+        Args:
+            relation_data: the relation data.
+
+        Returns:
+            A SamlRelationData instance.
+        """
         endpoints = []
-        for key, _ in relation_data.keys():
-            if key.endswith("_url"):
-                prefix = url_key.split("_")[:-1]
+        for key in relation_data:
+            if key.endswith("_redirect_url") or key.endswith("_post_url"):
+                prefix = "_".join(key.split("_")[:-1])
                 endpoints.append(
                     SamlEndpoint.from_relation_data(
-                        {key: relation_data[key] for key in relation_data.keys() if key.startswith(prefix)}
+                        {
+                            key: relation_data[key]
+                            for key in relation_data
+                            if key.startswith(prefix)
+                        }
                     )
                 )
+        endpoints.sort(key=lambda ep: ep.name)
         return cls(
-            relation_data["entity_id"],
-            relation_data["metadata_url"],
-            relation_data["certificates"].split(","),
-            endpoints
+            entity_id=relation_data["entity_id"],
+            metadata_url=parse_obj_as(AnyHttpUrl, relation_data["metadata_url"]),
+            certificates=relation_data["x509certs"].split(","),
+            endpoints=endpoints,
         )
 
 
+class SamlRequires(Object, ABC):
+    """Requires-side of the relation.
 
-class SamlProvides(Object, ABC):
-    
-    def __init__(self, charm: CharmBase, relation_name: str) -> None:
-        super().__init__(charm, relation_name)
-        self.charm = charm
-        self.relation_name = relation_name
-        self.framework.observe(charm.on[relation_name].relation_created, self._on_relation_created)
+    Attrs:
+        charm: the provider charm.
+        relation_name: the relation name.
+    """
 
-    def _on_relation_created(self, event: RelationCreatedEvent) -> None:
-        """Handle a change to the saml relation.
-
-        Populate the event data.
-
-        Args:
-            event: Event triggering the relation-created hook for the relation.
-        """
-        if not self.model.unit.is_leader():
-            return
-        self._update_relation_data(event.relation, self.charm.get_saml_data())
-
-    @property
-    def relations(self) -> List[Relation]:
-        """The list of Relation instances associated with this relation_name."""
-        return list(self.charm.model.relations[self.relation_name])
-
-    def _update_relation_data(self, relation: Relation, saml_data: SamlRelationData) -> None:
-        relation.data[self.charm.model.app].update(saml_data.to_relation_data())
-
-
-class DataRequires(Object, ABC):
-    """Requires-side of the relation."""
     def __init__(
         self,
         charm,
         relation_name: str,
     ):
+        """Initialize a new instance of the SamlRequires class.
+
+        Args:
+            charm: the requirer charm.
+            relation_name: the relation name.
+        """
         super().__init__(charm, relation_name)
         self.charm = charm
         self.relation_name = relation_name
@@ -182,5 +195,12 @@ class DataRequires(Object, ABC):
 
     @abstractmethod
     def _on_relation_changed_event(self, event: RelationChangedEvent) -> None:
-        """Handle the relation changed event."""
+        """Handle the relation changed event.
+
+        Args:
+            event: The event triggering the handler.
+
+        Raises:
+            NotImplementedError: always thrown.
+        """
         raise NotImplementedError
