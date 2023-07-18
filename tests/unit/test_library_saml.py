@@ -4,74 +4,6 @@
 from charms.saml_integrator.v0 import saml
 
 
-def test_saml_endpoint_without_response_url_to_relation_data():
-    endpoint = saml.SamlEndpoint(
-        name="SingleLogoutService",
-        url="https://login.staging.ubuntu.com/+logout",
-        binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
-    )
-    relation_data = endpoint.to_relation_data()
-    expected_relation_data = {
-        "single_logout_service_redirect_url": "https://login.staging.ubuntu.com/+logout",
-        "single_logout_service_redirect_binding": (
-            "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
-        ),
-    }
-    assert relation_data == expected_relation_data
-
-
-def test_saml_endpoint_with_response_url_to_relation_data():
-    endpoint = saml.SamlEndpoint(
-        name="SingleLogoutService",
-        url="https://login.staging.ubuntu.com/+logout",
-        binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
-        response_url="https://login.staging.ubuntu.com/+logout2",
-    )
-    relation_data = endpoint.to_relation_data()
-    expected_relation_data = {
-        "single_logout_service_redirect_url": "https://login.staging.ubuntu.com/+logout",
-        "single_logout_service_redirect_binding": (
-            "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
-        ),
-        "single_logout_service_redirect_response_url": "https://login.staging.ubuntu.com/+logout2",
-    }
-    assert relation_data == expected_relation_data
-
-
-def test_endpoint_without_response_url_from_relation_data():
-    relation_data = {
-        "single_logout_service_redirect_url": "https://login.staging.ubuntu.com/+logout",
-        "single_logout_service_redirect_binding": (
-            "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
-        ),
-    }
-    endpoint = saml.SamlEndpoint.from_relation_data(relation_data)
-    expected_endpoint = saml.SamlEndpoint(
-        name="SingleLogoutService",
-        url="https://login.staging.ubuntu.com/+logout",
-        binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
-    )
-    assert endpoint == expected_endpoint
-
-
-def test_endpoint_with_response_url_from_relation_data():
-    relation_data = {
-        "single_logout_service_redirect_url": "https://login.staging.ubuntu.com/+logout",
-        "single_logout_service_redirect_binding": (
-            "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
-        ),
-        "single_logout_service_redirect_response_url": "https://login.staging.ubuntu.com/+logout2",
-    }
-    endpoint = saml.SamlEndpoint.from_relation_data(relation_data)
-    expected_endpoint = saml.SamlEndpoint(
-        name="SingleLogoutService",
-        url="https://login.staging.ubuntu.com/+logout",
-        binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
-        response_url="https://login.staging.ubuntu.com/+logout2",
-    )
-    assert endpoint == expected_endpoint
-
-
 def test_saml_relation_data_to_relation_data():
     sso_ep = saml.SamlEndpoint(
         name="SingleSignOnService",
@@ -82,6 +14,7 @@ def test_saml_relation_data_to_relation_data():
         name="SingleLogoutService",
         url="https://login.staging.ubuntu.com/+logout",
         binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
+        response_url="https://login.staging.ubuntu.com/+logout2",
     )
     saml_data = saml.SamlRelationData(
         entity_id="https://login.staging.ubuntu.com",
@@ -102,6 +35,7 @@ def test_saml_relation_data_to_relation_data():
         "single_logout_service_redirect_binding": (
             "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
         ),
+        "single_logout_service_redirect_response_url": "https://login.staging.ubuntu.com/+logout2",
     }
     assert relation_data == expected_relation_data
 
