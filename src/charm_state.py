@@ -6,7 +6,6 @@
 """Module defining the CharmState class which represents the state of the SAML Integrator charm."""
 
 import itertools
-from typing import Optional
 
 import ops
 from pydantic import AnyHttpUrl, BaseModel, Field, ValidationError
@@ -14,7 +13,6 @@ from pydantic import AnyHttpUrl, BaseModel, Field, ValidationError
 KNOWN_CHARM_CONFIG = (
     "entity_id",
     "metadata_url",
-    "fingerprint",
 )
 
 
@@ -24,12 +22,10 @@ class SamlIntegratorConfig(BaseModel):  # pylint: disable=too-few-public-methods
     Attrs:
         entity_id: Entity ID.
         metadata_url: Metadata URL.
-        fingerprint: Fingerprint to validate the metadata URL's certificate.
     """
 
     entity_id: str = Field(..., min_length=1)
     metadata_url: AnyHttpUrl
-    fingerprint: Optional[str] = Field()
 
 
 class CharmConfigInvalidError(Exception):
@@ -54,7 +50,6 @@ class CharmState:
     Attrs:
         entity_id: Entity ID for SAML.
         metadata_url: URL for the SAML metadata.
-        fingerprint: Fingerprint to validate the metadata URL's certificate.
     """
 
     def __init__(self, *, saml_integrator_config: SamlIntegratorConfig):
@@ -73,15 +68,6 @@ class CharmState:
             str: entity_id config.
         """
         return self._saml_integrator_config.entity_id
-
-    @property
-    def fingerprint(self) -> Optional[str]:
-        """Return certificate config.
-
-        Returns:
-            str: certificate config.
-        """
-        return self._saml_integrator_config.fingerprint
 
     @property
     def metadata_url(self) -> str:

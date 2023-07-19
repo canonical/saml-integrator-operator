@@ -3,7 +3,6 @@
 
 """CharmState unit tests."""
 
-import pytest
 import yaml
 from ops.testing import Harness
 
@@ -52,5 +51,8 @@ def test_charm_state_from_charm_with_invalid_config():
     """
     harness = Harness(SamlIntegratorOperatorCharm)
     harness.begin()
-    with pytest.raises(CharmConfigInvalidError):
+    try:
         CharmState.from_charm(harness.charm)
+        assert False
+    except CharmConfigInvalidError:
+        assert True
