@@ -219,6 +219,32 @@ def test_saml_with_valid_certificate(context_mock, connection_mock):
         {
             "entity_id": entity_id,
             "metadata_url": metadata_url,
+            "fingerprint": (
+                "98:b2:28:f2:8e:ab:0b:2e:b5:d0:33:89:fb:6f:8f:97:33:da"
+                ":dc:f0:c1:70:07:fc:de:41:48:a4:de:41:db:54"
+            ),
+        }
+    )
+    charm_state = CharmState.from_charm(harness.charm)
+    SamlIntegrator(charm_state=charm_state)
+
+    harness.update_config(
+        {
+            "entity_id": entity_id,
+            "metadata_url": metadata_url,
+            "fingerprint": (
+                "98 b2 28 f2 8e ab 0b 2e b5 d0 33 89 fb 6f 8f 97 33 da"
+                " dc f0 c1 70 07 fc de 41 48 a4 de 41 db 54"
+            ),
+        }
+    )
+    charm_state = CharmState.from_charm(harness.charm)
+    SamlIntegrator(charm_state=charm_state)
+
+    harness.update_config(
+        {
+            "entity_id": entity_id,
+            "metadata_url": metadata_url,
             "fingerprint": "98b228f28eab0b2eb5d03389fb6f8f9733dadcf0c17007fcde4148a4de41db54",
         }
     )

@@ -10,4 +10,4 @@ options:
     description: URL to the IdP's metadata
   fingerprint:
     type: string
-    description: Fingerprint to validate the metadata URL's public certificate. If empty, no validation is performed
+    description: SHA256 Fingerprint to validate the metadata URL's public certificate. If empty, no validation is performed
