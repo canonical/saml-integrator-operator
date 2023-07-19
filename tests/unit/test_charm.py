@@ -24,7 +24,7 @@ def test_misconfigured_charm_reaches_blocked_status():
 
 
 @patch("urllib.request.urlopen")
-def test_charm_reaches_active_status(mock_urlopen):
+def test_charm_reaches_active_status(urlopen_mock):
     """
     arrange: set up a charm and mock HTTP requests.
     act: trigger a configuration change with the required configs.
@@ -35,7 +35,7 @@ def test_charm_reaches_active_status(mock_urlopen):
         cm.getcode.return_value = 200
         cm.read.return_value = metadata.read()
         cm.__enter__.return_value = cm
-        mock_urlopen.return_value = cm
+        urlopen_mock.return_value = cm
 
         harness = Harness(SamlIntegratorOperatorCharm)
         harness.begin()
@@ -48,51 +48,11 @@ def test_charm_reaches_active_status(mock_urlopen):
             }
         )
         harness.model.unit.status == ops.ActiveStatus()
-
-
-@patch("urllib.request.urlopen")
-def test_charm_propagates_config_change(mock_urlopen):
-    """
-    arrange: set up a charm and mock HTTP requests.
-    act: trigger a configuration change with the required configs.
-    assert: the charm reaches ActiveStatus.
-    """
-    with open("tests/unit/files/metadata_1.xml", "rb") as metadata:
-        cm = MagicMock()
-        cm.getcode.return_value = 200
-        cm.read.return_value = metadata.read()
-        cm.__enter__.return_value = cm
-        mock_urlopen.return_value = cm
-
-        harness = Harness(SamlIntegratorOperatorCharm)
-        harness.begin()
-        harness.set_leader(True)
-        entity_id = "https://login.staging.ubuntu.com"
-        metadata_url = "https://login.staging.ubuntu.com/saml/metadata"
-        harness.update_config(
-            {
-                "entity_id": entity_id,
-                "metadata_url": metadata_url,
-            }
-        )
-        harness.model.unit.status == ops.ActiveStatus()
-        harness.add_relation("saml", "indico")
-        data = harness.model.get_relation("saml").data[harness.model.app]
-        assert data["entity_id"] == entity_id
-        new_entity_id = "https://login2.staging.ubuntu.com"
-        harness.update_config(
-            {
-                "entity_id": new_entity_id,
-                "metadata_url": metadata_url,
-            }
-        )
-        data = harness.model.get_relation("saml").data[harness.model.app]
-        assert data["entity_id"] == new_entity_id
 
 
 @patch("urllib.request.urlopen")
 @pytest.mark.parametrize("metadata_file", [("metadata_1.xml"), ("metadata_2.xml")])
-def test_relation_created_when_leader(mock_urlopen, metadata_file):
+def test_relation_joined_when_leader(urlopen_mock, metadata_file):
     """
     arrange: set up a configured charm and set leadership for the unit.
     act: add a relation.
@@ -103,7 +63,7 @@ def test_relation_created_when_leader(mock_urlopen, metadata_file):
         cm.getcode.return_value = 200
         cm.read.return_value = metadata.read()
         cm.__enter__.return_value = cm
-        mock_urlopen.return_value = cm
+        urlopen_mock.return_value = cm
 
         harness = Harness(SamlIntegratorOperatorCharm)
         harness.begin()
@@ -165,7 +125,7 @@ def test_relation_created_when_leader(mock_urlopen, metadata_file):
 
 
 @patch("urllib.request.urlopen")
-def test_relation_created_when_not_leader(mock_urlopen):
+def test_relation_joined_when_not_leader(urlopen_mock):
     """
     arrange: set up a charm and unset leadership for the unit.
     act: add a relation.
@@ -176,7 +136,7 @@ def test_relation_created_when_not_leader(mock_urlopen):
         cm.getcode.return_value = 200
         cm.read.return_value = metadata.read()
         cm.__enter__.return_value = cm
-        mock_urlopen.return_value = cm
+        urlopen_mock.return_value = cm
 
         harness = Harness(SamlIntegratorOperatorCharm)
         harness.begin()
@@ -192,3 +152,43 @@ def test_relation_created_when_not_leader(mock_urlopen):
         harness.add_relation("saml", "indico")
         data = harness.model.get_relation("saml").data[harness.model.app]
         assert data == {}
+
+
+@patch("urllib.request.urlopen")
+def test_charm_propagates_config_change(urlopen_mock):
+    """
+    arrange: set up a charm and mock HTTP requests.
+    act: trigger a configuration change with the required configs.
+    assert: the charm reaches ActiveStatus.
+    """
+    with open("tests/unit/files/metadata_1.xml", "rb") as metadata:
+        cm = MagicMock()
+        cm.getcode.return_value = 200
+        cm.read.return_value = metadata.read()
+        cm.__enter__.return_value = cm
+        urlopen_mock.return_value = cm
+
+        harness = Harness(SamlIntegratorOperatorCharm)
+        harness.begin()
+        harness.set_leader(True)
+        entity_id = "https://login.staging.ubuntu.com"
+        metadata_url = "https://login.staging.ubuntu.com/saml/metadata"
+        harness.update_config(
+            {
+                "entity_id": entity_id,
+                "metadata_url": metadata_url,
+            }
+        )
+        harness.model.unit.status == ops.ActiveStatus()
+        harness.add_relation("saml", "indico")
+        data = harness.model.get_relation("saml").data[harness.model.app]
+        assert data["entity_id"] == entity_id
+        new_entity_id = "https://login2.staging.ubuntu.com"
+        harness.update_config(
+            {
+                "entity_id": new_entity_id,
+                "metadata_url": metadata_url,
+            }
+        )
+        data = harness.model.get_relation("saml").data[harness.model.app]
+        assert data["entity_id"] == new_entity_id
