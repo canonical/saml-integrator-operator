@@ -22,7 +22,7 @@ def app_name_fixture():
 async def app(ops_test: OpsTest, pytestconfig: Config, app_name: str):
     """SAML Integrator charm used for integration testing.
 
-    Build the charm and deploys it.
+    Build the charm and deploy it.
     """
     assert ops_test.model
     charm = pytestconfig.getoption("--charm-file")
