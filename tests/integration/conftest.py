@@ -27,7 +27,7 @@ async def app(ops_test: OpsTest, pytestconfig: Config, app_name: str):
     assert ops_test.model
     charm = pytestconfig.getoption("--charm-file")
     application = await ops_test.model.deploy(
-        charm,
+        f"./{charm}",
         application_name=app_name,
         series="focal",
     )

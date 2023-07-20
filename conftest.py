@@ -3,8 +3,10 @@
 
 """Test fixtures."""
 
+import pytest
 
-def pytest_addoption(parser):
+
+def pytest_addoption(parser: pytest.Parser):
     """Add test arguments.
 
     Args:
