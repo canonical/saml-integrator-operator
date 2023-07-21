@@ -5,6 +5,7 @@
 
 """SAML Integrator Charm service."""
 import logging
+import os
 import re
 from typing import Dict
 
@@ -12,7 +13,7 @@ import ops
 from charms.operator_libs_linux.v0 import apt
 from ops.main import main
 
-from charm_state import CharmConfigInvalidError, CharmState
+from charm_state import CharmConfigInvalidError, CharmState, ProxyConfig
 from saml import SamlIntegrator
 
 logger = logging.getLogger(__name__)
@@ -36,7 +37,12 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
 
     def _on_upgrade_charm(self, _) -> None:
         """Install needed apt packages."""
+        # The apt lib uses the env vars to set the proxy configuration
         self.unit.status = ops.MaintenanceStatus("Installing packages")
+        proxy_config = ProxyConfig.from_charm_env()
+        os.environ["HTTP_PROXY"] = proxy_config.http_proxy
+        os.environ["HTTPS_PROXY"] = proxy_config.https_proxy
+        os.environ["NO_PROXY"] = proxy_config.no_proxy
         apt.update()
         apt.add_package(["libxml2"])
 

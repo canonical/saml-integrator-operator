@@ -6,6 +6,8 @@
 """Module defining the CharmState class which represents the state of the SAML Integrator charm."""
 
 import itertools
+import os
+from typing import Optional
 
 import ops
 from pydantic import AnyHttpUrl, BaseModel, Field, ValidationError
@@ -14,6 +16,37 @@ KNOWN_CHARM_CONFIG = (
     "entity_id",
     "metadata_url",
 )
+
+
+class ProxyConfig(BaseModel):
+    """Configuration for accessing Jenkins through proxy.
+
+    Attributes:
+        http_proxy: The http proxy URL.
+        https_proxy: The https proxy URL.
+        no_proxy: Comma separated list of hostnames to bypass proxy.
+    """
+
+    http_proxy: Optional[AnyHttpUrl]
+    https_proxy: Optional[AnyHttpUrl]
+    no_proxy: Optional[str]
+
+    @classmethod
+    def from_charm_env(cls) -> Optional["ProxyConfig"]:
+        """Instantiate ProxyConfig from juju charm environment.
+
+        Returns:
+            ProxyConfig if proxy configuration is provided, None otherwise.
+        """
+        http_proxy = os.environ.get("JUJU_CHARM_HTTP_PROXY")
+        https_proxy = os.environ.get("JUJU_CHARM_HTTPS_PROXY")
+        no_proxy = os.environ.get("JUJU_CHARM_NO_PROXY")
+        if not http_proxy and not https_proxy:
+            return None
+        # Mypy doesn't understand str is supposed to be converted to HttpUrl by Pydantic.
+        return cls(
+            http_proxy=http_proxy, https_proxy=https_proxy, no_proxy=no_proxy  # type: ignore
+        )
 
 
 class SamlIntegratorConfig(BaseModel):  # pylint: disable=too-few-public-methods

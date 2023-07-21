@@ -3,11 +3,48 @@
 
 """CharmState unit tests."""
 
+import os
+
 import yaml
+from mock import patch
 from ops.testing import Harness
 
 from charm import SamlIntegratorOperatorCharm
-from charm_state import KNOWN_CHARM_CONFIG, CharmConfigInvalidError, CharmState
+from charm_state import KNOWN_CHARM_CONFIG, CharmConfigInvalidError, CharmState, ProxyConfig
+
+PROXY_SETTINGS = {
+    "JUJU_CHARM_HTTP_PROXY": "http://proxy.example:3128",
+    "JUJU_CHARM_HTTPS_PROXY": "https://proxy.example:3128",
+    "JUJU_CHARM_NO_PROXY": "localhost",
+}
+
+PROXY_SETTINGS_INVALID = {
+    "JUJU_CHARM_NO_PROXY": "localhost",
+}
+
+
+@patch.dict(os.environ, PROXY_SETTINGS)
+def test_proxy_config():
+    """
+    arrange: set JUJU_CHARM proxy env variables.
+    act: instantiate the proxy configuration.
+    assert: the proxy configuration is loaded correctly.
+    """
+    proxy_config = ProxyConfig.from_charm_env()
+    assert proxy_config.http_proxy == PROXY_SETTINGS["JUJU_CHARM_HTTP_PROXY"]
+    assert proxy_config.https_proxy == PROXY_SETTINGS["JUJU_CHARM_HTTPS_PROXY"]
+    assert proxy_config.no_proxy == PROXY_SETTINGS["JUJU_CHARM_NO_PROXY"]
+
+
+@patch.dict(os.environ, PROXY_SETTINGS_INVALID)
+def test_proxy_config_invalid():
+    """
+    arrange: set JUJU_CHARM no proxy env variable.
+    act: instantiate the proxy configuration.
+    assert: the proxy configuration is none.
+    """
+    proxy_config = ProxyConfig.from_charm_env()
+    assert proxy_config is None
 
 
 def test_known_charm_config():
