@@ -37,6 +37,11 @@ class SamlConsumerCharm(ops.CharmBase):
 
 
 def test_saml_relation_data_to_relation_data():
+    """
+    arrange: instantiate a SamlRelationData object.
+    act: obtain the relation representation.
+    assert: the relation representation is correct.
+    """
     sso_ep = saml.SamlEndpoint(
         name="SingleSignOnService",
         url="https://login.staging.ubuntu.com/saml/",
@@ -73,6 +78,11 @@ def test_saml_relation_data_to_relation_data():
 
 
 def test_consumer_charm_does_not_emit_event_id_no_leader():
+    """
+    arrange: set up a charm with no leadership.
+    act: trigger a relation changed event.
+    assert: no events are emitted.
+    """
     relation_data = {
         "entity_id": "https://login.staging.ubuntu.com",
         "metadata_url": "https://login.staging.ubuntu.com/saml/metadata",
@@ -100,6 +110,11 @@ def test_consumer_charm_does_not_emit_event_id_no_leader():
 
 
 def test_consumer_charm_emits_event_when_leader():
+    """
+    arrange: set up a charm with leadership.
+    act: trigger a relation changed event.
+    assert: a event containing the relation data is emitted.
+    """
     relation_data = {
         "entity_id": "https://login.staging.ubuntu.com",
         "metadata_url": "https://login.staging.ubuntu.com/saml/metadata",
