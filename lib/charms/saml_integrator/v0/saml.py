@@ -5,7 +5,7 @@
 
 """Library to manage the relation data for the SAML Integrator charm.
 
-This library contains the SamlRelationData class to encapsulate the relation
+This library contains the SamlRelatioSamlDataAvailableEvent class to encapsulate the relation
 data, providing an improved user experience for the requirer charms developers.
 """
 
@@ -25,8 +25,11 @@ PYDEPS = ["ops>=2.0.0", "pydantic==1.10.10"]
 import re
 from typing import Dict, List, Optional
 
+import ops
 from pydantic import AnyHttpUrl, BaseModel, Field
 from pydantic.tools import parse_obj_as
+
+DEFAULT_RELATION_NAME = "saml"
 
 
 class SamlEndpoint(BaseModel):
@@ -104,7 +107,7 @@ class SamlRelationData(BaseModel):
     endpoints: List[SamlEndpoint]
 
     def to_relation_data(self) -> Dict[str, str]:
-        """Convert an instance of SamlRelationData to the relation representation.
+        """Convert an instance of SamlDataAvailableEvent to the relation representation.
 
         Returns:
             Dict containing the representation.
@@ -118,33 +121,96 @@ class SamlRelationData(BaseModel):
             result = {**result, **endpoint.to_relation_data()}
         return result
 
-    @classmethod
-    def from_relation_data(cls, relation_data: Dict[str, str]) -> "SamlRelationData":
-        """Initialize a new instance of the SamlRelationData class from the relation data.
 
-        Args:
-            relation_data: the relation data.
+class SamlDataAvailableEvent(ops.RelationEvent):
+    """Saml event emitted when relation data has changed.
 
-        Returns:
-            A SamlRelationData instance.
-        """
+    Attrs:
+        entity_id: SAML entity ID.
+        metadata_url: URL to the metadata.
+        certificates: List of SAML certificates.
+        endpoints: List of SAML endpoints.
+    """
+
+    @property
+    def entity_id(self) -> str:
+        """Fetch the SAML entity ID from the relation."""
+        assert self.relation.app
+        return self.relation.data[self.relation.app].get("entity_id")
+
+    @property
+    def metadata_url(self) -> str:
+        """Fetch the SAML metadata URL from the relation."""
+        assert self.relation.app
+        return parse_obj_as(AnyHttpUrl, self.relation.data[self.relation.app].get("metadata_url"))
+
+    @property
+    def certificates(self) -> List[str]:
+        """Fetch the SAML certificates from the relation."""
+        assert self.relation.app
+        return self.relation.data[self.relation.app].get("x509certs").split(",")
+
+    @property
+    def endpoints(self) -> List[SamlEndpoint]:
+        """Fetch the SAML endpoints from the relation."""
         endpoints = []
+        assert self.relation.app
+        relation_data = self.relation.data[self.relation.app]
         for key in relation_data:
             if key.endswith("_redirect_url") or key.endswith("_post_url"):
                 prefix = "_".join(key.split("_")[:-1])
                 endpoints.append(
                     SamlEndpoint.from_relation_data(
                         {
-                            key: relation_data[key]
+                            key: relation_data.get(key)
                             for key in relation_data
                             if key.startswith(prefix)
                         }
                     )
                 )
         endpoints.sort(key=lambda ep: ep.name)
-        return cls(
-            entity_id=relation_data["entity_id"],
-            metadata_url=parse_obj_as(AnyHttpUrl, relation_data["metadata_url"]),
-            certificates=relation_data["x509certs"].split(","),
-            endpoints=endpoints,
-        )
+        return endpoints
+
+
+class SamlRequiresEvents(ops.CharmEvents):
+    """SAML events.
+
+    This class defines the events that a SAML requirer can emit.
+
+    Attrs:
+        saml_data_available: the SamlDataAvailableEvent.
+    """
+
+    saml_data_available = ops.EventSource(SamlDataAvailableEvent)
+
+
+class SamlRequires(ops.Object):
+    """Requirer side of the SAML relation.
+
+    Attrs:
+        on: events the provider can emit.
+    """
+
+    on = SamlRequiresEvents()
+
+    def __init__(self, charm: ops.CharmBase, relation_name: str = DEFAULT_RELATION_NAME) -> None:
+        """Construct.
+
+        Args:
+            charm: the provider charm.
+            relation_name: the relation name.
+        """
+        super().__init__(charm, relation_name)
+        self.charm = charm
+        self.relation_name = relation_name
+        self.framework.observe(charm.on[relation_name].relation_changed, self._on_relation_changed)
+
+    def _on_relation_changed(self, event: ops.RelationChangedEvent) -> None:
+        """Event emitted when the relation has changed.
+
+        Args:
+            event: event triggering this handler.
+        """
+        if not self.charm.unit.is_leader():
+            return
+        self.on.saml_data_available.emit(event.relation, app=event.app, unit=event.unit)
