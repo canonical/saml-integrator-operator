@@ -5,7 +5,6 @@
 
 """SAML Integrator Charm service."""
 import logging
-from typing import List
 
 import ops
 from charms.operator_libs_linux.v0 import apt
@@ -21,11 +20,7 @@ RELATION_NAME = "saml"
 
 
 class SamlIntegratorOperatorCharm(ops.CharmBase):
-    """Charm for SAML Integrator on kubernetes.
-
-    Attrs:
-        relations: List of charm relations.
-    """
+    """Charm for SAML Integrator on kubernetes."""
 
     def __init__(self, *args):
         """Construct.
@@ -36,6 +31,7 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
         super().__init__(*args)
         self._charm_state = None
         self._saml_integrator = None
+        self.saml = saml.SamlProvides(self)
         self.framework.observe(self.on[RELATION_NAME].relation_created, self._on_relation_created)
         self.framework.observe(self.on.config_changed, self._on_config_changed)
         self.framework.observe(self.on.upgrade_charm, self._on_upgrade_charm)
@@ -54,23 +50,7 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
         """
         if not self.model.unit.is_leader():
             return
-        self._update_relation_data(event.relation, self.get_saml_data())
-
-    @property
-    def relations(self) -> List[ops.Relation]:
-        """The list of Relation instances associated with this relation_name."""
-        return list(self.model.relations[RELATION_NAME])
-
-    def _update_relation_data(
-        self, relation: ops.Relation, saml_data: saml.SamlRelationData
-    ) -> None:
-        """Update the relation data.
-
-        Args:
-            relation: the relation for which to update the data.
-            saml_data: the data.
-        """
-        relation.data[self.model.app].update(saml_data.to_relation_data())
+        self.saml.update_relation_data(event.relation, self.get_saml_data())
 
     def _on_config_changed(self, _) -> None:
         """Handle changes in configuration."""
@@ -82,8 +62,8 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
             self.model.unit.status = ops.BlockedStatus(exc.msg)
             return
         if self.model.unit.is_leader():
-            for relation in self.relations:
-                self._update_relation_data(relation, self.get_saml_data())
+            for relation in self.saml.relations:
+                self.saml.update_relation_data(relation, self.get_saml_data())
         self.unit.status = ops.ActiveStatus()
 
     def get_saml_data(self) -> saml.SamlRelationData:

@@ -23,9 +23,9 @@ class SamlConsumerCharm(ops.CharmBase):
             args: Variable list of positional arguments passed to the parent constructor.
         """
         super().__init__(*args)
-        self.requirer = saml.SamlRequires(self)
+        self.saml = saml.SamlRequires(self)
         self.events = []
-        self.framework.observe(self.requirer.on.saml_data_available, self._record_event)
+        self.framework.observe(self.saml.on.saml_data_available, self._record_event)
 
     def _record_event(self, event: ops.EventBase) -> None:
         """Rececord emitted event in the event list.

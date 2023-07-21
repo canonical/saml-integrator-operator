@@ -214,3 +214,40 @@ class SamlRequires(ops.Object):
         if not self.charm.unit.is_leader():
             return
         self.on.saml_data_available.emit(event.relation, app=event.app, unit=event.unit)
+
+
+class SamlProvides(ops.Object):
+    """Provider side of the SAML relation.
+
+    Attrs:
+        relations: list of charm relations.
+    """
+
+    def __init__(self, charm: ops.CharmBase, relation_name: str = DEFAULT_RELATION_NAME) -> None:
+        """Construct.
+
+        Args:
+            charm: the provider charm.
+            relation_name: the relation name.
+        """
+        super().__init__(charm, relation_name)
+        self.charm = charm
+        self.relation_name = relation_name
+
+    @property
+    def relations(self) -> List[ops.Relation]:
+        """The list of Relation instances associated with this relation_name.
+
+        Returns:
+            List of relations to this charm.
+        """
+        return list(self.model.relations[self.relation_name])
+
+    def update_relation_data(self, relation: ops.Relation, saml_data: SamlRelationData) -> None:
+        """Update the relation data.
+
+        Args:
+            relation: the relation for which to update the data.
+            saml_data: a SamlRelationData instance wrapping the data to be updated.
+        """
+        relation.data[self.charm.model.app].update(saml_data.to_relation_data())
