@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest_asyncio
 import yaml
-from pytest import fixture
+from pytest import Config, fixture
 from pytest_operator.plugin import OpsTest
 
 
@@ -19,15 +19,15 @@ def app_name_fixture():
 
 
 @pytest_asyncio.fixture(scope="module")
-async def app(ops_test: OpsTest, app_name: str):
+async def app(ops_test: OpsTest, pytestconfig: Config, app_name: str):
     """SAML Integrator charm used for integration testing.
 
-    Build the charm and deploys it.
+    Build the charm and deploy it.
     """
     assert ops_test.model
-    charm = await ops_test.build_charm(".")
+    charm = pytestconfig.getoption("--charm-file")
     application = await ops_test.model.deploy(
-        charm,
+        f"./{charm}",
         application_name=app_name,
         series="focal",
     )
