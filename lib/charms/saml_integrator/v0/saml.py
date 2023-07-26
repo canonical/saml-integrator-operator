@@ -54,7 +54,9 @@ class SamlEndpoint(BaseModel):
             Dict containing the representation.
         """
         result: Dict[str, str] = {}
+        # Get the HTTP method from the SAML binding
         http_method = self.binding.split(":")[-1].split("-")[-1].lower()
+        # Transform name into snakecase
         lowercase_name = re.sub(r"(?<!^)(?=[A-Z])", "_", self.name).lower()
         prefix = f"{lowercase_name}_{http_method}_"
         result[f"{prefix}url"] = self.url
