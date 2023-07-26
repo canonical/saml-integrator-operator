@@ -29,8 +29,12 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
             args: Arguments passed to the CharmBase parent constructor.
         """
         super().__init__(*args)
-        self._charm_state = None
-        self._saml_integrator = None
+        try:
+            self._charm_state = CharmState.from_charm(charm=self)
+            self._saml_integrator = SamlIntegrator(charm_state=self._charm_state)
+        except CharmConfigInvalidError as exc:
+            self.model.unit.status = ops.BlockedStatus(exc.msg)
+            return
         self.saml = saml.SamlProvides(self)
         self.framework.observe(self.on[RELATION_NAME].relation_created, self._on_relation_created)
         self.framework.observe(self.on.config_changed, self._on_config_changed)
@@ -39,8 +43,7 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
     def _on_upgrade_charm(self, _) -> None:
         """Install needed apt packages."""
         self.unit.status = ops.MaintenanceStatus("Installing packages")
-        apt.update()
-        apt.add_package(["libxml2"])
+        apt.add_package(["libxml2"], update_cache=True)
 
     def _on_relation_created(self, event: ops.RelationCreatedEvent) -> None:
         """Handle a change to the saml relation.
@@ -55,12 +58,6 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
     def _on_config_changed(self, _) -> None:
         """Handle changes in configuration."""
         self.unit.status = ops.MaintenanceStatus("Configuring charm")
-        try:
-            self._charm_state = CharmState.from_charm(charm=self)
-            self._saml_integrator = SamlIntegrator(charm_state=self._charm_state)
-        except CharmConfigInvalidError as exc:
-            self.model.unit.status = ops.BlockedStatus(exc.msg)
-            return
         if self.model.unit.is_leader():
             for relation in self.saml.relations:
                 self.saml.update_relation_data(relation, self.get_saml_data())

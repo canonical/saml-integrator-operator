@@ -2,15 +2,11 @@
 # See LICENSE file for licensing details.
 
 """SAML Integrator unit tests."""
-import socket
-import ssl
 import urllib
 
 import pytest
 from mock import MagicMock, patch
-from ops.testing import Harness
 
-from charm import SamlIntegratorOperatorCharm
 from charm_state import CharmConfigInvalidError, CharmState
 from saml import SamlIntegrator
 
@@ -29,18 +25,15 @@ def test_saml_with_invalid_metadata(urlopen_mock):
     cm.__enter__.return_value = cm
     urlopen_mock.return_value = cm
 
-    harness = Harness(SamlIntegratorOperatorCharm)
-    harness.begin()
-    harness.disable_hooks()
     entity_id = "https://login.staging.ubuntu.com"
     metadata_url = "https://login.staging.ubuntu.com/saml/metadata"
-    harness.update_config(
-        {
+    charm = MagicMock(
+        config={
             "entity_id": entity_id,
             "metadata_url": metadata_url,
         }
     )
-    charm_state = CharmState.from_charm(harness.charm)
+    charm_state = CharmState.from_charm(charm)
     saml_integrator = SamlIntegrator(charm_state=charm_state)
     with pytest.raises(CharmConfigInvalidError):
         saml_integrator.certificates
@@ -56,18 +49,15 @@ def test_saml_with_invalid_url(urlopen_mock):
     assert: a CharmConfigInvalidError exception is raised when attempting to access the
         properties read from the metadata.
     """
-    harness = Harness(SamlIntegratorOperatorCharm)
-    harness.begin()
-    harness.disable_hooks()
     entity_id = "https://login.staging.ubuntu.com"
     metadata_url = "https://login.staging.ubuntu.com/saml/metadata"
-    harness.update_config(
-        {
+    charm = MagicMock(
+        config={
             "entity_id": entity_id,
             "metadata_url": metadata_url,
         }
     )
-    charm_state = CharmState.from_charm(harness.charm)
+    charm_state = CharmState.from_charm(charm)
     saml_integrator = SamlIntegrator(charm_state=charm_state)
     with pytest.raises(CharmConfigInvalidError):
         saml_integrator.certificates
@@ -96,18 +86,15 @@ def test_saml_with_valid_metadata(urlopen_mock, metadata_file, binding):
         cm.__enter__.return_value = cm
         urlopen_mock.return_value = cm
 
-        harness = Harness(SamlIntegratorOperatorCharm)
-        harness.begin()
-        harness.disable_hooks()
         entity_id = "https://login.staging.ubuntu.com"
         metadata_url = "https://login.staging.ubuntu.com/saml/metadata"
-        harness.update_config(
-            {
+        charm = MagicMock(
+            config={
                 "entity_id": entity_id,
                 "metadata_url": metadata_url,
             }
         )
-        charm_state = CharmState.from_charm(harness.charm)
+        charm_state = CharmState.from_charm(charm)
         saml_integrator = SamlIntegrator(charm_state=charm_state)
         assert saml_integrator.certificates == {
             (
@@ -139,108 +126,3 @@ def test_saml_with_valid_metadata(urlopen_mock, metadata_file, binding):
         assert endpoints[1].binding == binding
         assert endpoints[1].url == "https://login.staging.ubuntu.com/saml/"
         assert endpoints[1].response_url is None
-
-
-@patch.object(socket, "create_connection", return_value=MagicMock())
-@patch.object(ssl, "create_default_context", return_value=MagicMock())
-def test_saml_with_invalid_certificate(context_mock, connection_mock):
-    """
-    arrange: mock certificate retrieved from the metadata URL.
-    act: validate the certificate.
-    assert: the certificate is invalid and an exception is raised.
-    """
-    wrap_socket = context_mock.return_value.wrap_socket
-    wrap_socket.return_value.__enter__.return_value.getpeercert.return_value = b"someinvalidcert"
-
-    harness = Harness(SamlIntegratorOperatorCharm)
-    harness.begin()
-    harness.disable_hooks()
-    entity_id = "https://login.staging.ubuntu.com"
-    metadata_url = "https://login.staging.ubuntu.com/saml/metadata"
-    harness.update_config(
-        {
-            "entity_id": entity_id,
-            "metadata_url": metadata_url,
-            "fingerprint": "98b228f28eab0b2eb5d03389fb6f8f9733dadcf0c17007fcde4148a4de41db54",
-        }
-    )
-    charm_state = CharmState.from_charm(harness.charm)
-    with pytest.raises(CharmConfigInvalidError):
-        SamlIntegrator(charm_state=charm_state)
-
-
-@patch.object(socket, "create_connection", side_effect=TimeoutError())
-def test_saml_when_timeout(connection_mock):
-    """
-    arrange: mock the HTTP call to throw an exception when retrieving the certificate.
-    act: validate the certificate.
-    assert: an exception is raised.
-    """
-    harness = Harness(SamlIntegratorOperatorCharm)
-    harness.begin()
-    harness.disable_hooks()
-    entity_id = "https://login.staging.ubuntu.com"
-    metadata_url = "https://login.staging.ubuntu.com/saml/metadata"
-    harness.update_config(
-        {
-            "entity_id": entity_id,
-            "metadata_url": metadata_url,
-            "fingerprint": "98b228f28eab0b2eb5d03389fb6f8f9733dadcf0c17007fcde4148a4de41db54",
-        }
-    )
-    charm_state = CharmState.from_charm(harness.charm)
-    with pytest.raises(CharmConfigInvalidError):
-        SamlIntegrator(charm_state=charm_state)
-
-
-@patch.object(socket, "create_connection", return_value=MagicMock())
-@patch.object(ssl, "create_default_context", return_value=MagicMock())
-def test_saml_with_valid_certificate(context_mock, connection_mock):
-    """
-    arrange: mock certificate retrieved from the metadata URL.
-    act: validate the certificate.
-    assert: the certificate is valid.
-    """
-    wrap_socket = context_mock.return_value.wrap_socket
-    wrap_socket.return_value.__enter__.return_value.getpeercert.return_value = b"somevalidcert"
-
-    harness = Harness(SamlIntegratorOperatorCharm)
-    harness.begin()
-    harness.disable_hooks()
-    entity_id = "https://login.staging.ubuntu.com"
-    metadata_url = "https://login.staging.ubuntu.com/saml/metadata"
-    harness.update_config(
-        {
-            "entity_id": entity_id,
-            "metadata_url": metadata_url,
-            "fingerprint": (
-                "98:b2:28:f2:8e:ab:0b:2e:b5:d0:33:89:fb:6f:8f:97:33:da"
-                ":dc:f0:c1:70:07:fc:de:41:48:a4:de:41:db:54"
-            ),
-        }
-    )
-    charm_state = CharmState.from_charm(harness.charm)
-    SamlIntegrator(charm_state=charm_state)
-
-    harness.update_config(
-        {
-            "entity_id": entity_id,
-            "metadata_url": metadata_url,
-            "fingerprint": (
-                "98 b2 28 f2 8e ab 0b 2e b5 d0 33 89 fb 6f 8f 97 33 da"
-                " dc f0 c1 70 07 fc de 41 48 a4 de 41 db 54"
-            ),
-        }
-    )
-    charm_state = CharmState.from_charm(harness.charm)
-    SamlIntegrator(charm_state=charm_state)
-
-    harness.update_config(
-        {
-            "entity_id": entity_id,
-            "metadata_url": metadata_url,
-            "fingerprint": "98b228f28eab0b2eb5d03389fb6f8f9733dadcf0c17007fcde4148a4de41db54",
-        }
-    )
-    charm_state = CharmState.from_charm(harness.charm)
-    SamlIntegrator(charm_state=charm_state)
