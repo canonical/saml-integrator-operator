@@ -19,8 +19,6 @@ LIBAPI = 0
 # to 0 if you are raising the major API version
 LIBPATCH = 1
 
-PYDEPS = ["ops>=2.0.0", "pydantic==1.10.10"]
-
 # pylint: disable=wrong-import-position
 import re
 from typing import Dict, List, Optional
