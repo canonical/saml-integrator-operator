@@ -13,7 +13,7 @@ import ops
 from charms.operator_libs_linux.v0 import apt
 from ops.main import main
 
-from charm_state import CharmConfigInvalidError, CharmState, ProxyConfig
+from charm_state import CharmConfigInvalidError, CharmState
 from saml import SamlIntegrator
 
 logger = logging.getLogger(__name__)
@@ -29,8 +29,12 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
             args: Arguments passed to the CharmBase parent constructor.
         """
         super().__init__(*args)
-        self._charm_state = None
-        self._saml_integrator = None
+        try:
+            self._charm_state = CharmState.from_charm(charm=self)
+            self._saml_integrator = SamlIntegrator(charm_state=self._charm_state)
+        except CharmConfigInvalidError as exc:
+            self.model.unit.status = ops.BlockedStatus(exc.msg)
+            return
         self.framework.observe(self.on.config_changed, self._on_config_changed)
         self.framework.observe(self.on.upgrade_charm, self._on_upgrade_charm)
         self.framework.observe(self.on.saml_relation_created, self._on_saml_relation_created)
@@ -39,22 +43,15 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
         """Install needed apt packages."""
         # The apt lib uses the env vars to set the proxy configuration
         self.unit.status = ops.MaintenanceStatus("Installing packages")
-        proxy_config = ProxyConfig.from_charm_env()
+        proxy_config = self._charm_state.proxy_config
         os.environ["HTTP_PROXY"] = proxy_config.http_proxy
         os.environ["HTTPS_PROXY"] = proxy_config.https_proxy
         os.environ["NO_PROXY"] = proxy_config.no_proxy
-        apt.update()
-        apt.add_package(["libxml2"])
+        apt.add_package(["libxml2"], update_cache=True)
 
     def _on_config_changed(self, _) -> None:
         """Handle changes in configuration."""
         self.unit.status = ops.MaintenanceStatus("Configuring charm")
-        try:
-            self._charm_state = CharmState.from_charm(charm=self)
-            self._saml_integrator = SamlIntegrator(charm_state=self._charm_state)
-        except CharmConfigInvalidError as exc:
-            self.model.unit.status = ops.BlockedStatus(exc.msg)
-            return
         if self.model.unit.is_leader():
             for relation in self.model.relations["saml"]:
                 relation.data[self.model.app].update(self.dump_saml_data())
@@ -89,8 +86,10 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
         Args:
             event: Event triggering the relation-created hook for the relation.
         """
+        print("ENTRO red")
         if not self.model.unit.is_leader():
             return
+        print("LEADER")
         event.relation.data[self.model.app].update(self.dump_saml_data())
 
 

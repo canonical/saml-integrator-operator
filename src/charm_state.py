@@ -32,7 +32,7 @@ class ProxyConfig(BaseModel):
     no_proxy: Optional[str]
 
     @classmethod
-    def from_charm_env(cls) -> Optional["ProxyConfig"]:
+    def from_charm_env(cls) -> "ProxyConfig":
         """Instantiate ProxyConfig from juju charm environment.
 
         Returns:
@@ -41,8 +41,6 @@ class ProxyConfig(BaseModel):
         http_proxy = os.environ.get("JUJU_CHARM_HTTP_PROXY")
         https_proxy = os.environ.get("JUJU_CHARM_HTTPS_PROXY")
         no_proxy = os.environ.get("JUJU_CHARM_NO_PROXY")
-        if not http_proxy and not https_proxy:
-            return None
         # Mypy doesn't understand str is supposed to be converted to HttpUrl by Pydantic.
         return cls(
             http_proxy=http_proxy, https_proxy=https_proxy, no_proxy=no_proxy  # type: ignore
@@ -83,6 +81,7 @@ class CharmState:
     Attrs:
         entity_id: Entity ID for SAML.
         metadata_url: URL for the SAML metadata.
+        proxy_config: HTTP proxy configuration.
     """
 
     def __init__(self, *, saml_integrator_config: SamlIntegratorConfig):
@@ -110,6 +109,15 @@ class CharmState:
             str: metadata_url config.
         """
         return self._saml_integrator_config.metadata_url
+
+    @property
+    def proxy_config(self) -> ProxyConfig:
+        """Return the proxy configuration.
+
+        Returns:
+            ProxyConfig: if the proxy is configured.
+        """
+        return ProxyConfig.from_charm_env()
 
     @classmethod
     def from_charm(cls, charm: "ops.CharmBase") -> "CharmState":
