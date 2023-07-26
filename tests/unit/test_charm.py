@@ -2,9 +2,9 @@
 # See LICENSE file for licensing details.
 
 """SAML Integrator Charm unit tests."""
-import ops
 import os
 
+import ops
 import pytest
 from charms.operator_libs_linux.v0 import apt
 from mock import MagicMock, patch
