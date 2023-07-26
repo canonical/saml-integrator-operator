@@ -86,10 +86,8 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
         Args:
             event: Event triggering the relation-created hook for the relation.
         """
-        print("ENTRO red")
         if not self.model.unit.is_leader():
             return
-        print("LEADER")
         event.relation.data[self.model.app].update(self.dump_saml_data())
 
 
