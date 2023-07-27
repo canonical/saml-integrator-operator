@@ -148,13 +148,13 @@ class SamlDataAvailableEvent(ops.RelationEvent):
         return parse_obj_as(AnyHttpUrl, self.relation.data[self.relation.app].get("metadata_url"))
 
     @property
-    def certificates(self) -> tuple[str]:
+    def certificates(self) -> tuple[str, ...]:
         """Fetch the SAML certificates from the relation."""
         assert self.relation.app
         return tuple(self.relation.data[self.relation.app].get("x509certs").split(","))
 
     @property
-    def endpoints(self) -> tuple[SamlEndpoint]:
+    def endpoints(self) -> tuple[SamlEndpoint, ...]:
         """Fetch the SAML endpoints from the relation."""
         endpoints = []
         assert self.relation.app
