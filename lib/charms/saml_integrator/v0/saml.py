@@ -159,7 +159,7 @@ class SamlDataAvailableEvent(ops.RelationEvent):
         endpoints = []
         assert self.relation.app
         relation_data = self.relation.data[self.relation.app]
-        [
+        endpoints = [
             SamlEndpoint.from_relation_data(
                 {
                     key: relation_data.get(key)
@@ -167,7 +167,8 @@ class SamlDataAvailableEvent(ops.RelationEvent):
                     if key.startswith("_".join(key.split("_")[:-1]))
                 }
             )
-            for key in relation_data if key.endswith("_redirect_url") or key.endswith("_post_url")
+            for key in relation_data
+            if key.endswith("_redirect_url") or key.endswith("_post_url")
         ]
         endpoints.sort(key=lambda ep: ep.name)
         return tuple(endpoints)
