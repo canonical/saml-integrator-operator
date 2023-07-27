@@ -131,8 +131,8 @@ class SamlDataAvailableEvent(ops.RelationEvent):
     Attrs:
         entity_id: SAML entity ID.
         metadata_url: URL to the metadata.
-        certificates: List of SAML certificates.
-        endpoints: List of SAML endpoints.
+        certificates: Tuple containing the SAML certificates.
+        endpoints: Tuple containing the SAML endpoints.
     """
 
     @property
@@ -148,13 +148,13 @@ class SamlDataAvailableEvent(ops.RelationEvent):
         return parse_obj_as(AnyHttpUrl, self.relation.data[self.relation.app].get("metadata_url"))
 
     @property
-    def certificates(self) -> list[str]:
+    def certificates(self) -> tuple[str]:
         """Fetch the SAML certificates from the relation."""
         assert self.relation.app
-        return self.relation.data[self.relation.app].get("x509certs").split(",")
+        return tuple(self.relation.data[self.relation.app].get("x509certs").split(","))
 
     @property
-    def endpoints(self) -> list[SamlEndpoint]:
+    def endpoints(self) -> tuple[SamlEndpoint]:
         """Fetch the SAML endpoints from the relation."""
         endpoints = []
         assert self.relation.app
@@ -172,7 +172,7 @@ class SamlDataAvailableEvent(ops.RelationEvent):
                     )
                 )
         endpoints.sort(key=lambda ep: ep.name)
-        return endpoints
+        return tuple(endpoints)
 
 
 class SamlRequiresEvents(ops.CharmEvents):
