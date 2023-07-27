@@ -5,8 +5,57 @@
 
 """Library to manage the relation data for the SAML Integrator charm.
 
-This library contains the SamlRelatioSamlDataAvailableEvent class to encapsulate the relation
-data, providing an improved user experience for the requirer charms developers.
+This library contains the Requires and Provides classes for handling the relation
+between an application and a charm providing the `saml`relation.
+It also contains a `SamlRelationData` class to wrap the SAML data that will
+be shared via the relation.
+
+### Requirer Charm
+
+```python
+
+from charms.saml_integrator.v0 import SamlDataAvailableEvent, SamlRequires
+
+class SamlRequirerCharm(ops.CharmBase):
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.saml = saml.SamlRequires(self)
+        self.framework.observe(self.saml.on.saml_data_available, self._handler)
+        ...
+
+    def _handler(self, events: SamlDataAvailableEvent) -> None:
+        ...
+
+```
+
+As shown above, the library provides a custom event to handle the sceneario in
+which new SAML data has been added or updated.
+
+### Provider Charm
+
+Following the previous example, this is an example of the provider charm.
+
+```python
+from charms.saml_integrator.v0 import SamlDataAvailableEvent, SamlRequires
+
+class SamlRequirerCharm(ops.CharmBase):
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.saml = SamlRequires(self)
+        self.framework.observe(self.saml.on.saml_data_available, self._on_saml_data_available)
+        ...
+
+    def _on_saml_data_available(self, events: SamlDataAvailableEvent) -> None:
+        ...
+
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.saml = SamlProvides(self)
+
+```
+The SamlProvides object wraps the list of relations into a `relations` property
+and provides an `update_relation_data` method to update the relation data by passing
+a `SamlRelationData` data object.
 """
 
 # The unique Charmhub library identifier, never change it
