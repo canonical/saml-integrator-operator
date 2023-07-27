@@ -21,7 +21,7 @@ LIBPATCH = 1
 
 # pylint: disable=wrong-import-position
 import re
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import ops
 from pydantic import AnyHttpUrl, BaseModel, Field
