@@ -121,7 +121,7 @@ class SamlRelationData(BaseModel):
             "x509certs": ",".join(self.certificates),
         }
         for endpoint in self.endpoints:
-            result = {**result, **endpoint.to_relation_data()}
+            result.update(endpoint.to_relation_data())
         return result
 
 
