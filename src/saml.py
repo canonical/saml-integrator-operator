@@ -5,7 +5,6 @@
 import logging
 import urllib.request
 from functools import cached_property
-from typing import List, Set
 
 from charms.saml_integrator.v0 import saml
 
@@ -60,7 +59,7 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
             ) from ex
 
     @cached_property
-    def certificates(self) -> Set[str]:
+    def certificates(self) -> set[str]:
         """Return public certificates defined in the metadata.
 
         Returns:
@@ -78,7 +77,7 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         }
 
     @cached_property
-    def endpoints(self) -> List[saml.SamlEndpoint]:
+    def endpoints(self) -> list[saml.SamlEndpoint]:
         """Return endpoints defined in the metadata.
 
         Returns:
