@@ -153,5 +153,5 @@ def test_consumer_charm_emits_event_when_leader():
     assert len(harness.charm.events) == 1
     assert harness.charm.events[0].entity_id == relation_data["entity_id"]
     assert harness.charm.events[0].metadata_url == relation_data["metadata_url"]
-    assert harness.charm.events[0].certificates == relation_data["x509certs"].split(",")
+    assert harness.charm.events[0].certificates == tuple(relation_data["x509certs"].split(","))
     assert harness.charm.events[0].endpoints == (slo_ep, sso_ep)
