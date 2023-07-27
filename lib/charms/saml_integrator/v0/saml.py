@@ -156,7 +156,6 @@ class SamlDataAvailableEvent(ops.RelationEvent):
     @property
     def endpoints(self) -> tuple[SamlEndpoint, ...]:
         """Fetch the SAML endpoints from the relation."""
-        endpoints = []
         assert self.relation.app
         relation_data = self.relation.data[self.relation.app]
         endpoints = [
