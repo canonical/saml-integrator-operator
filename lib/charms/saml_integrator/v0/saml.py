@@ -21,7 +21,7 @@ LIBPATCH = 1
 
 # pylint: disable=wrong-import-position
 import re
-from typing import Optional
+from typing import Dict, List, Optional, Tuple
 
 import ops
 from pydantic import AnyHttpUrl, BaseModel, Field
@@ -45,13 +45,13 @@ class SamlEndpoint(BaseModel):
     binding: str = Field(..., min_length=1)
     response_url: Optional[AnyHttpUrl]
 
-    def to_relation_data(self) -> dict[str, str]:
+    def to_relation_data(self) -> Dict[str, str]:
         """Convert an instance of SamlEndpoint to the relation representation.
 
         Returns:
             Dict containing the representation.
         """
-        result: dict[str, str] = {}
+        result: Dict[str, str] = {}
         # Get the HTTP method from the SAML binding
         http_method = self.binding.split(":")[-1].split("-")[-1].lower()
         # Transform name into snakecase
@@ -64,7 +64,7 @@ class SamlEndpoint(BaseModel):
         return result
 
     @classmethod
-    def from_relation_data(cls, relation_data: dict[str, str]) -> "SamlEndpoint":
+    def from_relation_data(cls, relation_data: Dict[str, str]) -> "SamlEndpoint":
         """Initialize a new instance of the SamlEndpoint class from the relation data.
 
         Args:
@@ -106,10 +106,10 @@ class SamlRelationData(BaseModel):
 
     entity_id: str = Field(..., min_length=1)
     metadata_url: AnyHttpUrl
-    certificates: list[str]
-    endpoints: list[SamlEndpoint]
+    certificates: List[str]
+    endpoints: List[SamlEndpoint]
 
-    def to_relation_data(self) -> dict[str, str]:
+    def to_relation_data(self) -> Dict[str, str]:
         """Convert an instance of SamlDataAvailableEvent to the relation representation.
 
         Returns:
@@ -148,13 +148,13 @@ class SamlDataAvailableEvent(ops.RelationEvent):
         return parse_obj_as(AnyHttpUrl, self.relation.data[self.relation.app].get("metadata_url"))
 
     @property
-    def certificates(self) -> tuple[str, ...]:
+    def certificates(self) -> Tuple[str, ...]:
         """Fetch the SAML certificates from the relation."""
         assert self.relation.app
         return tuple(self.relation.data[self.relation.app].get("x509certs").split(","))
 
     @property
-    def endpoints(self) -> tuple[SamlEndpoint, ...]:
+    def endpoints(self) -> Tuple[SamlEndpoint, ...]:
         """Fetch the SAML endpoints from the relation."""
         assert self.relation.app
         relation_data = self.relation.data[self.relation.app]
@@ -236,7 +236,7 @@ class SamlProvides(ops.Object):
         self.relation_name = relation_name
 
     @property
-    def relations(self) -> list[ops.Relation]:
+    def relations(self) -> List[ops.Relation]:
         """The list of Relation instances associated with this relation_name.
 
         Returns:
