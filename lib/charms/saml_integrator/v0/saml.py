@@ -75,10 +75,13 @@ class SamlEndpoint(BaseModel):
         """
         url_key = ""
         for key in relation_data:
+            # A key per method and entpoint type that is always present
             if key.endswith("_redirect_url") or key.endswith("_post_url"):
                 url_key = key
+        # Get endpoint name from the relation data key
         lowercase_name = "_".join(url_key.split("_")[:-2])
         name = "".join(x.capitalize() for x in lowercase_name.split("_"))
+        # Get HTTP method from the relation data key
         http_method = url_key.split("_")[-2]
         prefix = f"{lowercase_name}_{http_method}_"
         return cls(
