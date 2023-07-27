@@ -161,9 +161,9 @@ class SamlDataAvailableEvent(ops.RelationEvent):
         endpoints = [
             SamlEndpoint.from_relation_data(
                 {
-                    key: relation_data.get(key)
-                    for key in relation_data
-                    if key.startswith("_".join(key.split("_")[:-1]))
+                    key2: relation_data.get(key2)
+                    for key2 in relation_data
+                    if key2.startswith("_".join(key.split("_")[:-1]))
                 }
             )
             for key in relation_data
