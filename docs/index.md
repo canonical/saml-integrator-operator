@@ -10,12 +10,20 @@ Documentation is an important part of this project, and we take the same open-so
 
 If there's a particular area of documentation that you'd like to see that's missing, please [file a bug](https://github.com/canonical/saml-integrator-operator/issues).
 
+## In this documentation
+
+| | |
+|--|--|
+|  [Tutorials](https://charmhub.io/saml-integrator/docs/tutorial-getting-started)</br>  Get started - a hands-on introduction to using the Charmed Indico operator for new users </br> |  [How-to guides](https://charmhub.io/saml-integrator/docs/how-to-contibute) </br> Step-by-step guides covering key operations and common tasks |
+| [Reference](https://charmhub.io/saml-integrator/docs/reference-actions) </br> Technical information - specifications, APIs, architecture | [Explanation](https://charmhub.io/saml-integrator/docs/explanation-charm-architecture) </br> Concepts - discussion and clarification of key topics  |
+
+
 # Contents
 
 1. [Tutorial](tutorial)
    1. [Getting Started](tutorial/getting-started.md)
 1. [How to](how-to)
-   1. [Contribute](how-to/contributing.md)
+   1. [Contribute](how-to/contribute.md)
    1. [Configure SAML](how-to/saml-configuration.md)
 1. [Reference](reference)
    1. [Actions](reference/actions.md)
