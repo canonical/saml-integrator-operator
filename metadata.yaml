@@ -24,7 +24,7 @@ description: |
 docs: ""
 issues: https://github.com/canonical/saml-integrator-operator/issues
 maintainers:
-  - arturo.seijas@canonical.com
+  - https://launchpad.net/~canonical-is-devops
 source: https://github.com/canonical/saml-integrator-operator
 assumes:
   - k8s-api
