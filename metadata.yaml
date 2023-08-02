@@ -26,8 +26,6 @@ issues: https://github.com/canonical/saml-integrator-operator/issues
 maintainers:
   - https://launchpad.net/~canonical-is-devops
 source: https://github.com/canonical/saml-integrator-operator
-assumes:
-  - k8s-api
 provides:
   saml:
     interface: saml
