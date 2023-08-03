@@ -8,9 +8,9 @@ Accordingly to the [Juju SDK](https://juju.is/docs/sdk/event): "an event is a da
 
 For this charm, the following events are observed:
 
-1. [upgrade_charm](https://juju.is/docs/sdk/upgrade-charm-event): fired on Kubernetes charms when the unit is undergoing an upgrade. Action: install charm dependencies.
-2. [config_changed](https://juju.is/docs/sdk/config-changed-event): usually fired in response to a configuration change using the GUI or CLI. Action: validate the configuration and fetch the SAML details from the metadata URL. If there are relations, update the SAML details in the relation databag.
-3. [saml_relation_joined](https://juju.is/docs/sdk/relation-name-relation-joined-event): Custom event for when a new SAML relations joins. Action: write the SAML details in the relation databag.
+1. [upgrade-charm](https://juju.is/docs/sdk/upgrade-charm-event): fired on the charms when the unit is undergoing an upgrade. Action: install charm dependencies.
+2. [config-changed](https://juju.is/docs/sdk/config-changed-event): usually fired in response to a configuration change using the GUI or CLI. Action: validate the configuration and fetch the SAML details from the metadata URL. If there are relations, update the SAML details in the relation databag.
+3. [saml-relation-joined](https://juju.is/docs/sdk/relation-name-relation-joined-event): Custom event for when a new SAML relations joins. Action: write the SAML details in the relation databag.
 
 ## Charm code overview
 
