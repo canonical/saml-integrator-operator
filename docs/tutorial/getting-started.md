@@ -11,11 +11,11 @@ You will need:
 
 ## Deploy this charm
 
-The charm will the deployed in a new model named `saml`:
+The charm will the deployed in a new model named `saml-tutorial`:
 
 ```
 # Add the model
-juju add-model saml
+juju add-model saml-tutorial
 
 # Deploy the charm
 juju deploy saml-integrator
@@ -28,8 +28,8 @@ juju config saml-integrator entity_id=https://login.staging.ubuntu.com
 
 By running `juju status --relations` the current state of the deployment can be queried, with the charm eventually reaching `Active` state:
 ```
-Model  Controller          Cloud/Region        Version  SLA          Timestamp
-saml   microk8s-localhost  microk8s/localhost  2.9.44   unsupported  12:54:25+02:00
+Model           Controller          Cloud/Region        Version  SLA          Timestamp
+saml-tutorial   microk8s-localhost  microk8s/localhost  2.9.44   unsupported  12:54:25+02:00
 
 App              Version  Status  Scale  Charm            Channel  Rev  Address        Exposed  Message
 saml-integrator           active      1  saml-integrator             0  10.152.183.65  no       
@@ -39,7 +39,7 @@ saml-integrator/0*  active    idle   10.1.57.14
 
 ```
 
-Run `kubectl get pods -n saml` to see the pods that are being created by the charms:
+Run `kubectl get pods -n saml-tutorial` to see the pods that are being created by the charms:
 ```
 NAME                            READY   STATUS    RESTARTS   AGE
 modeloperator-d465f6695-zvhk8   1/1     Running   0          2m33s
