@@ -216,13 +216,13 @@ def test_provider_charm_doesnt_emit_duplicates():
     harness.set_leader(True)
     relation_id = harness.add_relation("saml", "saml-provider")
     harness.add_relation_unit(relation_id, "saml-provider/0")
+    assert len(harness.charm.events) == 0
     harness.update_relation_data(
         relation_id,
         "saml-provider",
         saml_data.to_relation_data(),
     )
-    relation = harness.model.get_relation("saml", relation_id)
-    harness.charm.saml.update_relation_data(relation, saml_data)
     assert len(harness.charm.events) == 1
+    relation = harness.model.get_relation("saml", relation_id)
     harness.charm.saml.update_relation_data(relation, saml_data)
     assert len(harness.charm.events) == 1
