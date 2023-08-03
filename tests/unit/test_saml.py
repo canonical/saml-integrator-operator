@@ -19,11 +19,11 @@ def test_saml_with_invalid_metadata(urlopen_mock):
     assert: a CharmConfigInvalidError exception is raised when attempting to access the
         properties read from the metadata.
     """
-    cm = MagicMock()
-    cm.getcode.return_value = 200
-    cm.read.return_value = b"invalid"
-    cm.__enter__.return_value = cm
-    urlopen_mock.return_value = cm
+    magic_mock = MagicMock()
+    magic_mock.getcode.return_value = 200
+    magic_mock.read.return_value = b"invalid"
+    magic_mock.__enter__.return_value = magic_mock
+    urlopen_mock.return_value = magic_mock
 
     entity_id = "https://login.staging.ubuntu.com"
     metadata_url = "https://login.staging.ubuntu.com/saml/metadata"
@@ -42,7 +42,7 @@ def test_saml_with_invalid_metadata(urlopen_mock):
 
 
 @patch.object(urllib.request, "urlopen", side_effect=urllib.error.URLError("Error"))
-def test_saml_with_invalid_url(urlopen_mock):
+def test_saml_with_invalid_url(_):
     """
     arrange: mock the HTTP request for the metadata so that it fails.
     act: access the metadata properties.
@@ -80,11 +80,11 @@ def test_saml_with_valid_metadata(urlopen_mock, metadata_file, binding):
     assert: the properties are populated as defined in the metadata.
     """
     with open(f"tests/unit/files/{metadata_file}", "rb") as metadata:
-        cm = MagicMock()
-        cm.getcode.return_value = 200
-        cm.read.return_value = metadata.read()
-        cm.__enter__.return_value = cm
-        urlopen_mock.return_value = cm
+        magic_mock = MagicMock()
+        magic_mock.getcode.return_value = 200
+        magic_mock.read.return_value = metadata.read()
+        magic_mock.__enter__.return_value = magic_mock
+        urlopen_mock.return_value = magic_mock
 
         entity_id = "https://login.staging.ubuntu.com"
         metadata_url = "https://login.staging.ubuntu.com/saml/metadata"
