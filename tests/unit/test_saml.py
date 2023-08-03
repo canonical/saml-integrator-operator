@@ -2,6 +2,7 @@
 # See LICENSE file for licensing details.
 
 """SAML Integrator unit tests."""
+# pylint: disable=pointless-statement
 import urllib
 
 import pytest

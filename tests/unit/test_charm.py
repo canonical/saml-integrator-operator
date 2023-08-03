@@ -2,6 +2,7 @@
 # See LICENSE file for licensing details.
 
 """SAML Integrator Charm unit tests."""
+# pylint: disable=protected-access
 import ops
 import pytest
 from charms.operator_libs_linux.v0 import apt
