@@ -27,7 +27,7 @@ To build and deploy a local version of the charm, simply run:
 
 ```
 charmcraft pack
-# Ensure you're connected to a juju k8s model, assuming you're on amd64
+# Ensure you're connected to a juju model, assuming you're on amd64
 juju deploy ./saml-integrator_ubuntu-20.04-amd64.charm
 ```
 ## Canonical contributor agreement
