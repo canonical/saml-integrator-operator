@@ -1,10 +1,10 @@
 # Charm architecture
 
-The SAML Integrator charm consists on a charm workload that fetches the SAML metadata details based on the provided configuration and propagates them through the relation.
+The SAML Integrator charm fetches SAML metadata details based on the provided configuration and propagates them through a Juju integration.
 
 ## Juju events
 
-Accordingly to the [Juju SDK](https://juju.is/docs/sdk/event): "an event is a data structure that encapsulates part of the execution context of a charm".
+According to the [Juju SDK](https://juju.is/docs/sdk/event): "an event is a data structure that encapsulates part of the execution context of a charm".
 
 For this charm, the following events are observed:
 
