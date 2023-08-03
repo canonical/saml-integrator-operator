@@ -302,6 +302,5 @@ class SamlProvides(ops.Object):
         """
         # Update only if the relation data has changed to prevent triggering unnecessary events
         relation_data = saml_data.to_relation_data()
-        print(relation.data[self.charm.model.app] != relation_data)
         if relation.data[self.charm.model.app] != relation_data:
             relation.data[self.charm.model.app].update(relation_data)
