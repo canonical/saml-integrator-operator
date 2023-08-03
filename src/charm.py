@@ -49,7 +49,7 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
         """Handle a change to the saml relation."""
         if not self.model.unit.is_leader():
             return
-        # A new charm will be instantiated hance, the information will be fetched again.
+        # A new charm will be instantiated hence, the information will be fetched again.
         # The relation databags are rewritten in case there are changes.
         self._update_all_relations()
 
