@@ -1,6 +1,6 @@
 # Getting started
 
-In this tutorial, we'll walk you through the process of deploying the SAML Integrator charm.
+In this tutorial, we'll walk you through the process of deploying the SAML Integrator charm. We'll be deploying the charm on top of Kubenertes although a machine substrate could also be used.
 
 ## Requirements
 
