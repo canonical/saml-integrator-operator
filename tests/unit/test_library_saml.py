@@ -5,16 +5,23 @@ import ops
 from charms.saml_integrator.v0 import saml
 from ops.testing import Harness
 
-METADATA = """
+REQUIRER_METADATA = """
 name: saml-consumer
 requires:
   saml:
     interface: saml
 """
 
+PROVIDER_METADATA = """
+name: saml-producer
+provides:
+  saml:
+    interface: saml
+"""
 
-class SamlConsumerCharm(ops.CharmBase):
-    """Class for consumer charm testing."""
+
+class SamlRequirerCharm(ops.CharmBase):
+    """Class for requirer charm testing."""
 
     def __init__(self, *args):
         """Init method for the class.
@@ -26,6 +33,29 @@ class SamlConsumerCharm(ops.CharmBase):
         self.saml = saml.SamlRequires(self)
         self.events = []
         self.framework.observe(self.saml.on.saml_data_available, self._record_event)
+
+    def _record_event(self, event: ops.EventBase) -> None:
+        """Rececord emitted event in the event list.
+
+        Args:
+            event: event.
+        """
+        self.events.append(event)
+
+
+class SamlProviderCharm(ops.CharmBase):
+    """Class for provier charm testing."""
+
+    def __init__(self, *args):
+        """Init method for the class.
+
+        Args:
+            args: Variable list of positional arguments passed to the parent constructor.
+        """
+        super().__init__(*args)
+        self.saml = saml.SamlProvides(self)
+        self.events = []
+        self.framework.observe(self.on.saml_relation_changed, self._record_event)
 
     def _record_event(self, event: ops.EventBase) -> None:
         """Rececord emitted event in the event list.
@@ -77,7 +107,7 @@ def test_saml_relation_data_to_relation_data():
     assert relation_data == expected_relation_data
 
 
-def test_consumer_charm_does_not_emit_event_id_no_leader():
+def test_requirer_charm_does_not_emit_event_id_no_leader():
     """
     arrange: set up a charm with no leadership.
     act: trigger a relation changed event.
@@ -96,7 +126,7 @@ def test_consumer_charm_does_not_emit_event_id_no_leader():
             "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
         ),
     }
-    harness = Harness(SamlConsumerCharm, meta=METADATA)
+    harness = Harness(SamlRequirerCharm, meta=REQUIRER_METADATA)
     harness.begin()
     harness.set_leader(False)
     relation_id = harness.add_relation("saml", "saml-provider")
@@ -109,7 +139,7 @@ def test_consumer_charm_does_not_emit_event_id_no_leader():
     assert len(harness.charm.events) == 0
 
 
-def test_consumer_charm_emits_event_when_leader():
+def test_requirer_charm_emits_event_when_leader():
     """
     arrange: set up a charm with leadership.
     act: trigger a relation changed event.
@@ -129,7 +159,7 @@ def test_consumer_charm_emits_event_when_leader():
         ),
     }
 
-    harness = Harness(SamlConsumerCharm, meta=METADATA)
+    harness = Harness(SamlRequirerCharm, meta=REQUIRER_METADATA)
     harness.begin()
     harness.set_leader(True)
     relation_id = harness.add_relation("saml", "saml-provider")
@@ -155,3 +185,44 @@ def test_consumer_charm_emits_event_when_leader():
     assert harness.charm.events[0].metadata_url == relation_data["metadata_url"]
     assert harness.charm.events[0].certificates == tuple(relation_data["x509certs"].split(","))
     assert harness.charm.events[0].endpoints == (slo_ep, sso_ep)
+
+
+def test_privider_charm_doesnt_emit_duplicates():
+    """
+    arrange: set up a charm and set the relation data.
+    act: trigger the update of the relation data again.
+    assert: the relation data is not updated.
+    """
+    sso_ep = saml.SamlEndpoint(
+        name="SingleSignOnService",
+        url="https://login.staging.ubuntu.com/saml/",
+        binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
+    )
+    slo_ep = saml.SamlEndpoint(
+        name="SingleLogoutService",
+        url="https://login.staging.ubuntu.com/+logout",
+        binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
+        response_url="https://login.staging.ubuntu.com/+logout2",
+    )
+    saml_data = saml.SamlRelationData(
+        entity_id="https://login.staging.ubuntu.com",
+        metadata_url="https://login.staging.ubuntu.com/saml/metadata",
+        certificates=["cert1", "cert2"],
+        endpoints=[sso_ep, slo_ep],
+    )
+
+    harness = Harness(SamlProviderCharm, meta=PROVIDER_METADATA)
+    harness.begin()
+    harness.set_leader(True)
+    relation_id = harness.add_relation("saml", "saml-provider")
+    harness.add_relation_unit(relation_id, "saml-provider/0")
+    harness.update_relation_data(
+        relation_id,
+        "saml-provider",
+        saml_data.to_relation_data(),
+    )
+    relation = harness.model.get_relation("saml", relation_id)
+    harness.charm.saml.update_relation_data(relation, saml_data)
+    assert len(harness.charm.events) == 1
+    harness.charm.saml.update_relation_data(relation, saml_data)
+    assert len(harness.charm.events) == 1

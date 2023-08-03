@@ -45,23 +45,25 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
         self.unit.status = ops.MaintenanceStatus("Installing packages")
         apt.add_package(["libxml2"], update_cache=True)
 
-    def _on_relation_created(self, event: ops.RelationCreatedEvent) -> None:
-        """Handle a change to the saml relation.
-
-        Args:
-            event: Event triggering the relation-created hook for the relation.
-        """
+    def _on_relation_created(self, _) -> None:
+        """Handle a change to the saml relation."""
         if not self.model.unit.is_leader():
             return
-        self.saml.update_relation_data(event.relation, self.get_saml_data())
+        # A new charm will be instantiated hance, the information will be fetched again.
+        # The relation databags are rewritten in case there are changes.
+        self._update_all_relations()
 
     def _on_config_changed(self, _) -> None:
         """Handle changes in configuration."""
         self.unit.status = ops.MaintenanceStatus("Configuring charm")
         if self.model.unit.is_leader():
-            for relation in self.saml.relations:
-                self.saml.update_relation_data(relation, self.get_saml_data())
+            self._update_all_relations()
         self.unit.status = ops.ActiveStatus()
+
+    def _update_all_relations(self) -> None:
+        """Update all SAML data for the existing relations."""
+        for relation in self.saml.relations:
+            self.saml.update_relation_data(relation, self.get_saml_data())
 
     def get_saml_data(self) -> saml.SamlRelationData:
         """Get relation data.
