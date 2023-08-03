@@ -187,7 +187,7 @@ def test_requirer_charm_emits_event_when_leader():
     assert harness.charm.events[0].endpoints == (slo_ep, sso_ep)
 
 
-def test_privider_charm_doesnt_emit_duplicates():
+def test_provider_charm_doesnt_emit_duplicates():
     """
     arrange: set up a charm and update the relation data.
     act: execute the relation data update again.
