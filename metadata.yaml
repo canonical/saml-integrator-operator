@@ -21,7 +21,7 @@ description: |
 
   For DevOps or SRE teams this charm will make operating any charm leveraging SAML
   authentication simple and straightforward through Juju's clean interface.
-docs: ""
+docs: https://discourse.charmhub.io/t/saml-integrator-documentation-overview/11293
 issues: https://github.com/canonical/saml-integrator-operator/issues
 maintainers:
   - https://launchpad.net/~canonical-is-devops
