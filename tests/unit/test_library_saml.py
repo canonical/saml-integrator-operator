@@ -189,8 +189,8 @@ def test_requirer_charm_emits_event_when_leader():
 
 def test_privider_charm_doesnt_emit_duplicates():
     """
-    arrange: set up a charm and set the relation data.
-    act: trigger the update of the relation data again.
+    arrange: set up a charm and update the relation data.
+    act: execute the relation data update again.
     assert: the relation data is not updated.
     """
     sso_ep = saml.SamlEndpoint(
