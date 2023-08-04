@@ -52,11 +52,11 @@ def test_charm_reaches_active_status(urlopen_mock):
     assert: the charm reaches ActiveStatus.
     """
     with open("tests/unit/files/metadata_1.xml", "rb") as metadata:
-        magic_mock = MagicMock()
-        magic_mock.getcode.return_value = 200
-        magic_mock.read.return_value = metadata.read()
-        magic_mock.__enter__.return_value = magic_mock
-        urlopen_mock.return_value = magic_mock
+        urlopen_result_mock = MagicMock()
+        urlopen_result_mock.getcode.return_value = 200
+        urlopen_result_mock.read.return_value = metadata.read()
+        urlopen_result_mock.__enter__.return_value = urlopen_result_mock
+        urlopen_mock.return_value = urlopen_result_mock
 
         harness = Harness(SamlIntegratorOperatorCharm)
         entity_id = "https://login.staging.ubuntu.com"
@@ -81,11 +81,11 @@ def test_relation_joined_when_leader(urlopen_mock, metadata_file):
     assert: the relation get populated with the SAML data.
     """
     with open(f"tests/unit/files/{metadata_file}", "rb") as metadata:
-        magic_mock = MagicMock()
-        magic_mock.getcode.return_value = 200
-        magic_mock.read.return_value = metadata.read()
-        magic_mock.__enter__.return_value = magic_mock
-        urlopen_mock.return_value = magic_mock
+        urlopen_result_mock = MagicMock()
+        urlopen_result_mock.getcode.return_value = 200
+        urlopen_result_mock.read.return_value = metadata.read()
+        urlopen_result_mock.__enter__.return_value = urlopen_result_mock
+        urlopen_mock.return_value = urlopen_result_mock
 
         harness = Harness(SamlIntegratorOperatorCharm)
         harness.set_leader(True)
@@ -156,11 +156,11 @@ def test_relation_joined_when_not_leader(urlopen_mock):
     assert: the relation get populated with the SAML data.
     """
     with open("tests/unit/files/metadata_1.xml", "rb") as metadata:
-        magic_mock = MagicMock()
-        magic_mock.getcode.return_value = 200
-        magic_mock.read.return_value = metadata.read()
-        magic_mock.__enter__.return_value = magic_mock
-        urlopen_mock.return_value = magic_mock
+        urlopen_result_mock = MagicMock()
+        urlopen_result_mock.getcode.return_value = 200
+        urlopen_result_mock.read.return_value = metadata.read()
+        urlopen_result_mock.__enter__.return_value = urlopen_result_mock
+        urlopen_mock.return_value = urlopen_result_mock
 
         harness = Harness(SamlIntegratorOperatorCharm)
         harness.set_leader(False)
