@@ -58,7 +58,7 @@ class SamlProviderCharm(ops.CharmBase):
         self.framework.observe(self.on.saml_relation_changed, self._record_event)
 
     def _record_event(self, event: ops.EventBase) -> None:
-        """Rececord emitted event in the event list.
+        """Record emitted event in the event list.
 
         Args:
             event: event.
