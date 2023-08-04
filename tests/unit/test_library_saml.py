@@ -1,6 +1,7 @@
 # Copyright 2023 Canonical Ltd.
 # See LICENSE file for licensing details.
 
+"""SAML library unit tests"""
 import ops
 from charms.saml_integrator.v0 import saml
 from ops.testing import Harness

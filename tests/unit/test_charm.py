@@ -2,6 +2,7 @@
 # See LICENSE file for licensing details.
 
 """SAML Integrator Charm unit tests."""
+# pylint: disable=protected-access
 import ops
 import pytest
 from charms.operator_libs_linux.v0 import apt
@@ -40,7 +41,7 @@ def test_misconfigured_charm_reaches_blocked_status():
     """
     harness = Harness(SamlIntegratorOperatorCharm)
     harness.begin()
-    harness.model.unit.status == ops.BlockedStatus()
+    assert harness.model.unit.status.name == ops.BlockedStatus().name
 
 
 @patch("urllib.request.urlopen")
@@ -51,11 +52,11 @@ def test_charm_reaches_active_status(urlopen_mock):
     assert: the charm reaches ActiveStatus.
     """
     with open("tests/unit/files/metadata_1.xml", "rb") as metadata:
-        cm = MagicMock()
-        cm.getcode.return_value = 200
-        cm.read.return_value = metadata.read()
-        cm.__enter__.return_value = cm
-        urlopen_mock.return_value = cm
+        urlopen_result_mock = MagicMock()
+        urlopen_result_mock.getcode.return_value = 200
+        urlopen_result_mock.read.return_value = metadata.read()
+        urlopen_result_mock.__enter__.return_value = urlopen_result_mock
+        urlopen_mock.return_value = urlopen_result_mock
 
         harness = Harness(SamlIntegratorOperatorCharm)
         entity_id = "https://login.staging.ubuntu.com"
@@ -68,7 +69,7 @@ def test_charm_reaches_active_status(urlopen_mock):
         )
         harness.begin()
         harness.charm.on.config_changed.emit()
-        harness.model.unit.status == ops.ActiveStatus()
+        assert harness.model.unit.status == ops.ActiveStatus()
 
 
 @patch("urllib.request.urlopen")
@@ -80,11 +81,11 @@ def test_relation_joined_when_leader(urlopen_mock, metadata_file):
     assert: the relation get populated with the SAML data.
     """
     with open(f"tests/unit/files/{metadata_file}", "rb") as metadata:
-        cm = MagicMock()
-        cm.getcode.return_value = 200
-        cm.read.return_value = metadata.read()
-        cm.__enter__.return_value = cm
-        urlopen_mock.return_value = cm
+        urlopen_result_mock = MagicMock()
+        urlopen_result_mock.getcode.return_value = 200
+        urlopen_result_mock.read.return_value = metadata.read()
+        urlopen_result_mock.__enter__.return_value = urlopen_result_mock
+        urlopen_mock.return_value = urlopen_result_mock
 
         harness = Harness(SamlIntegratorOperatorCharm)
         harness.set_leader(True)
@@ -98,7 +99,7 @@ def test_relation_joined_when_leader(urlopen_mock, metadata_file):
         )
         harness.begin()
         harness.charm.on.config_changed.emit()
-        harness.model.unit.status == ops.ActiveStatus()
+        assert harness.model.unit.status == ops.ActiveStatus()
         harness.add_relation("saml", "indico")
         data = harness.model.get_relation("saml").data[harness.model.app]
         assert data["entity_id"] == harness.charm._charm_state.entity_id
@@ -155,11 +156,11 @@ def test_relation_joined_when_not_leader(urlopen_mock):
     assert: the relation get populated with the SAML data.
     """
     with open("tests/unit/files/metadata_1.xml", "rb") as metadata:
-        cm = MagicMock()
-        cm.getcode.return_value = 200
-        cm.read.return_value = metadata.read()
-        cm.__enter__.return_value = cm
-        urlopen_mock.return_value = cm
+        urlopen_result_mock = MagicMock()
+        urlopen_result_mock.getcode.return_value = 200
+        urlopen_result_mock.read.return_value = metadata.read()
+        urlopen_result_mock.__enter__.return_value = urlopen_result_mock
+        urlopen_mock.return_value = urlopen_result_mock
 
         harness = Harness(SamlIntegratorOperatorCharm)
         harness.set_leader(False)
@@ -173,7 +174,7 @@ def test_relation_joined_when_not_leader(urlopen_mock):
         )
         harness.begin()
         harness.charm.on.config_changed.emit()
-        harness.model.unit.status == ops.ActiveStatus()
+        assert harness.model.unit.status == ops.ActiveStatus()
         harness.add_relation("saml", "indico")
         data = harness.model.get_relation("saml").data[harness.model.app]
         assert data == {}
