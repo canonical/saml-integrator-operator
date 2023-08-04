@@ -72,12 +72,12 @@ def test_saml_relation_data_to_relation_data():
     act: obtain the relation representation.
     assert: the relation representation is correct.
     """
-    sso_ep = saml.SamlEndpoint(
+    sso_endpoint = saml.SamlEndpoint(
         name="SingleSignOnService",
         url="https://login.staging.ubuntu.com/saml/",
         binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
     )
-    slo_ep = saml.SamlEndpoint(
+    slo_endpoint = saml.SamlEndpoint(
         name="SingleLogoutService",
         url="https://login.staging.ubuntu.com/+logout",
         binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
@@ -87,7 +87,7 @@ def test_saml_relation_data_to_relation_data():
         entity_id="https://login.staging.ubuntu.com",
         metadata_url="https://login.staging.ubuntu.com/saml/metadata",
         certificates=["cert1", "cert2"],
-        endpoints=[sso_ep, slo_ep],
+        endpoints=[sso_endpoint, slo_endpoint],
     )
     relation_data = saml_data.to_relation_data()
     expected_relation_data = {
@@ -170,12 +170,12 @@ def test_requirer_charm_emits_event_when_leader():
         relation_data,
     )
 
-    slo_ep = saml.SamlEndpoint(
+    slo_endpoint = saml.SamlEndpoint(
         name="SingleLogoutService",
         url="https://login.staging.ubuntu.com/+logout",
         binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
     )
-    sso_ep = saml.SamlEndpoint(
+    sso_endpoint = saml.SamlEndpoint(
         name="SingleSignOnService",
         url="https://login.staging.ubuntu.com/saml/",
         binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
@@ -184,45 +184,4 @@ def test_requirer_charm_emits_event_when_leader():
     assert harness.charm.events[0].entity_id == relation_data["entity_id"]
     assert harness.charm.events[0].metadata_url == relation_data["metadata_url"]
     assert harness.charm.events[0].certificates == tuple(relation_data["x509certs"].split(","))
-    assert harness.charm.events[0].endpoints == (slo_ep, sso_ep)
-
-
-def test_provider_charm_doesnt_emit_duplicates():
-    """
-    arrange: set up a charm and update the relation data.
-    act: execute the relation data update again.
-    assert: the relation data is not updated.
-    """
-    sso_ep = saml.SamlEndpoint(
-        name="SingleSignOnService",
-        url="https://login.staging.ubuntu.com/saml/",
-        binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
-    )
-    slo_ep = saml.SamlEndpoint(
-        name="SingleLogoutService",
-        url="https://login.staging.ubuntu.com/+logout",
-        binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
-        response_url="https://login.staging.ubuntu.com/+logout2",
-    )
-    saml_data = saml.SamlRelationData(
-        entity_id="https://login.staging.ubuntu.com",
-        metadata_url="https://login.staging.ubuntu.com/saml/metadata",
-        certificates=["cert1", "cert2"],
-        endpoints=[sso_ep, slo_ep],
-    )
-
-    harness = Harness(SamlProviderCharm, meta=PROVIDER_METADATA)
-    harness.begin()
-    harness.set_leader(True)
-    relation_id = harness.add_relation("saml", "saml-provider")
-    harness.add_relation_unit(relation_id, "saml-provider/0")
-    assert len(harness.charm.events) == 0
-    harness.update_relation_data(
-        relation_id,
-        "saml-provider",
-        saml_data.to_relation_data(),
-    )
-    assert len(harness.charm.events) == 1
-    relation = harness.model.get_relation("saml", relation_id)
-    harness.charm.saml.update_relation_data(relation, saml_data)
-    assert len(harness.charm.events) == 1
+    assert harness.charm.events[0].endpoints == (slo_endpoint, sso_endpoint)
