@@ -3,9 +3,10 @@
 
 """CharmState unit tests."""
 
+from unittest.mock import MagicMock
+
 import pytest
 import yaml
-from mock import MagicMock
 
 from charm_state import KNOWN_CHARM_CONFIG, CharmConfigInvalidError, CharmState
 
