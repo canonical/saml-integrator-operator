@@ -6,7 +6,7 @@
 import ops
 import pytest
 from charms.operator_libs_linux.v0 import apt
-from mock import MagicMock, patch
+from unittest.mock import MagicMock, patch
 from ops.testing import Harness
 
 from charm import SamlIntegratorOperatorCharm

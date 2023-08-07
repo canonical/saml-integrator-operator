@@ -6,7 +6,7 @@
 import urllib
 
 import pytest
-from mock import MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 from charm_state import CharmConfigInvalidError
 from saml import SamlIntegrator
