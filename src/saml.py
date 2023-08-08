@@ -5,10 +5,10 @@
 import hashlib
 import logging
 import urllib.request
-from functools import cached_property
+from functools import cache, cached_property
+from typing import List
 
 from charms.saml_integrator.v0 import saml
-from signxml import XMLVerifier
 
 from charm_state import CharmConfigInvalidError, CharmState
 
@@ -62,41 +62,32 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
             ) from ex
 
     @cached_property
-    def _is_certificate_valid(self):
-        """Validate the metadata's SAML certificate against the provided fingerprint.
-
-        Returns:
-            True if the certificate matches the one provided.
-        """
-        XMLVerifier().verify(self._tree, x509_cert=self.signing_certificate)
-        return hashlib.sha256(
-            self.signing_certificate
-        ).hexdigest() == self._charm_state.fingerprint.replace(":", "").replace(" ", "")
-
-    @cached_property
     def signing_certificate(self) -> str | None:
         """Return the signing certificate for the metadata, if any."""
-        return self._tree.xpath(
-            "//ds:KeyInfo/ds:X509Data/ds:X509Certificate", namespaces=self._tree.nsmap
+        signing_certificates = self._tree.xpath(
+            "//md:KeyDescriptor[@use='signing']//ds:X509Certificate/text()",
+            namespaces=self._tree.nsmap,
         )
+        return signing_certificates[0] if signing_certificates else None
 
     @cached_property
-    def certificates(self) -> Set[str]:
+    def certificates(self) -> List[str]:
         """Return public certificates defined in the metadata.
 
         Returns:
             List of certificates.
         """
-        return {
-            node.text
-            for node in self._tree.xpath(
+        return sorted(
+            self._tree.xpath(
                 (
                     f"//md:EntityDescriptor[@entityID='{self._charm_state.entity_id}']"
-                    "//md:KeyDescriptor//ds:X509Certificate"
+                    "//md:KeyDescriptor[@use='encryption']//ds:X509Certificate/text() | "
+                    f"//md:EntityDescriptor[@entityID='{self._charm_state.entity_id}']"
+                    "//md:KeyDescriptor[not(@use)]//ds:X509Certificate/text()"
                 ),
                 namespaces=self._tree.nsmap,
             )
-        }
+        )
 
     @cached_property
     def endpoints(self) -> list[saml.SamlEndpoint]:
@@ -128,3 +119,22 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
                 )
             )
         return endpoints
+
+    @cache  # pylint: disable=method-cache-max-size-none
+    def validate_certificate(self):
+        """Validate the metadata's SAML certificate against the provided fingerprint.
+
+        Raises:
+            CharmConfigInvalidError: if the signature is invalid or the certificate does not match.
+        """
+        # Lazy importing. Required deb packages won't be present on charm startup
+        import signxml
+
+        try:
+            signxml.XMLVerifier().verify(self._tree, x509_cert=self.signing_certificate)
+        except signxml.exceptions.InvalidSignature as ex:
+            raise CharmConfigInvalidError("The metadata has an invalid signature") from ex
+        if not hashlib.sha256(
+            self.signing_certificate
+        ).hexdigest() == self._charm_state.fingerprint.replace(":", "").replace(" ", ""):
+            raise CharmConfigInvalidError("The metadata signature does not match the provided one")

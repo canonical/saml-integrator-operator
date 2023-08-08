@@ -31,7 +31,7 @@ def test_libxml2_installed(apt_add_package_mock):
     )
     harness.begin()
     harness.charm.on.upgrade_charm.emit()
-    apt_add_package_mock.assert_called_once_with(["libxml2"], update_cache=True)
+    apt_add_package_mock.assert_called_once_with(["libxml2", "libxslt-dev"], update_cache=True)
 
 
 def test_misconfigured_charm_reaches_blocked_status():

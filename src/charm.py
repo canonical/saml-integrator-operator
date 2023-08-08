@@ -44,7 +44,7 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
     def _on_upgrade_charm(self, _) -> None:
         """Install needed apt packages."""
         self.unit.status = ops.MaintenanceStatus("Installing packages")
-        apt.add_package(["libxml2"], update_cache=True)
+        apt.add_package(["libxml2", "libxslt-dev"], update_cache=True)
 
     def _on_relation_created(self, _) -> None:
         """Handle a change to the saml relation."""
