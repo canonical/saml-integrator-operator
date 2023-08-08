@@ -2,11 +2,13 @@
 # See LICENSE file for licensing details.
 
 """Provide the SamlApp class to encapsulate the business logic."""
+import hashlib
 import logging
 import urllib.request
 from functools import cached_property
 
 from charms.saml_integrator.v0 import saml
+from signxml import XMLVerifier
 
 from charm_state import CharmConfigInvalidError, CharmState
 
@@ -18,7 +20,8 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
 
     Attrs:
         endpoints: SAML endpoints.
-        certificates: Public certificates.
+        certificates: public certificates.
+        signing_certificate: signing certificate.
     """
 
     def __init__(self, charm_state: CharmState):
@@ -59,7 +62,26 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
             ) from ex
 
     @cached_property
-    def certificates(self) -> set[str]:
+    def _is_certificate_valid(self):
+        """Validate the metadata's SAML certificate against the provided fingerprint.
+
+        Returns:
+            True if the certificate matches the one provided.
+        """
+        XMLVerifier().verify(self._tree, x509_cert=self.signing_certificate)
+        return hashlib.sha256(
+            self.signing_certificate
+        ).hexdigest() == self._charm_state.fingerprint.replace(":", "").replace(" ", "")
+
+    @cached_property
+    def signing_certificate(self) -> str | None:
+        """Return the signing certificate for the metadata, if any."""
+        return self._tree.xpath(
+            "//ds:KeyInfo/ds:X509Data/ds:X509Certificate", namespaces=self._tree.nsmap
+        )
+
+    @cached_property
+    def certificates(self) -> Set[str]:
         """Return public certificates defined in the metadata.
 
         Returns:

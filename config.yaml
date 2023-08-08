@@ -5,6 +5,9 @@ options:
   entity_id:
     type: string
     description: Identifier of the IdP entity (must be a URI)
+  fingerprint:
+    type: string
+    description: SHA256 Fingerprint to validate the metadata's certificate. If empty, no validation is performed
   metadata_url:
     type: string
     description: URL to the IdP's metadata
