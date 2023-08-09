@@ -72,7 +72,7 @@ def test_saml_with_invalid_url(_):
 @patch("urllib.request.urlopen")
 def test_saml_with_valid_signed_metadata(urlopen_mock):
     """
-    arrange: mock the metadata contents so that they invalid.
+    arrange: mock the metadata contents so that they valid.
     act: access the metadata properties.
     assert: the properties are populated as defined in the metadata.
     """
@@ -135,6 +135,33 @@ def test_saml_with_valid_signed_metadata(urlopen_mock):
         assert endpoints[1].binding == "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
         assert endpoints[1].url == "https://login.staging.ubuntu.com/saml/"
         assert endpoints[1].response_url is None
+
+
+@patch("urllib.request.urlopen")
+def test_saml_with_valid_tampered_signed_metadata(urlopen_mock):
+    """
+    arrange: mock the metadata contents so that they invalid.
+    act: access the metadata properties.
+    assert: an expcetion is raised.
+    """
+    with open("tests/unit/files/metadata_signed_tampered.xml", "rb") as metadata:
+        urlopen_result_mock = get_urlopen_result_mock(200, metadata.read())
+        urlopen_result_mock.__enter__.return_value = urlopen_result_mock
+        urlopen_mock.return_value = urlopen_result_mock
+
+        entity_id = "https://login.staging.ubuntu.com"
+        metadata_url = "https://login.staging.ubuntu.com/saml/metadata"
+        charm_state = MagicMock(
+            entity_id=entity_id,
+            fingerprint=(
+                "1c:73:51:f2:23:55:f8:3d:25:7e:65:56:dd:f1:a9:17:fe:d4:af"
+                ":dc:70:d2:a8:11:b3:2f:d2:ea:c4:6d:91:e7"
+            ),
+            metadata_url=metadata_url,
+        )
+        saml_integrator = SamlIntegrator(charm_state=charm_state)
+        with pytest.raises(CharmConfigInvalidError):
+            saml_integrator.tree
 
 
 @patch("urllib.request.urlopen")

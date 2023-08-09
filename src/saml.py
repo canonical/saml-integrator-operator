@@ -76,7 +76,6 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         """
         # Lazy importing. Required deb packages won't be present on charm startup
         import signxml
-        from lxml import etree  # nosec
 
         if self._charm_state.fingerprint and (
             not self.signing_certificate
