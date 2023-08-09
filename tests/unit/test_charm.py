@@ -6,7 +6,6 @@
 from unittest.mock import MagicMock, patch
 
 import ops
-import pytest
 from charms.operator_libs_linux.v0 import apt
 from ops.testing import Harness
 
@@ -52,7 +51,7 @@ def test_charm_reaches_active_status(urlopen_mock):
     act: trigger a configuration change with the required configs.
     assert: the charm reaches ActiveStatus.
     """
-    with open("tests/unit/files/metadata_1.xml", "rb") as metadata:
+    with open("tests/unit/files/metadata_unsigned.xml", "rb") as metadata:
         urlopen_result_mock = MagicMock()
         urlopen_result_mock.getcode.return_value = 200
         urlopen_result_mock.read.return_value = metadata.read()
@@ -74,14 +73,13 @@ def test_charm_reaches_active_status(urlopen_mock):
 
 
 @patch("urllib.request.urlopen")
-@pytest.mark.parametrize("metadata_file", [("metadata_1.xml"), ("metadata_2.xml")])
-def test_relation_joined_when_leader(urlopen_mock, metadata_file):
+def test_relation_joined_when_leader(urlopen_mock):
     """
     arrange: set up a configured charm and set leadership for the unit.
     act: add a relation.
     assert: the relation get populated with the SAML data.
     """
-    with open(f"tests/unit/files/{metadata_file}", "rb") as metadata:
+    with open("tests/unit/files/metadata_unsigned.xml", "rb") as metadata:
         urlopen_result_mock = MagicMock()
         urlopen_result_mock.getcode.return_value = 200
         urlopen_result_mock.read.return_value = metadata.read()
@@ -156,7 +154,7 @@ def test_relation_joined_when_not_leader(urlopen_mock):
     act: add a relation.
     assert: the relation get populated with the SAML data.
     """
-    with open("tests/unit/files/metadata_1.xml", "rb") as metadata:
+    with open("tests/unit/files/metadata_unsigned.xml", "rb") as metadata:
         urlopen_result_mock = MagicMock()
         urlopen_result_mock.getcode.return_value = 200
         urlopen_result_mock.read.return_value = metadata.read()

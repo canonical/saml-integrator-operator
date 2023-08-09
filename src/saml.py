@@ -2,11 +2,12 @@
 # See LICENSE file for licensing details.
 
 """Provide the SamlApp class to encapsulate the business logic."""
+import base64
 import hashlib
 import logging
 import urllib.request
 from functools import cached_property
-from typing import List
+from typing import List, Optional
 
 from charms.saml_integrator.v0 import saml
 
@@ -21,6 +22,7 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
     Attrs:
         endpoints: SAML endpoints.
         certificates: public certificates.
+        signature: the Signature element in the metadata.
         signing_certificate: signing certificate.
         tree: the element tree for the metadata.
     """
@@ -33,7 +35,7 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         """
         self._charm_state = charm_state
 
-    @cached_property
+    @property
     def _tree(self) -> "etree.ElementTree":  # type: ignore
         """Fetch the metadata contents.
 
@@ -74,18 +76,27 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         """
         # Lazy importing. Required deb packages won't be present on charm startup
         import signxml
+        from lxml import etree  # nosec
 
+        if self._charm_state.fingerprint and (
+            not self.signing_certificate
+            or not hashlib.sha256(base64.b64decode(self.signing_certificate)).hexdigest()
+            == self._charm_state.fingerprint.replace(":", "").replace(" ", "")
+        ):
+            raise CharmConfigInvalidError("The metadata signature does not match the provided one")
         tree = self._tree
-        metadata_certificate = self.signing_certificate
-        if metadata_certificate:
+        if self.signing_certificate and self.signature:
             try:
-                signxml.XMLVerifier().verify(self._tree, x509_cert=metadata_certificate)
+                verification_result = (
+                    signxml.XMLVerifier()
+                    .verify(self._tree, x509_cert=self.signing_certificate)
+                )
+                # mypy doesn't recongnize the signed_xml attribute
+                assert verification_result.signed_xml
+                # if etree.tostring(etree_without_signature) != etree.tostring(verification_result.signed_xml):
+                #     raise CharmConfigInvalidError("The metadata is not fully signed")
             except signxml.exceptions.InvalidSignature as ex:
                 raise CharmConfigInvalidError("The metadata has an invalid signature") from ex
-        if self._charm_state.fingerprint and not hashlib.sha256(
-            self.signing_certificate
-        ).hexdigest() == self._charm_state.fingerprint.replace(":", "").replace(" ", ""):
-            raise CharmConfigInvalidError("The metadata signature does not match the provided one")
         return tree
 
     @cached_property
@@ -99,6 +110,16 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         return signing_certificates[0] if signing_certificates else None
 
     @cached_property
+    def signature(self) -> Optional["etree.ElementTree"]:  # type: ignore
+        """Check if the metadata has a Signature element."""
+        tree = self._tree
+        signature = tree.xpath(
+            "//ds:Signature",
+            namespaces=tree.nsmap,
+        )
+        return signature[0] if signature else None
+
+    @cached_property
     def certificates(self) -> List[str]:
         """Return public certificates defined in the metadata.
 
@@ -110,9 +131,7 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
             tree.xpath(
                 (
                     f"//md:EntityDescriptor[@entityID='{self._charm_state.entity_id}']"
-                    "//md:KeyDescriptor[@use='encryption']//ds:X509Certificate/text() | "
-                    f"//md:EntityDescriptor[@entityID='{self._charm_state.entity_id}']"
-                    "//md:KeyDescriptor[not(@use)]//ds:X509Certificate/text()"
+                    "//md:KeyDescriptor//ds:X509Certificate/text()"
                 ),
                 namespaces=tree.nsmap,
             )
