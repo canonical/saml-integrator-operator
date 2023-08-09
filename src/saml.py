@@ -87,14 +87,7 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         tree = self._tree
         if self.signing_certificate and self.signature:
             try:
-                verification_result = (
-                    signxml.XMLVerifier()
-                    .verify(self._tree, x509_cert=self.signing_certificate)
-                )
-                # mypy doesn't recongnize the signed_xml attribute
-                assert verification_result.signed_xml
-                # if etree.tostring(etree_without_signature) != etree.tostring(verification_result.signed_xml):
-                #     raise CharmConfigInvalidError("The metadata is not fully signed")
+                signxml.XMLVerifier().verify(self._tree, x509_cert=self.signing_certificate)
             except signxml.exceptions.InvalidSignature as ex:
                 raise CharmConfigInvalidError("The metadata has an invalid signature") from ex
         return tree
