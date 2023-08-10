@@ -5,6 +5,7 @@
 import base64
 import hashlib
 import logging
+import secrets
 import urllib.request
 from functools import cached_property
 from typing import List, Optional
@@ -79,8 +80,10 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
 
         if self._charm_state.fingerprint and (
             not self.signing_certificate
-            or not hashlib.sha256(base64.b64decode(self.signing_certificate)).hexdigest()
-            == self._charm_state.fingerprint.replace(":", "").replace(" ", "")
+            or not secrets.compare_digest(
+                hashlib.sha256(base64.b64decode(self.signing_certificate)).hexdigest(),
+                self._charm_state.fingerprint.replace(":", "").replace(" ", ""),
+            )
         ):
             raise CharmConfigInvalidError("The metadata signature does not match the provided one")
         tree = self._tree
