@@ -1,11 +1,12 @@
 # Copyright 2023 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-# pylint: disable=import-error,consider-using-with
+# pylint: disable=import-error,consider-using-with,no-member
 
 """This code snippet is used to be loaded into any-charm which is used for integration tests."""
-import saml
 from any_charm_base import AnyCharmBase
+
+import saml
 
 
 class AnyCharm(AnyCharmBase):  # pylint: disable=too-few-public-methods
