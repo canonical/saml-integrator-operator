@@ -102,7 +102,7 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
             "//md:KeyDescriptor[@use='signing']//ds:X509Certificate/text()",
             namespaces=tree.nsmap,
         )
-        return signing_certificates[0] if signing_certificates else None
+        return next(iter(signing_certificates), None)
 
     @cached_property
     def signature(self) -> Optional["etree.ElementTree"]:  # type: ignore
