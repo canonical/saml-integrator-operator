@@ -3,6 +3,7 @@
 
 """Fixtures for the SAML Integrator charm integration tests."""
 
+import json
 from pathlib import Path
 
 import pytest_asyncio
@@ -51,6 +52,6 @@ async def any_charm(ops_test: OpsTest):
         "any-charm",
         application_name="any",
         channel="beta",
-        config={"src-overwrite": src_overwrite},
+        config={"src-overwrite": json.dumps(src_overwrite)},
     )
     yield application

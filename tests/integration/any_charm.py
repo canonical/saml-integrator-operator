@@ -4,8 +4,8 @@
 # pylint: disable=import-error,consider-using-with
 
 """This code snippet is used to be loaded into any-charm which is used for integration tests."""
+import saml
 from any_charm_base import AnyCharmBase
-from charms.saml_integrator.v0 import saml
 
 
 class AnyCharm(AnyCharmBase):  # pylint: disable=too-few-public-methods
