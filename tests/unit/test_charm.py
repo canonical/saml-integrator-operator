@@ -31,7 +31,7 @@ def test_libxml2_installed(apt_add_package_mock):
     harness.begin()
     harness.charm.on.upgrade_charm.emit()
     apt_add_package_mock.assert_called_once_with(
-        ["libssl-dev", "libxml2", "libxslt-dev"], update_cache=True
+        ["libssl-dev", "libxml2", "libxslt-dev", "rustc"], update_cache=True
     )
 
 
