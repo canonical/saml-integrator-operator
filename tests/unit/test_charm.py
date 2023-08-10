@@ -13,7 +13,7 @@ from charm import SamlIntegratorOperatorCharm
 
 
 @patch.object(apt, "add_package")
-def test_libxml2_installed(apt_add_package_mock):
+def test_libs_installed(apt_add_package_mock):
     """
     arrange: set up a charm.
     act: none.
@@ -31,7 +31,7 @@ def test_libxml2_installed(apt_add_package_mock):
     harness.begin()
     harness.charm.on.upgrade_charm.emit()
     apt_add_package_mock.assert_called_once_with(
-        ["libssl3-dev", "libxml2", "libxslt-dev", "python3-openssl"], update_cache=True
+        ["libssl-dev", "libxml2", "libxslt-dev", "python3-openssl"], update_cache=True
     )
 
 
