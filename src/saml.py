@@ -37,7 +37,7 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         self._charm_state = charm_state
 
     @property
-    def _tree(self) -> "etree.ElementTree":  # type: ignore
+    def _read_tree(self) -> "etree.ElementTree":  # type: ignore
         """Fetch the metadata contents.
 
         Returns:
@@ -86,18 +86,18 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
             )
         ):
             raise CharmConfigInvalidError("The metadata signature does not match the provided one")
-        tree = self._tree
+        tree = self._read_tree
         if self.signing_certificate and self.signature:
             try:
-                signxml.XMLVerifier().verify(self._tree, x509_cert=self.signing_certificate)
+                signxml.XMLVerifier().verify(tree, x509_cert=self.signing_certificate)
             except signxml.exceptions.InvalidSignature as ex:
                 raise CharmConfigInvalidError("The metadata has an invalid signature") from ex
         return tree
 
     @cached_property
-    def signing_certificate(self) -> str | None:
+    def signing_certificate(self) -> Optional[str]:
         """Return the signing certificate for the metadata, if any."""
-        tree = self._tree
+        tree = self._read_tree
         signing_certificates = tree.xpath(
             "//md:KeyDescriptor[@use='signing']//ds:X509Certificate/text()",
             namespaces=tree.nsmap,
@@ -107,7 +107,7 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
     @cached_property
     def signature(self) -> Optional["etree.ElementTree"]:  # type: ignore
         """Check if the metadata has a Signature element."""
-        tree = self._tree
+        tree = self._read_tree
         signature = tree.xpath(
             "//ds:Signature",
             namespaces=tree.nsmap,

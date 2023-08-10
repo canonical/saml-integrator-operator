@@ -75,7 +75,7 @@ class CharmState:
         return self._saml_integrator_config.entity_id
 
     @property
-    def fingerprint(self) -> str | None:
+    def fingerprint(self) -> Optional[str]:
         """Return certificate config.
 
         Returns:
