@@ -39,29 +39,37 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
         self.framework.observe(self.on[RELATION_NAME].relation_created, self._on_relation_created)
         self.framework.observe(self.on.config_changed, self._on_config_changed)
         self.framework.observe(self.on.upgrade_charm, self._on_upgrade_charm)
+        self.framework.observe(self.on.update_status, self._on_update_status)
 
     def _on_upgrade_charm(self, _) -> None:
         """Install needed apt packages."""
         self.unit.status = ops.MaintenanceStatus("Installing packages")
         apt.add_package(["libxml2"], update_cache=True)
 
-    def _on_relation_created(self, event: ops.RelationCreatedEvent) -> None:
-        """Handle a change to the saml relation.
+    def _on_relation_created(self, _) -> None:
+        """Handle a change to the saml relation."""
+        # A new charm will be instantiated hence, the information will be fetched again.
+        # The relation databags are rewritten in case there are changes.
+        self._update_relations()
 
-        Args:
-            event: Event triggering the relation-created hook for the relation.
-        """
-        if not self.model.unit.is_leader():
-            return
-        self.saml.update_relation_data(event.relation, self.get_saml_data())
+    def _on_update_status(self, _) -> None:
+        """Handle the update status event."""
+        # A new charm will be instantiated hence, the information will be fetched again.
+        # The relation databags are rewritten in case there are changes.
+        self._update_relations()
 
     def _on_config_changed(self, _) -> None:
         """Handle changes in configuration."""
         self.unit.status = ops.MaintenanceStatus("Configuring charm")
-        if self.model.unit.is_leader():
-            for relation in self.saml.relations:
-                self.saml.update_relation_data(relation, self.get_saml_data())
+        self._update_relations()
         self.unit.status = ops.ActiveStatus()
+
+    def _update_relations(self) -> None:
+        """Update all SAML data for the existing relations."""
+        if not self.model.unit.is_leader():
+            return
+        for relation in self.saml.relations:
+            self.saml.update_relation_data(relation, self.get_saml_data())
 
     def get_saml_data(self) -> saml.SamlRelationData:
         """Get relation data.
