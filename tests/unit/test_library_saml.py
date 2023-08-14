@@ -108,6 +108,22 @@ def test_saml_relation_data_to_relation_data():
     assert relation_data == expected_relation_data
 
 
+def test_requirer_charm_does_not_emit_event_id_no_data():
+    """
+    arrange: set up a charm with no relation data to be populated.
+    act: trigger a relation changed event.
+    assert: no events are emitted.
+    """
+    harness = Harness(SamlRequirerCharm, meta=REQUIRER_METADATA)
+    harness.begin()
+    harness.set_leader(True)
+    relation_id = harness.add_relation("saml", "saml-provider")
+    harness.add_relation_unit(relation_id, "saml-provider/0")
+    relation = harness.charm.framework.model.get_relation("saml", 0)
+    harness.charm.on.saml_relation_changed.emit(relation)
+    assert len(harness.charm.events) == 0
+
+
 def test_requirer_charm_emits_event():
     """
     arrange: set up a charm with leadership.
