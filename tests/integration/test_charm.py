@@ -19,10 +19,7 @@ async def test_active(ops_test: OpsTest, app: ops.Application):
     await app.set_config(  # type: ignore[attr-defined]
         {
             "entity_id": "https://login.staging.ubuntu.com",
-            "fingerprint": (
-                "1c:73:51:f2:23:55:f8:3d:25:7e:65:56:dd:f1:a9:17:fe"
-                ":d4:af:dc:70:d2:a8:11:b3:2f:d2:ea:c4:6d:91:e7"
-            ),
+            "fingerprint": "",
             "metadata_url": "https://login.staging.ubuntu.com/saml/metadata",
         }
     )
@@ -42,10 +39,7 @@ async def test_relation(ops_test: OpsTest, app: ops.Application, any_charm: ops.
     await app.set_config(  # type: ignore[attr-defined]
         {
             "entity_id": "https://login.staging.ubuntu.com",
-            "fingerprint": (
-                "1c:73:51:f2:23:55:f8:3d:25:7e:65:56:dd:f1:a9:17:fe"
-                ":d4:af:dc:70:d2:a8:11:b3:2f:d2:ea:c4:6d:91:e7"
-            ),
+            "fingerprint": "",
             "metadata_url": "https://login.staging.ubuntu.com/saml/metadata",
         }
     )
