@@ -3,9 +3,10 @@
 
 """SAML Integrator Charm unit tests."""
 
+from unittest.mock import MagicMock, patch
+
 from charms.operator_libs_linux.v0 import apt
 from interface_tester.plugin import InterfaceTester
-from mock import MagicMock, patch
 
 from charm import SamlIntegratorOperatorCharm
 
