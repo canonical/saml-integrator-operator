@@ -153,7 +153,10 @@ def test_saml_with_valid_tampered_signed_metadata(urlopen_mock):
         metadata_url = "https://login.staging.ubuntu.com/saml/metadata"
         charm_state = MagicMock(
             entity_id=entity_id,
-            fingerprint="",
+            fingerprint=(
+                "1c:73:51:f2:23:55:f8:3d:25:7e:65:56:dd:f1:a9:17:fe:d4:af"
+                ":dc:70:d2:a8:11:b3:2f:d2:ea:c4:6d:91:e7"
+            ),
             metadata_url=metadata_url,
         )
         saml_integrator = SamlIntegrator(charm_state=charm_state)
