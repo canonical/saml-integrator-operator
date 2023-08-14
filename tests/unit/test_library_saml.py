@@ -108,39 +108,7 @@ def test_saml_relation_data_to_relation_data():
     assert relation_data == expected_relation_data
 
 
-def test_requirer_charm_does_not_emit_event_id_no_leader():
-    """
-    arrange: set up a charm with no leadership.
-    act: trigger a relation changed event.
-    assert: no events are emitted.
-    """
-    relation_data = {
-        "entity_id": "https://login.staging.ubuntu.com",
-        "metadata_url": "https://login.staging.ubuntu.com/saml/metadata",
-        "x509certs": "cert1,cert2",
-        "single_sign_on_service_redirect_url": "https://login.staging.ubuntu.com/saml/",
-        "single_sign_on_service_redirect_binding": (
-            "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
-        ),
-        "single_logout_service_redirect_url": "https://login.staging.ubuntu.com/+logout",
-        "single_logout_service_redirect_binding": (
-            "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
-        ),
-    }
-    harness = Harness(SamlRequirerCharm, meta=REQUIRER_METADATA)
-    harness.begin()
-    harness.set_leader(False)
-    relation_id = harness.add_relation("saml", "saml-provider")
-    harness.add_relation_unit(relation_id, "saml-provider/0")
-    harness.update_relation_data(
-        relation_id,
-        "saml-provider",
-        relation_data,
-    )
-    assert len(harness.charm.events) == 0
-
-
-def test_requirer_charm_emits_event_when_leader():
+def test_requirer_charm_emits_event():
     """
     arrange: set up a charm with leadership.
     act: trigger a relation changed event.
