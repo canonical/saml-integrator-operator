@@ -32,7 +32,7 @@ def test_libs_installed(apt_add_package_mock):
     harness.begin()
     harness.charm.on.start.emit()
     apt_add_package_mock.assert_called_once_with(
-        ["libssl-dev", "libxml2", "libxslt-dev", "python3-openssl"], update_cache=True
+        ["libssl-dev", "libxml2", "libxslt1-dev"], update_cache=True
     )
 
 
