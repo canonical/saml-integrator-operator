@@ -14,7 +14,7 @@ from charms.saml_integrator.v0 import saml
 
 from charm_state import CharmConfigInvalidError, CharmState
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: nocover
     from lxml import etree  # nosec
 
 
