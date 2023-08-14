@@ -8,11 +8,15 @@ import logging
 import secrets
 import urllib.request
 from functools import cached_property
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from charms.saml_integrator.v0 import saml
 
 from charm_state import CharmConfigInvalidError, CharmState
+
+if TYPE_CHECKING:
+    from lxml import etree  # nosec
+
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +41,7 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         self._charm_state = charm_state
 
     @property
-    def _read_tree(self) -> "etree.ElementTree":  # type: ignore
+    def _read_tree(self) -> "etree.ElementTree":
         """Fetch the metadata contents.
 
         Returns:
@@ -66,7 +70,7 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
             ) from ex
 
     @cached_property
-    def tree(self) -> "etree.ElementTree":  # type: ignore
+    def tree(self) -> "etree.ElementTree":
         """Fetch and validate the metadata contents.
 
         Returns:
@@ -105,7 +109,7 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         return next(iter(signing_certificates), None)
 
     @cached_property
-    def signature(self) -> Optional["etree.ElementTree"]:  # type: ignore
+    def signature(self) -> Optional["etree.ElementTree"]:
         """Check if the metadata has a Signature element."""
         tree = self._read_tree
         signature = tree.xpath(
