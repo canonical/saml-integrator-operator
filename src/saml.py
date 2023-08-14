@@ -8,7 +8,7 @@ import logging
 import secrets
 import urllib.request
 from functools import cached_property
-from typing import List, Optional
+from typing import Optional
 
 from charms.saml_integrator.v0 import saml
 
@@ -95,7 +95,7 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         return tree
 
     @cached_property
-    def signing_certificate(self) -> Optional[str]:
+    def signing_certificate(self) -> str | None:
         """Return the signing certificate for the metadata, if any."""
         tree = self._read_tree
         signing_certificates = tree.xpath(
@@ -115,7 +115,7 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         return signature[0] if signature else None
 
     @cached_property
-    def certificates(self) -> List[str]:
+    def certificates(self) -> list[str]:
         """Return public certificates defined in the metadata.
 
         Returns:
