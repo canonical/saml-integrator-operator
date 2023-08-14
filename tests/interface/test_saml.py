@@ -3,6 +3,7 @@
 
 """SAML Integrator Charm unit tests."""
 
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from charms.operator_libs_linux.v0 import apt
@@ -22,11 +23,11 @@ def test_ingress_interface(_, urlopen_mock, interface_tester: InterfaceTester):
         interface_tester: interface tester.
     """
     interface_tester.configure(charm_type=SamlIntegratorOperatorCharm, interface_name="saml")
-    with open("tests/unit/files/metadata_1.xml", "rb") as metadata:
-        urlopen_result_mock = MagicMock()
-        urlopen_result_mock.getcode.return_value = 200
-        urlopen_result_mock.read.return_value = metadata.read()
-        urlopen_result_mock.__enter__.return_value = urlopen_result_mock
-        urlopen_mock.return_value = urlopen_result_mock
+    metadata = Path("tests/unit/files/metadata_1.xml").read_bytes()
+    urlopen_result_mock = MagicMock()
+    urlopen_result_mock.getcode.return_value = 200
+    urlopen_result_mock.read.return_value = metadata
+    urlopen_result_mock.__enter__.return_value = urlopen_result_mock
+    urlopen_mock.return_value = urlopen_result_mock
 
-        interface_tester.run()
+    interface_tester.run()
