@@ -3,10 +3,11 @@
 
 """SAML Integrator Charm unit tests."""
 # pylint: disable=protected-access
+from unittest.mock import MagicMock, patch
+
 import ops
 import pytest
 from charms.operator_libs_linux.v0 import apt
-from mock import MagicMock, patch
 from ops.testing import Harness
 
 from charm import SamlIntegratorOperatorCharm

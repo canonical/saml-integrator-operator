@@ -4,9 +4,9 @@
 """SAML Integrator unit tests."""
 # pylint: disable=pointless-statement
 import urllib
+from unittest.mock import MagicMock, patch
 
 import pytest
-from mock import MagicMock, patch
 
 from charm_state import CharmConfigInvalidError
 from saml import SamlIntegrator
