@@ -29,6 +29,5 @@ async def app(ops_test: OpsTest, pytestconfig: Config, app_name: str):
     application = await ops_test.model.deploy(
         f"./{charm}",
         application_name=app_name,
-        series="focal",
     )
     yield application
