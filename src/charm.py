@@ -38,14 +38,7 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
         self.saml = saml.SamlProvides(self)
         self.framework.observe(self.on[RELATION_NAME].relation_created, self._on_relation_created)
         self.framework.observe(self.on.config_changed, self._on_config_changed)
-        self.framework.observe(self.on.start, self._on_start)
         self.framework.observe(self.on.update_status, self._on_update_status)
-
-    def _on_start(self, _) -> None:
-        """Install needed apt packages."""
-        self.unit.status = ops.MaintenanceStatus("Installing packages")
-        apt.add_package(["libssl-dev", "libxml2", "libxslt1-dev"], update_cache=True)
-        self.unit.status = ops.ActiveStatus()
 
     def _on_relation_created(self, _) -> None:
         """Handle a change to the saml relation."""
@@ -62,6 +55,17 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
     def _on_config_changed(self, _) -> None:
         """Handle changes in configuration."""
         self.unit.status = ops.MaintenanceStatus("Configuring charm")
+        logger.info("Running on config-changed")
+        try:
+            # Run `apt-get update`
+            logger.info("Running apt update")
+            apt.update()
+            logger.info("Running apt add package")
+            apt.add_package(["libssl-dev", "libxml2", "libxslt1-dev"])
+        except apt.PackageNotFoundError:
+            logger.error("a specified package not found in package cache or on system")
+        except apt.PackageError as exc:
+            logger.error("could not install package. Reason: %s", exc.message)
         self._update_relations()
         self.unit.status = ops.ActiveStatus()
 
