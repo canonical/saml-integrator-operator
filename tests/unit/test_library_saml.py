@@ -126,7 +126,7 @@ def test_requirer_charm_does_not_emit_event_id_no_data():
 
 def test_requirer_charm_emits_event():
     """
-    arrange: set up a charm with leadership.
+    arrange: set up a charm.
     act: trigger a relation changed event.
     assert: a event containing the relation data is emitted.
     """
