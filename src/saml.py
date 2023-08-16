@@ -2,13 +2,21 @@
 # See LICENSE file for licensing details.
 
 """Provide the SamlApp class to encapsulate the business logic."""
+import base64
+import hashlib
 import logging
+import secrets
 import urllib.request
 from functools import cached_property
+from typing import TYPE_CHECKING, Optional
 
 from charms.saml_integrator.v0 import saml
 
 from charm_state import CharmConfigInvalidError, CharmState
+
+if TYPE_CHECKING:  # pragma: nocover
+    from lxml import etree  # nosec
+
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +26,10 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
 
     Attrs:
         endpoints: SAML endpoints.
-        certificates: Public certificates.
+        certificates: public certificates.
+        signature: the Signature element in the metadata.
+        signing_certificate: signing certificate.
+        tree: the element tree for the metadata.
     """
 
     def __init__(self, charm_state: CharmState):
@@ -29,9 +40,8 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         """
         self._charm_state = charm_state
 
-    @cached_property
-    def _tree(self) -> "etree.ElementTree":  # type: ignore
-        """Fetch metadata contents.
+    def _read_tree(self) -> "etree.ElementTree":
+        """Fetch the metadata contents.
 
         Returns:
             The metadata as an XML tree.
@@ -59,22 +69,71 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
             ) from ex
 
     @cached_property
-    def certificates(self) -> set[str]:
+    def tree(self) -> "etree.ElementTree":
+        """Fetch and validate the metadata contents.
+
+        Returns:
+            The metadata as an XML tree.
+
+        Raises:
+            CharmConfigInvalidError: if the metadata URL or the metadata itself is invalid.
+        """
+        # Lazy importing. Required deb packages won't be present on charm startup
+        import signxml
+
+        if self._charm_state.fingerprint and (
+            not self.signing_certificate
+            or not secrets.compare_digest(
+                hashlib.sha256(base64.b64decode(self.signing_certificate)).hexdigest(),
+                self._charm_state.fingerprint.replace(":", "").replace(" ", ""),
+            )
+        ):
+            raise CharmConfigInvalidError("The metadata signature does not match the provided one")
+        tree = self._read_tree()
+        if self.signing_certificate and self.signature:
+            try:
+                signxml.XMLVerifier().verify(tree, x509_cert=self.signing_certificate)
+            except signxml.exceptions.InvalidSignature as ex:
+                raise CharmConfigInvalidError("The metadata has an invalid signature") from ex
+        return tree
+
+    @cached_property
+    def signing_certificate(self) -> str | None:
+        """Return the signing certificate for the metadata, if any."""
+        tree = self._read_tree()
+        signing_certificates = tree.xpath(
+            "//md:KeyDescriptor[@use='signing']//ds:X509Certificate/text()",
+            namespaces=tree.nsmap,
+        )
+        return next(iter(signing_certificates), None)
+
+    @cached_property
+    def signature(self) -> Optional["etree.ElementTree"]:
+        """Check if the metadata has a Signature element."""
+        tree = self._read_tree()
+        signature = tree.xpath(
+            "//ds:Signature",
+            namespaces=tree.nsmap,
+        )
+        return signature[0] if signature else None
+
+    @cached_property
+    def certificates(self) -> list[str]:
         """Return public certificates defined in the metadata.
 
         Returns:
             List of certificates.
         """
-        return {
-            node.text
-            for node in self._tree.xpath(
+        tree = self.tree
+        return sorted(
+            tree.xpath(
                 (
                     f"//md:EntityDescriptor[@entityID='{self._charm_state.entity_id}']"
-                    "//md:KeyDescriptor//ds:X509Certificate"
+                    "//md:KeyDescriptor//ds:X509Certificate/text()"
                 ),
-                namespaces=self._tree.nsmap,
+                namespaces=tree.nsmap,
             )
-        }
+        )
 
     @cached_property
     def endpoints(self) -> list[saml.SamlEndpoint]:
@@ -86,14 +145,15 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         # Lazy importing. Required deb packages won't be present on charm startup
         from lxml import etree  # nosec
 
-        results = self._tree.xpath(
+        tree = self.tree
+        results = tree.xpath(
             (
                 f"//md:EntityDescriptor[@entityID='{self._charm_state.entity_id}']"
                 f"//md:SingleSignOnService | "
                 f"//md:EntityDescriptor[@entityID='{self._charm_state.entity_id}']"
                 f"//md:SingleLogoutService"
             ),
-            namespaces=self._tree.nsmap,
+            namespaces=tree.nsmap,
         )
         endpoints = []
         for result in results:
