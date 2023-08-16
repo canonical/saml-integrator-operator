@@ -37,6 +37,7 @@ async def test_relation(ops_test: OpsTest, app: ops.Application, any_charm: ops.
     Assume that the charm has already been built and is running.
     """
     relation_name = f"{app.name}:saml"
+    assert ops_test.model
     await ops_test.model.add_relation(any_charm.name, relation_name)
     await app.set_config(  # type: ignore[attr-defined]
         {
@@ -45,7 +46,6 @@ async def test_relation(ops_test: OpsTest, app: ops.Application, any_charm: ops.
             "metadata_url": "https://login.staging.ubuntu.com/saml/metadata",
         }
     )
-    assert ops_test.model
     status_name = ops.ActiveStatus.name  # type: ignore[has-type]
     await ops_test.model.wait_for_idle(status=status_name, raise_on_error=True)
     assert app.units[0].workload_status == status_name  # type: ignore
