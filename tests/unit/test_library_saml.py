@@ -3,6 +3,7 @@
 
 """SAML library unit tests"""
 import ops
+import pytest
 from charms.saml_integrator.v0 import saml
 from ops.testing import Harness
 
@@ -124,7 +125,8 @@ def test_requirer_charm_does_not_emit_event_id_no_data():
     assert len(harness.charm.events) == 0
 
 
-def test_requirer_charm_emits_event():
+@pytest.mark.parametrize("is_leader", [True, False])
+def test_requirer_charm_emits_event(is_leader):
     """
     arrange: set up a charm.
     act: trigger a relation changed event.
@@ -146,7 +148,7 @@ def test_requirer_charm_emits_event():
 
     harness = Harness(SamlRequirerCharm, meta=REQUIRER_METADATA)
     harness.begin()
-    harness.set_leader(True)
+    harness.set_leader(is_leader)
     relation_id = harness.add_relation("saml", "saml-provider")
     harness.add_relation_unit(relation_id, "saml-provider/0")
     harness.update_relation_data(
