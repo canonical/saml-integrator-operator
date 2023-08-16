@@ -29,6 +29,7 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
             args: Arguments passed to the CharmBase parent constructor.
         """
         super().__init__(*args)
+        self.framework.observe(self.on.start, self._on_start)
         try:
             self._charm_state = CharmState.from_charm(charm=self)
             self._saml_integrator = SamlIntegrator(charm_state=self._charm_state)
@@ -38,7 +39,6 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
         self.saml = saml.SamlProvides(self)
         self.framework.observe(self.on[RELATION_NAME].relation_created, self._on_relation_created)
         self.framework.observe(self.on.config_changed, self._on_config_changed)
-        self.framework.observe(self.on.start, self._on_start)
         self.framework.observe(self.on.update_status, self._on_update_status)
 
     def _on_start(self, _) -> None:
