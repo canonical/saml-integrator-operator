@@ -3,6 +3,7 @@
 
 """SAML library unit tests"""
 import ops
+import pytest
 from charms.saml_integrator.v0 import saml
 from ops.testing import Harness
 
@@ -108,38 +109,6 @@ def test_saml_relation_data_to_relation_data():
     assert relation_data == expected_relation_data
 
 
-def test_requirer_charm_does_not_emit_event_id_no_leader():
-    """
-    arrange: set up a charm with no leadership.
-    act: trigger a relation changed event.
-    assert: no events are emitted.
-    """
-    relation_data = {
-        "entity_id": "https://login.staging.ubuntu.com",
-        "metadata_url": "https://login.staging.ubuntu.com/saml/metadata",
-        "x509certs": "cert1,cert2",
-        "single_sign_on_service_redirect_url": "https://login.staging.ubuntu.com/saml/",
-        "single_sign_on_service_redirect_binding": (
-            "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
-        ),
-        "single_logout_service_redirect_url": "https://login.staging.ubuntu.com/+logout",
-        "single_logout_service_redirect_binding": (
-            "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
-        ),
-    }
-    harness = Harness(SamlRequirerCharm, meta=REQUIRER_METADATA)
-    harness.begin()
-    harness.set_leader(False)
-    relation_id = harness.add_relation("saml", "saml-provider")
-    harness.add_relation_unit(relation_id, "saml-provider/0")
-    harness.update_relation_data(
-        relation_id,
-        "saml-provider",
-        relation_data,
-    )
-    assert len(harness.charm.events) == 0
-
-
 def test_requirer_charm_does_not_emit_event_id_no_data():
     """
     arrange: set up a charm with no relation data to be populated.
@@ -156,9 +125,10 @@ def test_requirer_charm_does_not_emit_event_id_no_data():
     assert len(harness.charm.events) == 0
 
 
-def test_requirer_charm_emits_event_when_leader():
+@pytest.mark.parametrize("is_leader", [True, False])
+def test_requirer_charm_emits_event(is_leader):
     """
-    arrange: set up a charm with leadership.
+    arrange: set up a charm.
     act: trigger a relation changed event.
     assert: a event containing the relation data is emitted.
     """
@@ -178,7 +148,7 @@ def test_requirer_charm_emits_event_when_leader():
 
     harness = Harness(SamlRequirerCharm, meta=REQUIRER_METADATA)
     harness.begin()
-    harness.set_leader(True)
+    harness.set_leader(is_leader)
     relation_id = harness.add_relation("saml", "saml-provider")
     harness.add_relation_unit(relation_id, "saml-provider/0")
     harness.update_relation_data(

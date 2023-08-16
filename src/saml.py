@@ -91,6 +91,9 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
             raise CharmConfigInvalidError("The metadata signature does not match the provided one")
         tree = self._read_tree()
         if self.signing_certificate and self.signature:
+            # The metadata can be tampered unless the metadata contents used are signed. To prevent
+            # this, instead of arbitrarily validating the signature for all fragments that can be
+            # shared with the requirer, the whole contents will need to be signed.
             try:
                 signxml.XMLVerifier().verify(tree, x509_cert=self.signing_certificate)
             except signxml.exceptions.InvalidSignature as ex:
