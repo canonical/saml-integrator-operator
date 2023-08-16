@@ -9,4 +9,3 @@ jobs:
     secrets: inherit
     with:
       trivy-fs-enabled: true
-      tmate-debug: true

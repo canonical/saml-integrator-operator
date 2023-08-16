@@ -14,5 +14,16 @@ bases:
 parts:
   charm:
     build-packages:
+    - build-essential
+    - cargo
+    - libffi-dev
+    - libssl-dev
     - libxml2
-    - libxslt-dev
+    - libxslt1-dev
+    - pkg-config
+    - python3-lxml
+    - python3-openssl
+    - python3-pip
+    - python3-setuptools
+    - python3-wheel
+    - rustc
