@@ -21,7 +21,7 @@ def test_ingress_interface(_, urlopen_mock, interface_tester: InterfaceTester, h
     assert: nothing, the tester will take care of the rest.
     """
     interface_tester.configure(charm_type=SamlIntegratorOperatorCharm, interface_name="saml")
-    metadata = Path("tests/unit/files/metadata_1.xml").read_bytes()
+    metadata = Path("tests/unit/files/metadata_unsigned.xml").read_bytes()
     urlopen_result_mock = helpers.get_urlopen_result_mock(200, metadata)
     urlopen_mock.return_value = urlopen_result_mock
 

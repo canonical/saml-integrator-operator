@@ -9,12 +9,12 @@ from interface_tester.plugin import InterfaceTester
 from charm import SamlIntegratorOperatorCharm
 
 
-@pytest.fixture
-def interface_tester(interface_tester_instance: InterfaceTester):
+@pytest.fixture(name="interface_tester")
+def interface_tester_instance(interface_tester: InterfaceTester):
     """Interface tester fixture.
 
     Args:
-        interface_tester_instance: Interface tester.
+        interface_tester: Interface tester.
     """
-    interface_tester_instance.configure(charm_type=SamlIntegratorOperatorCharm)
-    yield interface_tester_instance
+    interface_tester.configure(charm_type=SamlIntegratorOperatorCharm)
+    yield interface_tester
