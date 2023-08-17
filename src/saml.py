@@ -15,6 +15,8 @@ from charms.saml_integrator.v0 import saml
 from charm_state import CharmConfigInvalidError, CharmState
 
 if TYPE_CHECKING:  # pragma: nocover
+    # Bandit classifies this import as vulnerable. For more details, see
+    # https://github.com/PyCQA/bandit/issues/767
     from lxml import etree  # nosec
 
 
