@@ -4,7 +4,7 @@
 """SAML Integrator Charm unit tests."""
 # pylint: disable=protected-access
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import ops
 from charms.operator_libs_linux.v0 import apt
@@ -48,17 +48,14 @@ def test_misconfigured_charm_reaches_blocked_status():
 
 
 @patch("urllib.request.urlopen")
-def test_charm_reaches_active_status(urlopen_mock):
+def test_charm_reaches_active_status(urlopen_mock, helpers):
     """
     arrange: set up a charm and mock HTTP requests.
     act: trigger a configuration change with the required configs.
     assert: the charm reaches ActiveStatus.
     """
     metadata = Path("tests/unit/files/metadata_unsigned.xml").read_bytes()
-    urlopen_result_mock = MagicMock()
-    urlopen_result_mock.getcode.return_value = 200
-    urlopen_result_mock.read.return_value = metadata
-    urlopen_result_mock.__enter__.return_value = urlopen_result_mock
+    urlopen_result_mock = helpers.get_urlopen_result_mock(200, metadata)
     urlopen_mock.return_value = urlopen_result_mock
 
     harness = Harness(SamlIntegratorOperatorCharm)
@@ -76,17 +73,14 @@ def test_charm_reaches_active_status(urlopen_mock):
 
 
 @patch("urllib.request.urlopen")
-def test_relation_joined_when_leader(urlopen_mock):
+def test_relation_joined_when_leader(urlopen_mock, helpers):
     """
     arrange: set up a configured charm and set leadership for the unit.
     act: add a relation.
     assert: the relation get populated with the SAML data.
     """
     metadata = Path("tests/unit/files/metadata_unsigned.xml").read_bytes()
-    urlopen_result_mock = MagicMock()
-    urlopen_result_mock.getcode.return_value = 200
-    urlopen_result_mock.read.return_value = metadata
-    urlopen_result_mock.__enter__.return_value = urlopen_result_mock
+    urlopen_result_mock = helpers.get_urlopen_result_mock(200, metadata)
     urlopen_mock.return_value = urlopen_result_mock
 
     harness = Harness(SamlIntegratorOperatorCharm)
@@ -151,17 +145,14 @@ def test_relation_joined_when_leader(urlopen_mock):
 
 
 @patch("urllib.request.urlopen")
-def test_relation_joined_when_not_leader(urlopen_mock):
+def test_relation_joined_when_not_leader(urlopen_mock, helpers):
     """
     arrange: set up a charm and unset leadership for the unit.
     act: add a relation.
     assert: the relation get populated with the SAML data.
     """
     metadata = Path("tests/unit/files/metadata_unsigned.xml").read_bytes()
-    urlopen_result_mock = MagicMock()
-    urlopen_result_mock.getcode.return_value = 200
-    urlopen_result_mock.read.return_value = metadata
-    urlopen_result_mock.__enter__.return_value = urlopen_result_mock
+    urlopen_result_mock = helpers.get_urlopen_result_mock(200, metadata)
     urlopen_mock.return_value = urlopen_result_mock
 
     harness = Harness(SamlIntegratorOperatorCharm)
