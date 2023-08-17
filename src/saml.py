@@ -15,6 +15,8 @@ from charms.saml_integrator.v0 import saml
 from charm_state import CharmConfigInvalidError, CharmState
 
 if TYPE_CHECKING:  # pragma: nocover
+    # Bandit has blacklisted this import. For more details, see
+    # https://github.com/canonical/is-charms-contributing-guide/pull/69
     from lxml import etree  # nosec
 
 
