@@ -32,6 +32,7 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         signature: the Signature element in the metadata.
         signing_certificate: signing certificate.
         tree: the element tree for the metadata.
+        nsmap: namespaces list.
     """
 
     def __init__(self, charm_state: CharmState):
@@ -103,12 +104,26 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         return tree
 
     @cached_property
+    def nsmap(self) -> dict:
+        """Get namespaces.
+
+        Returns:
+            The namespaces list without None.
+        """
+        tree = self._read_tree()
+        nsmap = tree.nsmap
+        if None in nsmap:
+            nsmap["md"] = nsmap[None]
+            nsmap.pop(None)
+        return nsmap
+
+    @cached_property
     def signing_certificate(self) -> str | None:
         """Return the signing certificate for the metadata, if any."""
         tree = self._read_tree()
         signing_certificates = tree.xpath(
             "//md:KeyDescriptor[@use='signing']//ds:X509Certificate/text()",
-            namespaces=tree.nsmap,
+            namespaces=self.nsmap,
         )
         return next(iter(signing_certificates), None)
 
@@ -118,7 +133,7 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         tree = self._read_tree()
         signature = tree.xpath(
             "//ds:Signature",
-            namespaces=tree.nsmap,
+            namespaces=self.nsmap,
         )
         return signature[0] if signature else None
 
@@ -136,7 +151,7 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
                     f"//md:EntityDescriptor[@entityID='{self._charm_state.entity_id}']"
                     "//md:KeyDescriptor//ds:X509Certificate/text()"
                 ),
-                namespaces=tree.nsmap,
+                namespaces=self.nsmap,
             )
         )
 
@@ -158,7 +173,7 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
                 f"//md:EntityDescriptor[@entityID='{self._charm_state.entity_id}']"
                 f"//md:SingleLogoutService"
             ),
-            namespaces=tree.nsmap,
+            namespaces=self.nsmap,
         )
         endpoints = []
         for result in results:
