@@ -220,6 +220,7 @@ def test_saml_with_valid_unsigned_metadata(urlopen_mock):
         assert endpoints[1].url == "https://login.staging.ubuntu.com/saml/"
         assert endpoints[1].response_url is None
 
+
 @patch("urllib.request.urlopen")
 def test_saml_with_metadata_with_default_namespaces(urlopen_mock):
     """
