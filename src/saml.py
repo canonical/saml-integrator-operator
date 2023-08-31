@@ -19,7 +19,6 @@ if TYPE_CHECKING:  # pragma: nocover
     # https://github.com/PyCQA/bandit/issues/767
     from lxml import etree  # nosec
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -110,12 +109,10 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         Returns:
             The namespaces list without None.
         """
-        tree = self._read_tree()
-        nsmap = tree.nsmap
-        if None in nsmap:
-            nsmap["md"] = nsmap[None]
-            nsmap.pop(None)
-        return nsmap
+        return {
+            "md": "urn:oasis:names:tc:SAML:2.0:metadata",
+            "ds": "http://www.w3.org/2000/09/xmldsig#",
+        }
 
     @cached_property
     def signing_certificate(self) -> str | None:

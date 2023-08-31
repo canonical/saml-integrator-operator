@@ -176,26 +176,59 @@ def test_saml_with_valid_unsigned_metadata(urlopen_mock, helpers):
     act: access the metadata properties.
     assert: the properties are populated as defined in the metadata.
     """
-    metadata = Path("tests/unit/files/metadata_unsigned.xml").read_bytes()
-    urlopen_result_mock = helpers.get_urlopen_result_mock(200, metadata)
-    urlopen_mock.return_value = urlopen_result_mock
+    with open("tests/unit/files/metadata_unsigned.xml", "rb") as metadata:
+        urlopen_result_mock = get_urlopen_result_mock(200, metadata.read())
+        urlopen_result_mock.__enter__.return_value = urlopen_result_mock
+        urlopen_mock.return_value = urlopen_result_mock
 
-    entity_id = "https://login.staging.ubuntu.com"
-    metadata_url = "https://login.staging.ubuntu.com/saml/metadata"
-    charm_state = MagicMock(
-        entity_id=entity_id,
-        fingerprint="",
-        metadata_url=metadata_url,
-    )
-    saml_integrator = SamlIntegrator(charm_state=charm_state)
-    assert saml_integrator.certificates == ["cert1_content"]
-    endpoints = saml_integrator.endpoints
-    assert len(endpoints) == 2
-    assert endpoints[0].name == "SingleLogoutService"
-    assert endpoints[0].binding == "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Post"
-    assert endpoints[0].url == "https://login.staging.ubuntu.com/+logout"
-    assert endpoints[0].response_url == "https://login.staging.ubuntu.com/example/"
-    assert endpoints[1].name == "SingleSignOnService"
-    assert endpoints[1].binding == "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Post"
-    assert endpoints[1].url == "https://login.staging.ubuntu.com/saml/"
-    assert endpoints[1].response_url is None
+        entity_id = "https://login.staging.ubuntu.com"
+        metadata_url = "https://login.staging.ubuntu.com/saml/metadata"
+        charm_state = MagicMock(
+            entity_id=entity_id,
+            fingerprint="",
+            metadata_url=metadata_url,
+        )
+        saml_integrator = SamlIntegrator(charm_state=charm_state)
+        assert saml_integrator.certificates == ["cert1_content"]
+        endpoints = saml_integrator.endpoints
+        assert len(endpoints) == 2
+        assert endpoints[0].name == "SingleLogoutService"
+        assert endpoints[0].binding == "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Post"
+        assert endpoints[0].url == "https://login.staging.ubuntu.com/+logout"
+        assert endpoints[0].response_url == "https://login.staging.ubuntu.com/example/"
+        assert endpoints[1].name == "SingleSignOnService"
+        assert endpoints[1].binding == "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Post"
+        assert endpoints[1].url == "https://login.staging.ubuntu.com/saml/"
+        assert endpoints[1].response_url is None
+
+
+@patch("urllib.request.urlopen")
+def test_saml_with_metadata_with_default_namespaces(urlopen_mock):
+    """
+    arrange: mock the metadata with XML default namespaces.
+    act: access the metadata properties.
+    assert: the properties are populated as defined in the metadata.
+    """
+    with open("tests/unit/files/metadata_default_namespaces.xml", "rb") as metadata:
+        urlopen_result_mock = get_urlopen_result_mock(200, metadata.read())
+        urlopen_result_mock.__enter__.return_value = urlopen_result_mock
+        urlopen_mock.return_value = urlopen_result_mock
+
+        entity_id = "https://saml.canonical.test/metadata"
+        metadata_url = "https://saml.canonical.test/metadata"
+        charm_state = MagicMock(
+            entity_id=entity_id,
+            fingerprint="",
+            metadata_url=metadata_url,
+        )
+        saml_integrator = SamlIntegrator(charm_state=charm_state)
+        endpoints = saml_integrator.endpoints
+        assert len(endpoints) == 2
+        assert endpoints[0].name == "SingleSignOnService"
+        assert endpoints[0].binding == "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+        assert endpoints[0].url == "https://saml.canonical.test/sso"
+        assert endpoints[0].response_url is None
+        assert endpoints[1].name == "SingleSignOnService"
+        assert endpoints[1].binding == "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+        assert endpoints[1].url == "https://saml.canonical.test/sso"
+        assert endpoints[1].response_url is None
