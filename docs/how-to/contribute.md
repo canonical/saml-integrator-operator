@@ -9,6 +9,7 @@ This document explains the processes and practices recommended for contributing 
   * code quality
   * test coverage
   * user experience for Juju administrators of this charm.
+* Please generate src documentation for every commit. See the section below for more details.
 For more details, check our [contibuting guide](https://github.com/canonical/is-charms-contributing-guide/blob/main/CONTRIBUTING.md).
 
 ## Developing
@@ -30,6 +31,16 @@ charmcraft pack
 # Ensure you're connected to a juju model, assuming you're on amd64
 juju deploy ./saml-integrator_ubuntu-20.04-amd64.charm
 ```
+
+### Generating src docs for every commit
+
+Run the following command:
+
+```bash
+echo -e "tox -e src-docs\ngit add src-docs\n" >> .git/hooks/pre-commit
+chmod +x .git/hooks/pre-commit
+```
+
 ## Canonical contributor agreement
 
 Canonical welcomes contributions to the SAML Integrator Operator. Please check out our [contributor agreement](https://ubuntu.com/legal/contributors) if you’re interested in contributing to the solution.
