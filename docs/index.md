@@ -16,17 +16,3 @@ If there's a particular area of documentation that you'd like to see that's miss
 |--|--|
 |  [Tutorials](https://charmhub.io/saml-integrator/docs/tutorial-getting-started)</br>  Get started - a hands-on introduction to using the SAML Integrator operator for new users </br> |  [How-to guides](https://charmhub.io/saml-integrator/docs/how-to-contibute) </br> Step-by-step guides covering key operations and common tasks |
 | [Reference](https://charmhub.io/saml-integrator/docs/reference-actions) </br> Technical information - specifications, APIs, architecture | [Explanation](https://charmhub.io/saml-integrator/docs/explanation-charm-architecture) </br> Concepts - discussion and clarification of key topics  |
-
-# Contents
-
-1. [Tutorial](tutorial)
-   1. [Getting Started](tutorial/getting-started.md)
-1. [How to](how-to)
-   1. [Contribute](how-to/contribute.md)
-   1. [Configure SAML](how-to/configure-saml.md)
-1. [Reference](reference)
-   1. [Actions](reference/actions.md)
-   1. [Configurations](reference/configurations.md)
-   1. [Integrations](reference/integrations.md)
-1. [Explanation](explanation)
-   1. [Charm architecture](explanation/charm-architecture.md)
