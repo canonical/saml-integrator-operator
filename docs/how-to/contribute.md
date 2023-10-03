@@ -10,7 +10,7 @@ This document explains the processes and practices recommended for contributing 
   * test coverage
   * user experience for Juju administrators of this charm.
 * Please generate src documentation for every commit. See the section below for more details.
-For more details, check our [contibuting guide](https://github.com/canonical/is-charms-contributing-guide/blob/main/CONTRIBUTING.md).
+For more details, check our [contributing guide](https://github.com/canonical/is-charms-contributing-guide/blob/main/CONTRIBUTING.md).
 
 ## Developing
 

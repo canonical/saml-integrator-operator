@@ -46,7 +46,7 @@ class SamlRequirerCharm(ops.CharmBase):
 
 
 class SamlProviderCharm(ops.CharmBase):
-    """Class for provier charm testing."""
+    """Class for provider charm testing."""
 
     def __init__(self, *args):
         """Init method for the class.

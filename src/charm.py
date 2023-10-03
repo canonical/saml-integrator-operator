@@ -20,7 +20,7 @@ RELATION_NAME = "saml"
 
 
 class SamlIntegratorOperatorCharm(ops.CharmBase):
-    """Charm for SAML Integrator on kubernetes."""
+    """Charm for SAML Integrator."""
 
     def __init__(self, *args):
         """Construct.
