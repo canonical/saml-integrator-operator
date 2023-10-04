@@ -125,7 +125,7 @@ def test_saml_with_valid_tampered_signed_metadata(urlopen_mock, helpers):
     """
     arrange: mock the metadata contents so that they invalid.
     act: access the metadata properties.
-    assert: an expcetion is raised.
+    assert: an exception is raised.
     """
     metadata = Path("tests/unit/files/metadata_signed_tampered.xml").read_bytes()
     urlopen_result_mock = helpers.get_urlopen_result_mock(200, metadata)
