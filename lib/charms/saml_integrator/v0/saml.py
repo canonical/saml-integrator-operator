@@ -28,7 +28,7 @@ class SamlRequirerCharm(ops.CharmBase):
 
 ```
 
-As shown above, the library provides a custom event to handle the sceneario in
+As shown above, the library provides a custom event to handle the scenario in
 which new SAML data has been added or updated.
 
 ### Provider Charm
