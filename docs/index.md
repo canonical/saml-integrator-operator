@@ -4,15 +4,26 @@ The code is licensed under the [Apache License, version 2](https://www.apache.or
 
 For details on configuration options, see [this page](https://charmhub.io/saml-integrator/configure).
 
-## Contributing to this documentation
-
-Documentation is an important part of this project, and we take the same open-source approach to the documentation as the code. As such, we welcome community contributions, suggestions and constructive feedback on our documentation. Our documentation is hosted on the [Charmhub forum](https://discourse.charmhub.io/t/saml-integrator-documentation-overview/11293) to enable easy collaboration. Please use the "Help us improve this documentation" links on each documentation page to either directly change something you see that's wrong, ask a question, or make a suggestion about a potential change via the comments section.
-
-If there's a particular area of documentation that you'd like to see that's missing, please [file a bug](https://github.com/canonical/saml-integrator-operator/issues).
-
 ## In this documentation
 
 | | |
 |--|--|
 |  [Tutorials](https://charmhub.io/saml-integrator/docs/tutorial-getting-started)</br>  Get started - a hands-on introduction to using the SAML Integrator operator for new users </br> |  [How-to guides](https://charmhub.io/saml-integrator/docs/how-to-contibute) </br> Step-by-step guides covering key operations and common tasks |
 | [Reference](https://charmhub.io/saml-integrator/docs/reference-actions) </br> Technical information - specifications, APIs, architecture | [Explanation](https://charmhub.io/saml-integrator/docs/explanation-charm-architecture) </br> Concepts - discussion and clarification of key topics  |
+
+## Contributing to this documentation
+
+Documentation is an important part of this project, and we take the same open-source approach to the documentation as the code. As such, we welcome community contributions, suggestions and constructive feedback on our documentation. Our documentation is hosted on the [Charmhub forum](https://discourse.charmhub.io/t/saml-integrator-documentation-overview/11293) to enable easy collaboration. Please use the "Help us improve this documentation" links on each documentation page to either directly change something you see that's wrong, ask a question, or make a suggestion about a potential change via the comments section.
+
+If there's a particular area of documentation that you'd like to see that's missing, please [file a bug](https://github.com/canonical/saml-integrator-operator/issues).
+
+## Project and community
+
+The SAML Integrator Operator is a member of the Ubuntu family. It's an open source
+project that warmly welcomes community projects, contributions, suggestions,
+fixes and constructive feedback.
+* [Code of conduct](https://ubuntu.com/community/code-of-conduct)
+* [Get support](https://discourse.charmhub.io/)
+* [Join our online chat](https://chat.charmhub.io/charmhub/channels/charm-dev)
+* [Contribute](https://charmhub.io/saml-integrator/docs/how-to-contribute)
+Thinking about using the SAML Integrator for your next project? [Get in touch](https://chat.charmhub.io/charmhub/channels/charm-dev)!
