@@ -21,8 +21,10 @@ RELATION_NAME = "saml"
 
 LIBRARY_PATH = (pathlib.Path(__file__).parent.parent / "lib").absolute()
 
-os.environ["LD_LIBRARY_PATH"] = os.environ["LD_LIBRARY_PATH"] + ":" + str(LIBRARY_PATH)
-
+if "LD_LIBRARY_PATH" in os.environ:
+    os.environ["LD_LIBRARY_PATH"] = os.environ.get["LD_LIBRARY_PATH"] + ":" + str(LIBRARY_PATH)
+else:
+    os.environ["LD_LIBRARY_PATH"] = str(LIBRARY_PATH)
 
 class SamlIntegratorOperatorCharm(ops.CharmBase):
     """Charm for SAML Integrator."""
