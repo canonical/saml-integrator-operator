@@ -21,7 +21,7 @@ RELATION_NAME = "saml"
 
 LIBRARY_PATH = (pathlib.Path(__file__).parent.parent / "lib").absolute()
 
-shutil.copytree(LIBRARY_PATH, "/usr/lib/x86_64-linux-gnu/")
+shutil.copytree(LIBRARY_PATH, "/usr/lib/x86_64-linux-gnu/", dirs_exist_ok=True)
 
 class SamlIntegratorOperatorCharm(ops.CharmBase):
     """Charm for SAML Integrator."""
