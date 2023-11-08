@@ -5,8 +5,8 @@
 
 """SAML Integrator Charm service."""
 import logging
-import os
 import pathlib
+import shutil
 
 import ops
 from charms.saml_integrator.v0 import saml
@@ -21,10 +21,7 @@ RELATION_NAME = "saml"
 
 LIBRARY_PATH = (pathlib.Path(__file__).parent.parent / "lib").absolute()
 
-if "LD_LIBRARY_PATH" in os.environ:
-    os.environ["LD_LIBRARY_PATH"] = os.environ.get["LD_LIBRARY_PATH"] + ":" + str(LIBRARY_PATH)
-else:
-    os.environ["LD_LIBRARY_PATH"] = str(LIBRARY_PATH)
+shutil.copytree(LIBRARY_PATH, "/usr/lib/x86_64-linux-gnu/")
 
 class SamlIntegratorOperatorCharm(ops.CharmBase):
     """Charm for SAML Integrator."""
