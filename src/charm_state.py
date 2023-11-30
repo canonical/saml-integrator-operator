@@ -11,12 +11,6 @@ from typing import Optional
 import ops
 from pydantic import AnyHttpUrl, BaseModel, Field, ValidationError
 
-KNOWN_CHARM_CONFIG = (
-    "entity_id",
-    "fingerprint",
-    "metadata_url",
-)
-
 
 class SamlIntegratorConfig(BaseModel):  # pylint: disable=too-few-public-methods
     """Represent charm builtin configuration values.
@@ -105,10 +99,9 @@ class CharmState:
         Raises:
             CharmConfigInvalidError: if the charm configuration is invalid.
         """
-        config = {k: v for k, v in charm.config.items() if k in KNOWN_CHARM_CONFIG}
         try:
             # Incompatible with pydantic.AnyHttpUrl
-            valid_config = SamlIntegratorConfig(**config)  # type: ignore
+            valid_config = SamlIntegratorConfig(**dict(charm.config.items()))  # type: ignore
         except ValidationError as exc:
             error_fields = set(
                 itertools.chain.from_iterable(error["loc"] for error in exc.errors())

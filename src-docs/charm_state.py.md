@@ -5,9 +5,6 @@
 # <kbd>module</kbd> `charm_state.py`
 Module defining the CharmState class which represents the state of the SAML Integrator charm. 
 
-**Global Variables**
----------------
-- **KNOWN_CHARM_CONFIG**
 
 
 ---
@@ -17,7 +14,7 @@ Exception raised when a charm configuration is found to be invalid.
 
 Attrs:  msg (str): Explanation of the error. 
 
-<a href="../src/charm_state.py#L42"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/charm_state.py#L36"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>function</kbd> `__init__`
 
@@ -44,7 +41,7 @@ Represents the state of the SAML Integrator charm.
 
 Attrs:  entity_id: Entity ID for SAML.  fingerprint: fingerprint to validate the signing certificate against.  metadata_url: URL for the SAML metadata. 
 
-<a href="../src/charm_state.py#L60"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/charm_state.py#L54"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>function</kbd> `__init__`
 
@@ -101,7 +98,7 @@ Return metadata_url config.
 
 ---
 
-<a href="../src/charm_state.py#L95"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/charm_state.py#L89"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>classmethod</kbd> `from_charm`
 
