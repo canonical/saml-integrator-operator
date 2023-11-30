@@ -35,6 +35,7 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
             self._saml_integrator = SamlIntegrator(charm_state=self._charm_state)
         except CharmConfigInvalidError as exc:
             self.model.unit.status = ops.BlockedStatus(exc.msg)
+            print(exc)
             return
         self.saml = saml.SamlProvides(self)
         self.framework.observe(self.on[RELATION_NAME].relation_created, self._on_relation_created)
@@ -70,6 +71,9 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
         if not self.model.unit.is_leader():
             return
         for relation in self.saml.relations:
+            print("-----------------------------------")
+            print(self.get_saml_data())
+            print("-----------------------------------")
             self.saml.update_relation_data(relation, self.get_saml_data())
 
     def get_saml_data(self) -> saml.SamlRelationData:
@@ -78,6 +82,9 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
         Returns:
             SamlRelationData containing the IdP details.
         """
+        print(self._saml_integrator)
+        print(self._saml_integrator.certificates)
+        print(self._saml_integrator.endpoints)
         return saml.SamlRelationData(
             entity_id=self._charm_state.entity_id,
             metadata_url=self._charm_state.metadata_url,
