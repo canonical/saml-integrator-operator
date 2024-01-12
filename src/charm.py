@@ -29,7 +29,7 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
             args: Arguments passed to the CharmBase parent constructor.
         """
         super().__init__(*args)
-        self.framework.observe(self.on.start, self._on_start)
+        self.framework.observe(self.on.install, self._on_install)
         try:
             self._charm_state = CharmState.from_charm(charm=self)
             self._saml_integrator = SamlIntegrator(charm_state=self._charm_state)
@@ -41,7 +41,7 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
         self.framework.observe(self.on.config_changed, self._on_config_changed)
         self.framework.observe(self.on.update_status, self._on_update_status)
 
-    def _on_start(self, _) -> None:
+    def _on_install(self, _) -> None:
         """Install needed apt packages."""
         self.unit.status = ops.MaintenanceStatus("Installing packages")
         apt.add_package(["libssl-dev", "libxml2", "libxslt1-dev"], update_cache=True)

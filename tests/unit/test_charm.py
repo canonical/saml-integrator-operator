@@ -17,8 +17,8 @@ from charm import SamlIntegratorOperatorCharm
 def test_libs_installed(apt_add_package_mock):
     """
     arrange: set up a charm.
-    act: none.
-    assert: the charm installs libxml2.
+    act: trigger the install event.
+    assert: the charm installs required packages.
     """
     harness = Harness(SamlIntegratorOperatorCharm)
     entity_id = "https://login.staging.ubuntu.com"
@@ -30,7 +30,10 @@ def test_libs_installed(apt_add_package_mock):
         }
     )
     harness.begin()
-    harness.charm.on.start.emit()
+    # First confirm no packages have been installed.
+    apt_add_package_mock.assert_not_called()
+    harness.charm.on.install.emit()
+    # And now confirm we've installed the required packages.
     apt_add_package_mock.assert_called_once_with(
         ["libssl-dev", "libxml2", "libxslt1-dev"], update_cache=True
     )
