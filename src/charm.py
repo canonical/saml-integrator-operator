@@ -5,9 +5,10 @@
 
 """SAML Integrator Charm service."""
 import logging
+import pathlib
+import shutil
 
 import ops
-from charms.operator_libs_linux.v0 import apt
 from charms.saml_integrator.v0 import saml
 from ops.main import main
 
@@ -17,6 +18,10 @@ from saml import SamlIntegrator
 logger = logging.getLogger(__name__)
 
 RELATION_NAME = "saml"
+
+LIBRARY_PATH = (pathlib.Path(__file__).parent.parent / "lib/x86_64-linux-gnu").absolute()
+
+shutil.copytree(LIBRARY_PATH, "/usr/lib/x86_64-linux-gnu/", dirs_exist_ok=True)
 
 
 class SamlIntegratorOperatorCharm(ops.CharmBase):
@@ -44,7 +49,6 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
     def _on_install(self, _) -> None:
         """Install needed apt packages."""
         self.unit.status = ops.MaintenanceStatus("Installing packages")
-        apt.add_package(["libssl-dev", "libxml2", "libxslt1-dev"], update_cache=True)
         self.unit.status = ops.ActiveStatus()
 
     def _on_relation_created(self, _) -> None:
