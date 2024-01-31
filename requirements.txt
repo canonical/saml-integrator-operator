@@ -1,4 +1,4 @@
 lxml==4.9.4
-ops==2.9.0
+ops==2.10.0
 pydantic==1.10.14
 signxml==3.2.2
