@@ -56,6 +56,8 @@ class SamlRequirerCharm(ops.CharmBase):
 The SamlProvides object wraps the list of relations into a `relations` property
 and provides an `update_relation_data` method to update the relation data by passing
 a `SamlRelationData` data object.
+Additionally, SamlRelationData can be used to directly parse the relation data with the
+class method `from_relation_data`.
 """
 
 # The unique Charmhub library identifier, never change it
