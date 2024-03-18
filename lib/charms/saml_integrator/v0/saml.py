@@ -297,7 +297,8 @@ class SamlRequires(ops.Object):
             SmtpRelationData: the relation data.
         """
         relation = self.model.get_relation(self.relation_name)
-        assert relation
+        if not relation:
+            return None
         assert relation.data
         assert relation.app
         return SamlRelationData.from_relation_data(relation.data[relation.app])
