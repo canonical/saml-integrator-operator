@@ -14,5 +14,6 @@ bases:
 parts:
   charm:
     charm-binary-python-packages:
-      - lxml==4.9.4
-      - signxml==3.2.2
+      - --requirement==requirements-binary.txt
+    charm-requirements:
+      - requirements-non-binary.txt
