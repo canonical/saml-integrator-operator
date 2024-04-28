@@ -13,8 +13,8 @@ bases:
       channel: "22.04"
 parts:
   charm:
+    charm-binary-python-packages:
+    - lxml==5.2.1
+    - signxml==3.2.2
     charm-requirements:
-    - requirements-non-binary.txt
-    override-build: |
-      craftctl default
-      $CRAFT_PART_BUILD/staging-venv/bin/pip install -U -r requirements-binary.txt
+    - requirements-no-binary.txt
