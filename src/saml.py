@@ -5,19 +5,17 @@
 import base64
 import hashlib
 import logging
+import pathlib
 import secrets
 import urllib.request
 from functools import cached_property
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+import signxml
 from charms.saml_integrator.v0 import saml
+from lxml import etree
 
 from charm_state import CharmConfigInvalidError, CharmState
-
-if TYPE_CHECKING:  # pragma: nocover
-    # Bandit classifies this import as vulnerable. For more details, see
-    # https://github.com/PyCQA/bandit/issues/767
-    from lxml import etree  # nosec
 
 logger = logging.getLogger(__name__)
 
@@ -80,9 +78,6 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         Raises:
             CharmConfigInvalidError: if the metadata URL or the metadata itself is invalid.
         """
-        # Lazy importing. Required deb packages won't be present on charm startup
-        import signxml
-
         if self._charm_state.fingerprint and (
             not self.signing_certificate
             or not secrets.compare_digest(
