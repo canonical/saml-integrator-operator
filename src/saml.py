@@ -5,7 +5,6 @@
 import base64
 import hashlib
 import logging
-import pathlib
 import secrets
 import urllib.request
 from functools import cached_property
@@ -49,9 +48,6 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         Raises:
             CharmConfigInvalidError: if the metadata URL can't be parsed.
         """
-        # Lazy importing. Required deb packages won't be present on charm startup
-        from lxml import etree  # nosec
-
         try:
             with urllib.request.urlopen(
                 self._charm_state.metadata_url, timeout=10
@@ -154,9 +150,6 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         Returns:
             List of endpoints.
         """
-        # Lazy importing. Required deb packages won't be present on charm startup
-        from lxml import etree  # nosec
-
         tree = self.tree
         results = tree.xpath(
             (
