@@ -85,7 +85,7 @@ def test_relation_joined_when_leader(urlopen_mock):
     act: add a relation.
     assert: the relation get populated with the SAML data.
     """
-    metadata = Path("tests/unit/files/metadata_default_namespaces.xml").read_bytes()
+    metadata = Path("tests/unit/files/metadata_unsigned.xml").read_bytes()
     urlopen_result_mock = MagicMock()
     urlopen_result_mock.getcode.return_value = 200
     urlopen_result_mock.read.return_value = metadata
@@ -107,7 +107,6 @@ def test_relation_joined_when_leader(urlopen_mock):
     assert harness.model.unit.status == ops.ActiveStatus()
     harness.add_relation("saml", "indico")
     data = harness.model.get_relation("saml").data[harness.model.app]
-    print(data)
     assert data["entity_id"] == harness.charm._charm_state.entity_id
     assert data["metadata_url"] == harness.charm._charm_state.metadata_url
     assert data["x509certs"] == ",".join(harness.charm._saml_integrator.certificates)
