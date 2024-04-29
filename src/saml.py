@@ -12,7 +12,9 @@ from typing import Optional
 
 import signxml
 from charms.saml_integrator.v0 import saml
-from lxml import etree
+
+# lxml is used with trusted input in here
+from lxml import etree  # nosec
 
 from charm_state import CharmConfigInvalidError, CharmState
 
