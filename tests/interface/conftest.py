@@ -5,7 +5,6 @@
 
 from unittest import mock
 
-import ops
 import pytest
 from charms.saml_integrator.v0.saml import SamlEndpoint
 from interface_tester.plugin import InterfaceTester
