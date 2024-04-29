@@ -1,2 +1,2 @@
 -r requirements-binary.txt
--r requirements-non-binary.txt
+-r requirements-no-binary.txt
