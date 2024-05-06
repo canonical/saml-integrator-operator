@@ -13,17 +13,9 @@ bases:
       channel: "22.04"
 parts:
   charm:
-    build-packages:
-    - build-essential
-    - cargo
-    - libffi-dev
-    - libssl-dev
-    - libxml2
-    - libxslt1-dev
-    - pkg-config
-    - python3-lxml
-    - python3-openssl
-    - python3-pip
-    - python3-setuptools
-    - python3-wheel
-    - rustc
+    charm-binary-python-packages:
+    # must keep in sync with requirements-binary.txt
+    - lxml==5.2.1
+    - signxml==3.2.2
+    charm-requirements:
+    - requirements-no-binary.txt

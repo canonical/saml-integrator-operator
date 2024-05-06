@@ -7,36 +7,10 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import ops
-from charms.operator_libs_linux.v0 import apt
+import yaml
 from ops.testing import Harness
 
 from charm import SamlIntegratorOperatorCharm
-
-
-@patch.object(apt, "add_package")
-def test_libs_installed(apt_add_package_mock):
-    """
-    arrange: set up a charm.
-    act: trigger the install event.
-    assert: the charm installs required packages.
-    """
-    harness = Harness(SamlIntegratorOperatorCharm)
-    entity_id = "https://login.staging.ubuntu.com"
-    metadata_url = "https://login.staging.ubuntu.com/saml/metadata"
-    harness.update_config(
-        {
-            "entity_id": entity_id,
-            "metadata_url": metadata_url,
-        }
-    )
-    harness.begin()
-    # First confirm no packages have been installed.
-    apt_add_package_mock.assert_not_called()
-    harness.charm.on.install.emit()
-    # And now confirm we've installed the required packages.
-    apt_add_package_mock.assert_called_once_with(
-        ["libssl-dev", "libxml2", "libxslt1-dev"], update_cache=True
-    )
 
 
 def test_misconfigured_charm_reaches_blocked_status():
@@ -183,3 +157,47 @@ def test_relation_joined_when_not_leader(urlopen_mock):
     harness.add_relation("saml", "indico")
     data = harness.model.get_relation("saml").data[harness.model.app]
     assert data == {}
+
+
+@patch("urllib.request.urlopen")
+def test_relation_refresh_on_update_status(urlopen_mock):
+    """
+    arrange: set up a configured charm and set leadership for the unit.
+    act: add a relation.
+    assert: the relation get populated with the SAML data.
+    """
+    metadata = Path("tests/unit/files/metadata_unsigned.xml").read_bytes()
+    urlopen_result_mock = MagicMock()
+    urlopen_result_mock.getcode.return_value = 200
+    urlopen_result_mock.read.return_value = metadata
+    urlopen_result_mock.__enter__.return_value = urlopen_result_mock
+    urlopen_mock.return_value = urlopen_result_mock
+
+    harness = Harness(SamlIntegratorOperatorCharm)
+    harness.set_leader(True)
+    entity_id = "https://login.staging.ubuntu.com"
+    metadata_url = "https://login.staging.ubuntu.com/saml/metadata"
+    harness.update_config(
+        {
+            "entity_id": entity_id,
+            "metadata_url": metadata_url,
+        }
+    )
+    harness.begin()
+    harness.charm.on.update_status.emit()
+    harness.add_relation("saml", "indico")
+    data = harness.model.get_relation("saml").data[harness.model.app]
+    assert data["entity_id"] == harness.charm._charm_state.entity_id
+
+
+def test_charmcraft_dependency_in_sync():
+    """
+    arrange: none.
+    act: none.
+    assert: the charm-binary-python-packages of charmcraft.yaml charm part is in sync with the
+        requirements-binary.txt file.
+    """
+    root = Path(__file__).parent.parent.parent
+    charmcraft_yaml = yaml.safe_load((root / "charmcraft.yaml").read_text())
+    requirements = set((root / "requirements-binary.txt").read_text().splitlines())
+    assert set(charmcraft_yaml["parts"]["charm"]["charm-binary-python-packages"]) == requirements
