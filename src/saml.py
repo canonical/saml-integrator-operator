@@ -6,7 +6,6 @@ import base64
 import hashlib
 import logging
 import secrets
-import urllib.request
 from functools import cached_property
 from typing import TYPE_CHECKING, Optional
 
@@ -55,20 +54,9 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         from lxml import etree  # nosec
 
         try:
-            with urllib.request.urlopen(
-                self._charm_state.metadata_url, timeout=10
-            ) as resource:  # nosec
-                raw_data = resource.read()
-                tree = etree.fromstring(raw_data)  # nosec
-                return tree
-        except urllib.error.URLError as ex:
-            raise CharmConfigInvalidError(
-                f"Error while retrieving data from {self._charm_state.metadata_url}"
-            ) from ex
+            return etree.fromstring(self._charm_state.metadata)  # nosec
         except etree.XMLSyntaxError as ex:
-            raise CharmConfigInvalidError(
-                f"Data from {self._charm_state.metadata_url} can't be parsed"
-            ) from ex
+            raise CharmConfigInvalidError("Metadata can't be parsed") from ex
 
     @cached_property
     def tree(self) -> "etree.ElementTree":
