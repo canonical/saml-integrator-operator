@@ -39,6 +39,32 @@ def test_libs_installed(apt_add_package_mock):
     )
 
 
+@patch.object(apt, "add_package")
+def test_libs_installed_on_upgrade(apt_add_package_mock):
+    """
+    arrange: set up a charm.
+    act: trigger the upgrade-charm event.
+    assert: the charm installs required packages.
+    """
+    harness = Harness(SamlIntegratorOperatorCharm)
+    entity_id = "https://login.staging.ubuntu.com"
+    metadata_url = "https://login.staging.ubuntu.com/saml/metadata"
+    harness.update_config(
+        {
+            "entity_id": entity_id,
+            "metadata_url": metadata_url,
+        }
+    )
+    harness.begin()
+    # First confirm no packages have been installed.
+    apt_add_package_mock.assert_not_called()
+    harness.charm.on.upgrade_charm.emit()
+    # And now confirm we've installed the required packages.
+    apt_add_package_mock.assert_called_once_with(
+        ["libssl-dev", "libxml2", "libxslt1-dev"], update_cache=True
+    )
+
+
 def test_misconfigured_charm_reaches_blocked_status():
     """
     arrange: set up a charm.
