@@ -58,7 +58,7 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
             with urllib.request.urlopen(
                 self._charm_state.metadata_url, timeout=10
             ) as resource:  # nosec
-                raw_data = resource.read().decode("utf-8")
+                raw_data = resource.read()
                 tree = etree.fromstring(raw_data)  # nosec
                 return tree
         except urllib.error.URLError as ex:
@@ -87,10 +87,12 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
             not self.signing_certificate
             or not secrets.compare_digest(
                 hashlib.sha256(base64.b64decode(self.signing_certificate)).hexdigest(),
-                self._charm_state.fingerprint.replace(":", "").replace(" ", ""),
+                self._charm_state.fingerprint.replace(":", "").replace(" ", "").lower(),
             )
         ):
-            raise CharmConfigInvalidError("The metadata signature does not match the provided one")
+            raise CharmConfigInvalidError(
+                "The metadata's signing certificate does not match the provided fingerprint"
+            )
         tree = self._read_tree()
         if self.signing_certificate and self.signature:
             # The metadata can be tampered unless the metadata contents used are signed. To prevent

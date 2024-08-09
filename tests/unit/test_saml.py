@@ -86,7 +86,7 @@ def test_saml_with_valid_signed_metadata(urlopen_mock):
         charm_state = MagicMock(
             entity_id=entity_id,
             fingerprint=(
-                "1c:73:51:f2:23:55:f8:3d:25:7e:65:56:dd:f1:a9:17:fe:d4:af"
+                "1C:73:51:f2:23:55:f8:3d:25:7e:65:56:dd:f1:a9:17:fe:d4:af"
                 ":dc:70:d2:a8:11:b3:2f:d2:ea:c4:6d:91:e7"
             ),
             metadata_url=metadata_url,
@@ -218,6 +218,57 @@ def test_saml_with_valid_unsigned_metadata(urlopen_mock):
         assert endpoints[1].name == "SingleSignOnService"
         assert endpoints[1].binding == "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Post"
         assert endpoints[1].url == "https://login.staging.ubuntu.com/saml/"
+        assert endpoints[1].response_url is None
+
+
+@patch("urllib.request.urlopen")
+def test_saml_with_valid_unsigned_metadata_non_utf8(urlopen_mock):
+    """
+    arrange: mock the metadata contents so that they invalid.
+    act: access the metadata properties.
+    assert: the properties are populated as defined in the metadata.
+    """
+    with open("tests/unit/files/non_utf8_metadata_unsigned.xml", "rb") as metadata:
+        urlopen_result_mock = get_urlopen_result_mock(200, metadata.read())
+        urlopen_result_mock.__enter__.return_value = urlopen_result_mock
+        urlopen_mock.return_value = urlopen_result_mock
+
+        entity_id = "https://accounts.google.com/o/saml2?idpid=C03oypjtr"
+        metadata_url = "https://accounts.google.com/samlrp/metadata?idpid=C03oypjtr"
+        charm_state = MagicMock(
+            entity_id=entity_id,
+            fingerprint="",
+            metadata_url=metadata_url,
+        )
+        saml_integrator = SamlIntegrator(charm_state=charm_state)
+        certificate = (
+            "MIIDdDCCAlygAwIBAgIGAYdLBPyWMA0GCSqGSIb3DQEBCwUAMHsxFDASBgNVBAoTC0dvb2dsZSBJ"
+            "bmMuMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MQ8wDQYDVQQDEwZHb29nbGUxGDAWBgNVBAsTD0dv"
+            "b2dsZSBGb3IgV29yazELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWEwHhcNMjMwNDA0"
+            "MDY0NzA5WhcNMjgwNDAyMDY0NzA5WjB7MRQwEgYDVQQKEwtHb29nbGUgSW5jLjEWMBQGA1UEBxMN"
+            "TW91bnRhaW4gVmlldzEPMA0GA1UEAxMGR29vZ2xlMRgwFgYDVQQLEw9Hb29nbGUgRm9yIFdvcmsx"
+            "CzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8A"
+            "MIIBCgKCAQEApl6vmP6rt86m6I3dojHeT7bodIlDU3UnE2y1Hpqc6xlq0Kxv3ZcVrZX1dX/UC4NY"
+            "CTlumUrEoVzERKRU1aGqBuk9QqvMpkf25jiWEetDly7IVJAq8behjq+801KzU3Kn1s830+czzQuH"
+            "oVA9KlWwL6FSbCjmNKlAQ8qqcyQ3C1HlVF0x489/kfgZFw6sSX1sTZHgG0vw2E8xGdjRdtVVEgQG"
+            "uWzLvcpWAPAK6IqzY5e9xETXN8au04SqnVWfUi19f4w8kCh3T8LIakmvm09lxYajndKCQvYrPnq+"
+            "YpVwHiufnHxkVMb4claFFgX+gNDyEWbGDIi8yOQnKeUHnpCKGQIDAQABMA0GCSqGSIb3DQEBCwUA"
+            "A4IBAQBZJnZzQilSlH3N2UCoJ1G9Me47NdZIs1HyQZNMtzbXwS+Z5Ek05loKFj75D3R094dtn4RC"
+            "1pM5BQjBProMG5UbtQKVKbM8SjQgj23UWuuc6YXDok9lqtWuGwpOSNYUU75K/7vdVCFdG2urtms2"
+            "ueZ2D8bA3nDhsgHAhc6YJM3TqatcFHRGTNlwkKl71GYMWYM3JKNEZAfU7zhjicXYhW7t3+Hj6TJC"
+            "ChYw2B+hfOv0W324BZyyZW8X3m5CWVlCWxBKfIo3NJ+gg/dGbkuPIbzdV197LSuxkArm/7rMbxwe"
+            "KNL8a7w5HN3iCi27GlKpmj4n5uMnDpRDk81hrvyew2Rp"
+        )
+        assert saml_integrator.certificates == [certificate]
+        endpoints = saml_integrator.endpoints
+        assert len(endpoints) == 2
+        assert endpoints[0].name == "SingleSignOnService"
+        assert endpoints[0].binding == "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+        assert endpoints[0].url == "https://accounts.google.com/o/saml2/idp?idpid=C03oypjtr"
+        assert endpoints[0].response_url is None
+        assert endpoints[1].name == "SingleSignOnService"
+        assert endpoints[1].binding == "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+        assert endpoints[1].url == "https://accounts.google.com/o/saml2/idp?idpid=C03oypjtr"
         assert endpoints[1].response_url is None
 
 
