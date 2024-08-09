@@ -17,6 +17,7 @@ from saml import SamlIntegrator
 logger = logging.getLogger(__name__)
 
 RELATION_NAME = "saml"
+REQUIRED_PACKAGES = ["libssl-dev", "libxml2", "libxslt1-dev"]
 
 
 class SamlIntegratorOperatorCharm(ops.CharmBase):
@@ -30,6 +31,7 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
         """
         super().__init__(*args)
         self.framework.observe(self.on.install, self._on_install)
+        self.framework.observe(self.on.upgrade_charm, self._on_upgrade_charm)
         try:
             self._charm_state = CharmState.from_charm(charm=self)
             self._saml_integrator = SamlIntegrator(charm_state=self._charm_state)
@@ -44,7 +46,13 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
     def _on_install(self, _) -> None:
         """Install needed apt packages."""
         self.unit.status = ops.MaintenanceStatus("Installing packages")
-        apt.add_package(["libssl-dev", "libxml2", "libxslt1-dev"], update_cache=True)
+        apt.add_package(REQUIRED_PACKAGES, update_cache=True)
+        self.unit.status = ops.ActiveStatus()
+
+    def _on_upgrade_charm(self, _) -> None:
+        """Install needed apt packages."""
+        self.unit.status = ops.MaintenanceStatus("Installing packages")
+        apt.add_package(REQUIRED_PACKAGES, update_cache=True)
         self.unit.status = ops.ActiveStatus()
 
     def _on_relation_created(self, _) -> None:
