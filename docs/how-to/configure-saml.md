@@ -4,4 +4,4 @@ To configure the SAML Integrator integration you'll have to set the following co
 
 Two configuration values are mandatory, the SAML metadata URL that needs to be specified in `metadata_url` and the entity ID, in `entity_id`.
 
-For more details on the configuration options and their default values see the [configuration reference](https://charmhub.io/saml-integrator/configure).
+For more details on the configuration options and their default values see the [configuration reference](https://charmhub.io/saml-integrator/configuration).
