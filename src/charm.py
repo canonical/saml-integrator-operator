@@ -43,7 +43,7 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
         self.framework.observe(self.on.update_status, self._on_update_status)
 
     def _on_install(self, _) -> None:
-        """Install needed apt packages."""
+        """Handle the install event."""
         self.unit.status = ops.MaintenanceStatus("Installing packages")
         self._install_apt_packages()
         self.unit.status = ops.ActiveStatus()
