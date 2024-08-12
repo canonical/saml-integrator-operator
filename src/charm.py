@@ -31,7 +31,6 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
         """
         super().__init__(*args)
         self.framework.observe(self.on.install, self._on_install)
-        self.framework.observe(self.on.upgrade_charm, self._on_upgrade_charm)
         try:
             self._charm_state = CharmState.from_charm(charm=self)
             self._saml_integrator = SamlIntegrator(charm_state=self._charm_state)
@@ -46,13 +45,7 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
     def _on_install(self, _) -> None:
         """Install needed apt packages."""
         self.unit.status = ops.MaintenanceStatus("Installing packages")
-        apt.add_package(REQUIRED_PACKAGES, update_cache=True)
-        self.unit.status = ops.ActiveStatus()
-
-    def _on_upgrade_charm(self, _) -> None:
-        """Install needed apt packages."""
-        self.unit.status = ops.MaintenanceStatus("Installing packages")
-        apt.add_package(REQUIRED_PACKAGES, update_cache=True)
+        self._install_apt_packages()
         self.unit.status = ops.ActiveStatus()
 
     def _on_relation_created(self, _) -> None:
@@ -70,8 +63,19 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
     def _on_config_changed(self, _) -> None:
         """Handle changes in configuration."""
         self.unit.status = ops.MaintenanceStatus("Configuring charm")
-        self._update_relations()
+        try:
+            self._update_relations()
+        except ImportError:
+            # If we've upgraded the charm, or the container gets restarted it
+            # may not have the required packages, so ensure that's always the
+            # case.
+            self._install_apt_packages()
+            self._update_relations()
         self.unit.status = ops.ActiveStatus()
+
+    def _install_apt_packages(self) -> None:
+        """Install needed apt packages."""
+        apt.add_package(REQUIRED_PACKAGES, update_cache=True)
 
     def _update_relations(self) -> None:
         """Update all SAML data for the existing relations."""
