@@ -16,7 +16,6 @@ from saml import SamlIntegrator
 logger = logging.getLogger(__name__)
 
 RELATION_NAME = "saml"
-REQUIRED_PACKAGES = ["libssl-dev", "libxml2", "libxslt1-dev"]
 
 
 class SamlIntegratorOperatorCharm(ops.CharmBase):
@@ -55,19 +54,8 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
     def _on_config_changed(self, _) -> None:
         """Handle changes in configuration."""
         self.unit.status = ops.MaintenanceStatus("Configuring charm")
-        try:
-            self._update_relations()
-        except ImportError:
-            # If we've upgraded the charm, or the container gets restarted it
-            # may not have the required packages, so ensure that's always the
-            # case.
-            self._install_apt_packages()
-            self._update_relations()
+        self._update_relations()
         self.unit.status = ops.ActiveStatus()
-
-    def _install_apt_packages(self) -> None:
-        """Install needed apt packages."""
-        apt.add_package(REQUIRED_PACKAGES, update_cache=True)
 
     def _update_relations(self) -> None:
         """Update all SAML data for the existing relations."""

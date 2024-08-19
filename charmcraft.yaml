@@ -6,16 +6,26 @@
 type: "charm"
 bases:
   - build-on:
-    - name: "ubuntu"
-      channel: "22.04"
+      - name: "ubuntu"
+        channel: "22.04"
     run-on:
-    - name: "ubuntu"
-      channel: "22.04"
+      - name: "ubuntu"
+        channel: "22.04"
 parts:
   charm:
-    charm-binary-python-packages:
-    # must keep in sync with requirements-binary.txt
-    - lxml==5.2.1
-    - signxml==3.2.2
+    build-packages:
+      - libxml2-dev
+      - libxslt-dev
+      - python3-dev
+      - libffi-dev
+      - libssl-dev
+      - pkg-config
+    build-snaps:
+      - rustup
     charm-requirements:
-    - requirements-no-binary.txt
+      - requirements-no-binary.txt
+    override-build: |
+      rustup default stable
+      craftctl default
+      export STATIC_DEPS=true
+      $CRAFT_PART_BUILD/staging-venv/bin/pip install --no-binary :all: -r requirements-binary.txt
