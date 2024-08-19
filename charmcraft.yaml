@@ -23,9 +23,12 @@ parts:
     build-snaps:
       - rustup
     charm-requirements:
-      - requirements-no-binary.txt
+      - requirements-charmcraft.txt
     override-build: |
       rustup default stable
       craftctl default
-      export STATIC_DEPS=true
-      $CRAFT_PART_BUILD/staging-venv/bin/pip install --no-binary :all: -r requirements-binary.txt
+      # charmcraft filters all environment variables, build static linked variant of lxml here
+      export CFLAGS="-O3 -g1 -pipe -fPIC -flto"
+      export LDFLAGS="-fPIC -flto"
+      export STATIC_DEPS="true"
+      $CRAFT_PART_BUILD/staging-venv/bin/pip install --no-binary :all: -r requirements-static.txt
