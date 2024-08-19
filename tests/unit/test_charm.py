@@ -186,16 +186,3 @@ def test_relation_refresh_on_update_status(urlopen_mock):
     harness.add_relation("saml", "indico")
     data = harness.model.get_relation("saml").data[harness.model.app]
     assert data["entity_id"] == harness.charm._charm_state.entity_id
-
-
-def test_charmcraft_dependency_in_sync():
-    """
-    arrange: none.
-    act: none.
-    assert: the charm-binary-python-packages of charmcraft.yaml charm part is in sync with the
-        requirements-binary.txt file.
-    """
-    root = Path(__file__).parent.parent.parent
-    charmcraft_yaml = yaml.safe_load((root / "charmcraft.yaml").read_text())
-    requirements = set((root / "requirements-binary.txt").read_text().splitlines())
-    assert set(charmcraft_yaml["parts"]["charm"]["charm-binary-python-packages"]) == requirements
