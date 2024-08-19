@@ -4,10 +4,9 @@
 """SAML Integrator Charm unit tests."""
 # pylint: disable=protected-access
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import ops
-import yaml
 from ops.testing import Harness
 
 from charm import SamlIntegratorOperatorCharm
@@ -42,7 +41,7 @@ def test_update_status():
     harness.begin()
     with patch("charm.SamlIntegratorOperatorCharm._update_relations") as update_relations_mock:
         harness.charm.on.update_status.emit()
-        assert update_relations_mock.called_once()
+        update_relations_mock.assert_called_once()
 
 
 def test_charm_reaches_active_status():
