@@ -1,2 +1,2 @@
--r requirements-binary.txt
--r requirements-no-binary.txt
+-r requirements-charmcraft.txt
+-r requirements-static.txt
