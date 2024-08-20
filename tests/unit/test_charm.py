@@ -4,7 +4,7 @@
 """SAML Integrator Charm unit tests."""
 # pylint: disable=protected-access
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import ops
 from ops.testing import Harness
