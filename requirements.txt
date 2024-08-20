@@ -1,2 +1,2 @@
 -r requirements-charmcraft.txt
--r requirements-static.txt
+-r requirements-lxml.txt

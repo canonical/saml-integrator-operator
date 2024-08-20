@@ -28,7 +28,7 @@ parts:
       rustup default stable
       craftctl default
       ls -lah $CRAFT_PART_INSTALL/venv
-      # charmcraft filters all environment variables, build static linked variant of lxml here
+      # charmcraft filters all environment variables, build statically linked variant of lxml here
       CFLAGS="-O3 -g1 -pipe -fPIC -flto" \
         LDFLAGS="-fPIC -flto" \
         STATIC_DEPS="true" \
@@ -36,6 +36,7 @@ parts:
         install --target $CRAFT_PART_INSTALL/venv -v \
         --no-binary :all: \
         $(grep lxml requirements-static.txt)
+      # install all remaining packages depends on lxml
       $CRAFT_PART_BUILD/staging-venv/bin/pip \
         install --target $CRAFT_PART_INSTALL/venv -v \
         --no-binary :all: \
