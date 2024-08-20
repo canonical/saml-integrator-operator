@@ -7,16 +7,16 @@ import hashlib
 import logging
 import secrets
 from functools import cached_property
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+import signxml
 from charms.saml_integrator.v0 import saml
 
-from charm_state import CharmConfigInvalidError, CharmState
+# Bandit classifies this import as vulnerable. For more details, see
+# https://github.com/PyCQA/bandit/issues/767
+from lxml import etree  # nosec
 
-if TYPE_CHECKING:  # pragma: nocover
-    # Bandit classifies this import as vulnerable. For more details, see
-    # https://github.com/PyCQA/bandit/issues/767
-    from lxml import etree  # nosec
+from charm_state import CharmConfigInvalidError, CharmState
 
 logger = logging.getLogger(__name__)
 
@@ -50,9 +50,6 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         Raises:
             CharmConfigInvalidError: if the metadata URL can't be parsed.
         """
-        # Lazy importing. Required deb packages won't be present on charm startup
-        from lxml import etree  # nosec
-
         try:
             return etree.fromstring(self._charm_state.metadata)  # nosec
         except etree.XMLSyntaxError as ex:
@@ -68,9 +65,6 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         Raises:
             CharmConfigInvalidError: if the metadata URL or the metadata itself is invalid.
         """
-        # Lazy importing. Required deb packages won't be present on charm startup
-        import signxml
-
         if self._charm_state.fingerprint and (
             not self.signing_certificate
             or not secrets.compare_digest(
@@ -149,9 +143,6 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         Returns:
             List of endpoints.
         """
-        # Lazy importing. Required deb packages won't be present on charm startup
-        from lxml import etree  # nosec
-
         tree = self.tree
         results = tree.xpath(
             (

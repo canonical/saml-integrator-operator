@@ -5,7 +5,6 @@
 
 from unittest import mock
 
-import ops
 import pytest
 from charms.saml_integrator.v0.saml import SamlEndpoint
 from interface_tester.plugin import InterfaceTester
@@ -23,12 +22,6 @@ from charm import SamlIntegratorOperatorCharm
 # to include the new identifier/location.
 @pytest.fixture
 def interface_tester(interface_tester: InterfaceTester, monkeypatch: pytest.MonkeyPatch):
-    def _on_install_patched(self, _) -> None:
-        """Patched start event handler."""
-        self.unit.status = ops.ActiveStatus()
-
-    monkeypatch.setattr(SamlIntegratorOperatorCharm, "_on_install", _on_install_patched)
-
     sso_endpoint = SamlEndpoint(
         name="SingleSignOnService",
         url="https://login.staging.ubuntu.com/saml/",
