@@ -35,7 +35,7 @@ parts:
         $CRAFT_PART_BUILD/staging-venv/bin/pip \
         install --target $CRAFT_PART_INSTALL/venv -v \
         --no-binary :all: \
-        $(grep lxml requirements-static.txt)
+        $(grep lxml requirements-lxml.txt)
       # install all remaining packages depends on lxml
       $CRAFT_PART_BUILD/staging-venv/bin/pip \
         install --target $CRAFT_PART_INSTALL/venv -v \
