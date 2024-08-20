@@ -27,9 +27,16 @@ parts:
     override-build: |
       rustup default stable
       craftctl default
-      # charmcraft filters all environment variables, build static linked variant of lxml here
-      export CFLAGS="-O3 -g1 -pipe -fPIC -flto"
-      export LDFLAGS="-fPIC -flto"
-      export STATIC_DEPS="true"
       ls -lah $CRAFT_PART_INSTALL/venv
-      $CRAFT_PART_BUILD/staging-venv/bin/pip install --target $CRAFT_PART_INSTALL/venv --no-binary :all: -r requirements-static.txt
+      # charmcraft filters all environment variables, build static linked variant of lxml here
+      CFLAGS="-O3 -g1 -pipe -fPIC -flto" \
+        LDFLAGS="-fPIC -flto" \
+        STATIC_DEPS="true" \
+        $CRAFT_PART_BUILD/staging-venv/bin/pip \
+        install --target $CRAFT_PART_INSTALL/venv -v \
+        --no-binary :all: \
+        $(grep lxml requirements-static.txt)
+      $CRAFT_PART_BUILD/staging-venv/bin/pip \
+        install --target $CRAFT_PART_INSTALL/venv -v \
+        --no-binary :all: \
+        -r requirements-static.txt
