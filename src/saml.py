@@ -12,7 +12,8 @@ from typing import Optional
 import signxml
 from charms.saml_integrator.v0 import saml
 
-# lxml is used with trusted input in here
+# Bandit classifies this import as vulnerable. For more details, see
+# https://github.com/PyCQA/bandit/issues/767
 from lxml import etree  # nosec
 
 from charm_state import CharmConfigInvalidError, CharmState
