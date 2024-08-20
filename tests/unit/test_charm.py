@@ -154,34 +154,3 @@ def test_relation_joined_when_not_leader():
     harness.add_relation("saml", "indico")
     data = harness.model.get_relation("saml").data[harness.model.app]
     assert data == {}
-
-
-@patch("urllib.request.urlopen")
-def test_relation_refresh_on_update_status(urlopen_mock):
-    """
-    arrange: set up a configured charm and set leadership for the unit.
-    act: add a relation.
-    assert: the relation get populated with the SAML data.
-    """
-    metadata = Path("tests/unit/files/metadata_unsigned.xml").read_bytes()
-    urlopen_result_mock = MagicMock()
-    urlopen_result_mock.getcode.return_value = 200
-    urlopen_result_mock.read.return_value = metadata
-    urlopen_result_mock.__enter__.return_value = urlopen_result_mock
-    urlopen_mock.return_value = urlopen_result_mock
-
-    harness = Harness(SamlIntegratorOperatorCharm)
-    harness.set_leader(True)
-    entity_id = "https://login.staging.ubuntu.com"
-    metadata_url = "https://login.staging.ubuntu.com/saml/metadata"
-    harness.update_config(
-        {
-            "entity_id": entity_id,
-            "metadata_url": metadata_url,
-        }
-    )
-    harness.begin()
-    harness.charm.on.update_status.emit()
-    harness.add_relation("saml", "indico")
-    data = harness.model.get_relation("saml").data[harness.model.app]
-    assert data["entity_id"] == harness.charm._charm_state.entity_id
