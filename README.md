@@ -19,10 +19,9 @@ You can follow the tutorial [here](https://charmhub.io/saml-integrator/docs/tuto
 
 ## Learn more
 * [Read more](https://charmhub.io/saml-integrator)
-* [Developer documentation](https://charmhub.io/saml-integrator/docs)
-* [Troubleshooting](https://chat.charmhub.io/charmhub/channels/charm-dev)
+* [SAML specification](https://www.oasis-open.org/standard/saml/)
 
 ## Project and community
 * [Issues](https://github.com/canonical/saml-integrator-operator/issues)
 * [Contributing](https://charmhub.io/saml-integrator/docs/how-to-contribute)
-* [Matrix](https://chat.charmhub.io/charmhub/channels/charm-dev)
+* [Matrix](https://matrix.to/#/#charmhub-charmdev:ubuntu.com)
