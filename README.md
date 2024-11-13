@@ -20,6 +20,7 @@ You can follow the tutorial [here](https://charmhub.io/saml-integrator/docs/tuto
 ## Learn more
 * [Read more](https://charmhub.io/saml-integrator)
 * [SAML specification](https://www.oasis-open.org/standard/saml/)
+* [Troubleshooting](https://matrix.to/#/#charmhub-charmdev:ubuntu.com)
 
 ## Project and community
 * [Issues](https://github.com/canonical/saml-integrator-operator/issues)
