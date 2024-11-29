@@ -99,7 +99,7 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
         }
 
     @cached_property
-    def signing_certificate(self) -> str | None:
+    def signing_certificate(self) -> Optional[str]:
         """Return the signing certificate for the metadata, if any."""
         tree = self._read_tree()
         signing_certificates = tree.xpath(
