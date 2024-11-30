@@ -27,3 +27,17 @@ fixes and constructive feedback.
 * [Join our online chat](https://chat.charmhub.io/charmhub/channels/charm-dev)
 * [Contribute](https://charmhub.io/saml-integrator/docs/how-to-contribute)
 Thinking about using the SAML Integrator for your next project? [Get in touch](https://chat.charmhub.io/charmhub/channels/charm-dev)!
+
+# Contents
+
+1. [Tutorial](tutorial)
+  1. [Getting Started](tutorial/getting-started.md)
+1. [How to](how-to)
+  1. [Contribute](how-to/contribute.md)
+  1. [Configure SAML](how-to/configure-saml.md)
+1. [Reference](reference)
+  1. [Actions](reference/actions.md)
+  1. [Configurations](reference/configurations.md)
+  1. [Integrations](reference/integrations.md)
+1. [Explanation](explanation)
+  1. [Charm architecture](explanation/charm-architecture.md)
