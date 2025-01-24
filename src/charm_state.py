@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
-# Copyright 2023 Canonical Ltd.
+# Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
 """Module defining the CharmState class which represents the state of the SAML Integrator charm."""
 
 import itertools
+import urllib
 from typing import Optional
 
 import ops
@@ -16,14 +17,16 @@ class SamlIntegratorConfig(BaseModel):  # pylint: disable=too-few-public-methods
     """Represent charm builtin configuration values.
 
     Attrs:
-        entity_id: Entity ID.
+        entity_id: entity ID.
         fingerprint: fingerprint to validate the signing certificate against.
-        metadata_url: Metadata URL.
+        metadata: metadata.
+        metadata_url: metadata URL.
     """
 
     entity_id: str = Field(..., min_length=1)
     fingerprint: Optional[str]
-    metadata_url: AnyHttpUrl
+    metadata: Optional[str]
+    metadata_url: Optional[AnyHttpUrl]
 
 
 class CharmConfigInvalidError(Exception):
@@ -48,6 +51,7 @@ class CharmState:
     Attrs:
         entity_id: Entity ID for SAML.
         fingerprint: fingerprint to validate the signing certificate against.
+        metadata: metadata.
         metadata_url: URL for the SAML metadata.
     """
 
@@ -78,13 +82,34 @@ class CharmState:
         return self._saml_integrator_config.fingerprint
 
     @property
-    def metadata_url(self) -> str:
+    def metadata_url(self) -> Optional[str]:
         """Return metadata_url config.
 
         Returns:
             str: metadata_url config.
         """
         return self._saml_integrator_config.metadata_url
+
+    @property
+    def metadata(self) -> str:
+        """Return metadata config or metadata_url content.
+
+        Returns:
+            str: metadata.
+        """
+        if self._saml_integrator_config.metadata_url:
+            try:
+                with urllib.request.urlopen(
+                    self._saml_integrator_config.metadata_url, timeout=10
+                ) as resource:  # nosec
+                    return resource.read()
+            except urllib.error.URLError as ex:
+                raise CharmConfigInvalidError(
+                    f"Error while retrieving data from {self.metadata_url}"
+                ) from ex
+        # Config will be identified as invalid is neither metadata_url nor metadata are defined.
+        assert self._saml_integrator_config.metadata  # nosec
+        return self._saml_integrator_config.metadata
 
     @classmethod
     def from_charm(cls, charm: "ops.CharmBase") -> "CharmState":
@@ -102,6 +127,10 @@ class CharmState:
         try:
             # Incompatible with pydantic.AnyHttpUrl
             valid_config = SamlIntegratorConfig(**dict(charm.config.items()))  # type: ignore
+            if not valid_config.metadata_url and not valid_config.metadata:
+                raise CharmConfigInvalidError(
+                    "Either the metadata_url or the metadata need to be configured."
+                )
         except ValidationError as exc:
             error_fields = set(
                 itertools.chain.from_iterable(error["loc"] for error in exc.errors())

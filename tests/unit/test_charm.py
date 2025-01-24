@@ -1,39 +1,15 @@
-# Copyright 2023 Canonical Ltd.
+# Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
 """SAML Integrator Charm unit tests."""
 # pylint: disable=protected-access
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import ops
-from charms.operator_libs_linux.v0 import apt
 from ops.testing import Harness
 
 from charm import SamlIntegratorOperatorCharm
-
-
-@patch.object(apt, "add_package")
-def test_libs_installed(apt_add_package_mock):
-    """
-    arrange: set up a charm.
-    act: none.
-    assert: the charm installs libxml2.
-    """
-    harness = Harness(SamlIntegratorOperatorCharm)
-    entity_id = "https://login.staging.ubuntu.com"
-    metadata_url = "https://login.staging.ubuntu.com/saml/metadata"
-    harness.update_config(
-        {
-            "entity_id": entity_id,
-            "metadata_url": metadata_url,
-        }
-    )
-    harness.begin()
-    harness.charm.on.start.emit()
-    apt_add_package_mock.assert_called_once_with(
-        ["libssl-dev", "libxml2", "libxslt1-dev"], update_cache=True
-    )
 
 
 def test_misconfigured_charm_reaches_blocked_status():
@@ -47,27 +23,40 @@ def test_misconfigured_charm_reaches_blocked_status():
     assert harness.model.unit.status.name == ops.BlockedStatus().name
 
 
-@patch("urllib.request.urlopen")
-def test_charm_reaches_active_status(urlopen_mock):
+def test_update_status():
     """
-    arrange: set up a charm and mock HTTP requests.
-    act: trigger a configuration change with the required configs.
-    assert: the charm reaches ActiveStatus.
+    arrange: set up a charm.
+    act: trigger an update status with the required configs.
+    assert: the charm executes _update_relations.
     """
-    metadata = Path("tests/unit/files/metadata_unsigned.xml").read_bytes()
-    urlopen_result_mock = MagicMock()
-    urlopen_result_mock.getcode.return_value = 200
-    urlopen_result_mock.read.return_value = metadata
-    urlopen_result_mock.__enter__.return_value = urlopen_result_mock
-    urlopen_mock.return_value = urlopen_result_mock
-
+    metadata = Path("tests/unit/files/metadata_unsigned.xml").read_text(encoding="utf-8")
     harness = Harness(SamlIntegratorOperatorCharm)
     entity_id = "https://login.staging.ubuntu.com"
-    metadata_url = "https://login.staging.ubuntu.com/saml/metadata"
     harness.update_config(
         {
             "entity_id": entity_id,
-            "metadata_url": metadata_url,
+            "metadata": metadata,
+        }
+    )
+    harness.begin()
+    with patch("charm.SamlIntegratorOperatorCharm._update_relations") as update_relations_mock:
+        harness.charm.on.update_status.emit()
+        update_relations_mock.assert_called_once()
+
+
+def test_charm_reaches_active_status():
+    """
+    arrange: set up a charm.
+    act: trigger a configuration change with the required configs.
+    assert: the charm reaches ActiveStatus.
+    """
+    metadata = Path("tests/unit/files/metadata_unsigned.xml").read_text(encoding="utf-8")
+    harness = Harness(SamlIntegratorOperatorCharm)
+    entity_id = "https://login.staging.ubuntu.com"
+    harness.update_config(
+        {
+            "entity_id": entity_id,
+            "metadata": metadata,
         }
     )
     harness.begin()
@@ -75,28 +64,21 @@ def test_charm_reaches_active_status(urlopen_mock):
     assert harness.model.unit.status == ops.ActiveStatus()
 
 
-@patch("urllib.request.urlopen")
-def test_relation_joined_when_leader(urlopen_mock):
+def test_relation_joined_when_leader():
     """
     arrange: set up a configured charm and set leadership for the unit.
     act: add a relation.
     assert: the relation get populated with the SAML data.
     """
-    metadata = Path("tests/unit/files/metadata_unsigned.xml").read_bytes()
-    urlopen_result_mock = MagicMock()
-    urlopen_result_mock.getcode.return_value = 200
-    urlopen_result_mock.read.return_value = metadata
-    urlopen_result_mock.__enter__.return_value = urlopen_result_mock
-    urlopen_mock.return_value = urlopen_result_mock
+    metadata = Path("tests/unit/files/metadata_unsigned.xml").read_text(encoding="utf-8")
 
     harness = Harness(SamlIntegratorOperatorCharm)
     harness.set_leader(True)
     entity_id = "https://login.staging.ubuntu.com"
-    metadata_url = "https://login.staging.ubuntu.com/saml/metadata"
     harness.update_config(
         {
             "entity_id": entity_id,
-            "metadata_url": metadata_url,
+            "metadata": metadata,
         }
     )
     harness.begin()
@@ -105,7 +87,6 @@ def test_relation_joined_when_leader(urlopen_mock):
     harness.add_relation("saml", "indico")
     data = harness.model.get_relation("saml").data[harness.model.app]
     assert data["entity_id"] == harness.charm._charm_state.entity_id
-    assert data["metadata_url"] == harness.charm._charm_state.metadata_url
     assert data["x509certs"] == ",".join(harness.charm._saml_integrator.certificates)
     endpoints = harness.charm._saml_integrator.endpoints
     sl_re = [
@@ -150,28 +131,21 @@ def test_relation_joined_when_leader(urlopen_mock):
         assert data["single_sign_on_service_post_binding"] == sso_post[0].binding
 
 
-@patch("urllib.request.urlopen")
-def test_relation_joined_when_not_leader(urlopen_mock):
+def test_relation_joined_when_not_leader():
     """
     arrange: set up a charm and unset leadership for the unit.
     act: add a relation.
     assert: the relation get populated with the SAML data.
     """
-    metadata = Path("tests/unit/files/metadata_unsigned.xml").read_bytes()
-    urlopen_result_mock = MagicMock()
-    urlopen_result_mock.getcode.return_value = 200
-    urlopen_result_mock.read.return_value = metadata
-    urlopen_result_mock.__enter__.return_value = urlopen_result_mock
-    urlopen_mock.return_value = urlopen_result_mock
+    metadata = Path("tests/unit/files/metadata_unsigned.xml").read_text(encoding="utf-8")
 
     harness = Harness(SamlIntegratorOperatorCharm)
     harness.set_leader(False)
     entity_id = "https://login.staging.ubuntu.com"
-    metadata_url = "https://login.staging.ubuntu.com/saml/metadata"
     harness.update_config(
         {
             "entity_id": entity_id,
-            "metadata_url": metadata_url,
+            "metadata": metadata,
         }
     )
     harness.begin()

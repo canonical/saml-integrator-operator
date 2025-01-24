@@ -1,4 +1,4 @@
-# Copyright 2023 Canonical Ltd.
+# Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
 """Fixtures for the SAML Integrator charm integration tests."""
@@ -52,6 +52,6 @@ async def any_charm(ops_test: OpsTest):
         "any-charm",
         application_name="any",
         channel="beta",
-        config={"src-overwrite": json.dumps(src_overwrite)},
+        config={"python-packages": "pydantic<2.0", "src-overwrite": json.dumps(src_overwrite)},
     )
     yield application

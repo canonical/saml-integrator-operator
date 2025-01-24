@@ -1,4 +1,4 @@
-# Copyright 2023 Canonical Ltd.
+# Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
 # Learn more about charmcraft.yaml configuration at:
@@ -6,24 +6,38 @@
 type: "charm"
 bases:
   - build-on:
-    - name: "ubuntu"
-      channel: "22.04"
+      - name: "ubuntu"
+        channel: "22.04"
     run-on:
-    - name: "ubuntu"
-      channel: "22.04"
+      - name: "ubuntu"
+        channel: "22.04"
 parts:
   charm:
     build-packages:
-    - build-essential
-    - cargo
-    - libffi-dev
-    - libssl-dev
-    - libxml2
-    - libxslt1-dev
-    - pkg-config
-    - python3-lxml
-    - python3-openssl
-    - python3-pip
-    - python3-setuptools
-    - python3-wheel
-    - rustc
+      - libffi-dev
+      - libssl-dev
+      - libxml2-dev
+      - libxslt-dev
+      - pkg-config
+      - python3-dev
+    build-snaps:
+      - rustup
+    charm-requirements:
+      - requirements-charmcraft.txt
+    override-build: |
+      rustup default stable
+      craftctl default
+      ls -lah $CRAFT_PART_INSTALL/venv
+      # charmcraft filters all environment variables, build statically linked variant of lxml here
+      CFLAGS="-O3 -g1 -pipe -fPIC -flto" \
+        LDFLAGS="-fPIC -flto" \
+        STATIC_DEPS="true" \
+        $CRAFT_PART_BUILD/staging-venv/bin/pip \
+        install --target $CRAFT_PART_INSTALL/venv -v \
+        --no-binary :all: \
+        $(grep lxml requirements-lxml.txt)
+      # install all remaining packages depends on lxml
+      $CRAFT_PART_BUILD/staging-venv/bin/pip \
+        install --target $CRAFT_PART_INSTALL/venv -v \
+        --no-binary :all: \
+        -r requirements-lxml.txt

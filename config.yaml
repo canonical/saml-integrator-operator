@@ -1,4 +1,4 @@
-# Copyright 2023 Canonical Ltd.
+# Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
 options:
@@ -10,6 +10,9 @@ options:
     description: |
       SHA256 Fingerprint to validate the metadata's certificate. If empty, no validation is 
       performed. Setting a value will also check if the whole metadata is signed.
+  metadata:
+    type: string
+    description: The IdP's metadata. This configuration has effect only if `metadata_url` is not defined.
   metadata_url:
     type: string
     description: URL to the IdP's metadata
