@@ -43,13 +43,17 @@ class SamlIntegratorOperatorCharm(ops.CharmBase):
         """Handle a change to the saml relation."""
         # A new charm will be instantiated hence, the information will be fetched again.
         # The relation databags are rewritten in case there are changes.
+        self.unit.status = ops.MaintenanceStatus("Update integrations")
         self._update_relations()
+        self.unit.status = ops.ActiveStatus()
 
     def _on_update_status(self, _) -> None:
         """Handle the update status event."""
         # A new charm will be instantiated hence, the information will be fetched again.
         # The relation databags are rewritten in case there are changes.
+        self.unit.status = ops.MaintenanceStatus("Update integrations")
         self._update_relations()
+        self.unit.status = ops.ActiveStatus()
 
     def _on_config_changed(self, _) -> None:
         """Handle changes in configuration."""
