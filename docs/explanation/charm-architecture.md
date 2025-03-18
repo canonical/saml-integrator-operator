@@ -17,9 +17,9 @@ According to the [Juju SDK](https://canonical-juju.readthedocs-hosted.com/en/lat
 
 For this charm, the following events are observed:
 
-1. [config-changed](https://canonical-juju.readthedocs-hosted.com/en/latest/user/reference/hook/#config-changed): usually fired in response to a configuration change using the GUI or CLI. Action: validate the configuration and fetch the SAML details from the metadata. If there are relations, update the SAML details in the relation databag.
-2. [saml-relation-created](https://canonical-juju.readthedocs-hosted.com/en/latest/user/reference/hook/#endpoint-relation-created): Custom event for when a new SAML relations is created. Action: write the SAML details in the relation databag.
-3. [update-status](https://canonical-juju.readthedocs-hosted.com/en/latest/user/reference/hook/#update-status): Fired periodically by Juju. Action: write the SAML details in the relation databag if data has changed.
+1. [config-changed](https://canonical-juju.readthedocs-hosted.com/en/latest/user/reference/hook/#config-changed): usually fired in response to a configuration change using the GUI or CLI. **Action**: validate the configuration and fetch the SAML details from the metadata. If there are relations, update the SAML details in the relation databag.
+2. [saml-relation-created](https://canonical-juju.readthedocs-hosted.com/en/latest/user/reference/hook/#endpoint-relation-created): Custom event for when a new SAML relations is created. **Action**: write the SAML details in the relation databag.
+3. [update-status](https://canonical-juju.readthedocs-hosted.com/en/latest/user/reference/hook/#update-status): Fired periodically by Juju. **Action**: write the SAML details in the relation databag if data has changed.
 
 ## Charm code overview
 
