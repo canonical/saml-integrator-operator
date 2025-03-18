@@ -2,7 +2,8 @@
 
 The SAML Integrator charm fetches SAML metadata details based on the provided configuration and propagates them through a Juju integration.
 
-The SAML Integrator can be deployed in Kubernetes and machine models and is a workloadless charm.
+The SAML Integrator can be deployed in Kubernetes and machine models.
+As a workloadless charm, the SAML Integrator doesn't have any OCI images.
 
 The metadata can be provided directly, through the configuration option `metadata`, or it can be provided through the 
 configuration option `metadata_url`. In the latter case, the SAML integrator charm will get the XML SAML metadata document from 
