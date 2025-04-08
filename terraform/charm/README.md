@@ -49,7 +49,7 @@ resource "juju_integration" "saml_integrator_indico" {
 }
 ```
 
-The complete list of available integrations can be found [in the Integrations tab][saml-integrator].
+The complete list of available integrations can be found [in the Integrations tab][saml-integrator-integrations].
 
 [Terraform]: https://www.terraform.io/
 [Terraform Juju provider]: https://registry.terraform.io/providers/juju/juju/latest
