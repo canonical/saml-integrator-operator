@@ -1,6 +1,6 @@
 # SAML integrator Terraform module
 
-This folder contains a base [Terraform][Terraform] module for the SAL integrator charm.
+This folder contains a base [Terraform][Terraform] module for the SAML integrator charm.
 
 The module uses the [Terraform Juju provider][Terraform Juju provider] to model the charm
 deployment onto any Kubernetes environment managed by [Juju][Juju].
