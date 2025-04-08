@@ -26,7 +26,7 @@ resource "juju_offer" "saml" {
 resource "juju_access_offer" "saml" {
   offer_url = juju_offer.saml.url
   admin     = [data.juju_model.saml_integrator.name]
-  consume   = [var.saml_offer_consumers]
+  consume   = var.saml_offer_consumers
 }
 
 
