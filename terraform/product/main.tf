@@ -18,7 +18,7 @@ module "saml_integrator" {
 }
 
 resource "juju_offer" "saml" {
-  model            = var.juju_model_name
+  model            = data.juju_model.saml_integrator.name
   application_name = module.saml_integrator.app_name
   endpoint         = "saml"
 }
