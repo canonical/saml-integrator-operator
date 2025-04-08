@@ -1,7 +1,7 @@
 # Terraform Modules
 
 This project contains the [Terraform][Terraform] modules to deploy the 
-[SAML integrator charm][Wazuh server charm] with its dependencies.
+[SAML integrator charm][SAML integrator charm] with its dependencies.
 
 The modules use the [Terraform Juju provider][Terraform Juju provider] to model
 the bundle deployment onto any Kubernetes environment managed by [Juju][Juju].

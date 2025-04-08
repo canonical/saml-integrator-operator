@@ -1,4 +1,4 @@
-# Wazuh server Terraform module
+# SAML integrator Terraform module
 
 This folder contains a base [Terraform][Terraform] module for the SAL integrator charm.
 

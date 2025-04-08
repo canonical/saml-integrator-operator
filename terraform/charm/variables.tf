@@ -4,7 +4,7 @@
 variable "app_name" {
   description = "Name of the application in the Juju model."
   type        = string
-  default     = "wazuh-server"
+  default     = "saml-integrator"
 }
 
 
@@ -15,7 +15,7 @@ variable "channel" {
 }
 
 variable "config" {
-  description = "Application config. Details about available options can be found at https://charmhub.io/wazuh-server/configurations."
+  description = "Application config. Details about available options can be found at https://charmhub.io/saml-integrator/configurations."
   type        = map(string)
   default     = {}
 }
