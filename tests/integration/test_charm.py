@@ -38,7 +38,7 @@ async def test_relation(ops_test: OpsTest, app: ops.Application, any_charm: ops.
     """
     relation_name = f"{app.name}:saml"
     assert ops_test.model
-    await ops_test.model.add_relation(any_charm.name, relation_name)
+    await ops_test.model.add_relation(f"{any_charm.name}:require-saml", relation_name)
     await app.set_config(  # type: ignore[attr-defined]
         {
             "entity_id": "https://login.staging.ubuntu.com",
