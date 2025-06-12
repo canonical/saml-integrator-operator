@@ -5,7 +5,7 @@
 # <kbd>module</kbd> `charm.py`
 SAML Integrator Charm service. 
 
-**Global Variables**
+**Global variables**
 ---------------
 - **RELATION_NAME**
 

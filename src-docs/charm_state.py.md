@@ -12,7 +12,7 @@ Module defining the CharmState class which represents the state of the SAML Inte
 ## <kbd>class</kbd> `CharmConfigInvalidError`
 Exception raised when a charm configuration is found to be invalid. 
 
-Attrs:  msg (str): Explanation of the error. 
+Attrs:  `msg` (str): Explanation of the error. 
 
 <a href="../src/charm_state.py#L36"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
@@ -22,7 +22,7 @@ Attrs:  msg (str): Explanation of the error.
 __init__(msg: str)
 ```
 
-Initialize a new instance of the CharmConfigInvalidError exception. 
+Initialize a new instance of the `CharmConfigInvalidError` exception. 
 
 
 
@@ -39,7 +39,7 @@ Initialize a new instance of the CharmConfigInvalidError exception.
 ## <kbd>class</kbd> `CharmState`
 Represents the state of the SAML Integrator charm. 
 
-Attrs:  entity_id: Entity ID for SAML.  fingerprint: fingerprint to validate the signing certificate against.  metadata_url: URL for the SAML metadata. 
+Attrs:  `entity_id`: Entity ID for SAML.  fingerprint: fingerprint to validate the signing certificate against.  `metadata_url`: URL for the SAML metadata. 
 
 <a href="../src/charm_state.py#L54"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
@@ -62,13 +62,13 @@ Initialize a new instance of the CharmState class.
 
 #### <kbd>property</kbd> entity_id
 
-Return entity_id config. 
+Return `entity_id` config. 
 
 
 
 **Returns:**
  
- - <b>`str`</b>:  entity_id config. 
+ - <b>`str`</b>:  `entity_id` config. 
 
 ---
 
@@ -86,13 +86,13 @@ Return certificate config.
 
 #### <kbd>property</kbd> metadata_url
 
-Return metadata_url config. 
+Return `metadata_url` config. 
 
 
 
 **Returns:**
  
- - <b>`str`</b>:  metadata_url config. 
+ - <b>`str`</b>:  `metadata_url` config. 
 
 
 
@@ -128,7 +128,7 @@ Return: The CharmState instance created by the provided charm.
 ## <kbd>class</kbd> `SamlIntegratorConfig`
 Represent charm builtin configuration values. 
 
-Attrs:  entity_id: Entity ID.  fingerprint: fingerprint to validate the signing certificate against.  metadata_url: Metadata URL. 
+Attrs:  `entity_id`: Entity ID.  fingerprint: fingerprint to validate the signing certificate against.  `metadata_url`: Metadata URL. 
 
 
 
