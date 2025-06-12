@@ -1,4 +1,4 @@
-# Terraform Modules
+# Terraform modules
 
 This project contains the [Terraform][Terraform] modules to deploy the 
 [SAML integrator charm][SAML integrator charm] with its dependencies.

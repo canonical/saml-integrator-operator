@@ -3,14 +3,17 @@
 [![Promote charm](https://github.com/canonical/saml-integrator-operator/actions/workflows/promote_charm.yaml/badge.svg)](https://github.com/canonical/saml-integrator-operator/actions/workflows/promote_charm.yaml)
 [![Discourse Status](https://img.shields.io/discourse/status?server=https%3A%2F%2Fdiscourse.charmhub.io&style=flat&label=CharmHub%20Discourse)](https://discourse.charmhub.io)
 
+<!-- vale Canonical.007-Headings-sentence-case = NO -->
+<!-- "Operator" is part of the name -->
 # SAML Integrator Operator
+<!-- vale Canonical.007-Headings-sentence-case = YES -->
 
 A [Juju](https://juju.is/) [charm](https://juju.is/docs/olm/charmed-operators)
 deploying and managing a SAML Integrator on Kubernetes and bare metal. SAML
 is an XML-based open-standard for transferring identity data between two parties:
-an identity provider (IdP) and a service provider (SP).
+an identity provider (IdP) and a service provider.
 
-This charm simplifies configuration of SAML SPs by providing a single point
+This charm simplifies configuration of SAML service providers by providing a single point
 of configuration for all the requirers using the same SAML entity.
 
 ## Get started
