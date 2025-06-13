@@ -1,5 +1,3 @@
-Args
-Attrs
 databag
 namespaces
 requirers
