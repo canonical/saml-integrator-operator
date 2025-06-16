@@ -11,9 +11,9 @@
 A [Juju](https://juju.is/) [charm](https://juju.is/docs/olm/charmed-operators)
 deploying and managing a SAML Integrator on Kubernetes and bare metal. SAML
 is an XML-based open-standard for transferring identity data between two parties:
-an identity provider (IdP) and a service provider.
+an identity provider (IdP) and a service provider (SP).
 
-This charm simplifies configuration of SAML service providers by providing a single point
+This charm simplifies configuration of a SAML SP by providing a single point
 of configuration for all the requirers using the same SAML entity.
 
 ## Get started
