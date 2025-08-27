@@ -8,7 +8,7 @@
 # SAML Integrator Operator
 <!-- vale Canonical.007-Headings-sentence-case = YES -->
 
-A [Juju](https://juju.is/) [charm](https://juju.is/docs/olm/charmed-operators)
+A [Juju](https://juju.is/) [charm](https://documentation.ubuntu.com/juju/3.6/reference/charm/)
 deploying and managing a SAML Integrator on Kubernetes and bare metal. SAML
 is an XML-based open-standard for transferring identity data between two parties:
 an identity provider (IdP) and a service provider (SP).
