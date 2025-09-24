@@ -6,18 +6,8 @@ output "app_name" {
   value       = juju_application.saml_integrator.name
 }
 
-output "requires" {
-  value = {
-    certificates      = "certificates"
-    ingress           = "ingress"
-    logging           = "logging"
-    opensearch-client = "opensearch-client"
-  }
-}
-
 output "provides" {
   value = {
-    grafana_dashboard = "grafana-dashboard"
-    metrics_endpoint  = "metrics-endpoint"
+    saml = "saml"
   }
 }
