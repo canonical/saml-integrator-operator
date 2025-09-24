@@ -98,5 +98,4 @@ No modules.
 |------|-------------|
 | <a name="output_app_name"></a> [app\_name](#output\_app\_name) | Name of the deployed application. |
 | <a name="output_provides"></a> [provides](#output\_provides) | n/a |
-| <a name="output_requires"></a> [requires](#output\_requires) | n/a |
 <!-- END_TF_DOCS -->
