@@ -1,0 +1,9 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"Check that the charm is active.
+
+    Assume that the charm has already been built and is running.
+    ","25236","test_active","tests.integration","2025-10-24","passed","2025-10-24","","test_charm","",""
+"Check that the charm is active once related to another charm.
+
+    Assume that the charm has already been built and is running.
+    ","34415","test_relation","tests.integration","2025-10-24","passed","2025-10-24","","test_charm","",""
