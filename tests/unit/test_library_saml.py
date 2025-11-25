@@ -2,6 +2,7 @@
 # See LICENSE file for licensing details.
 
 """SAML library unit tests"""
+
 import ops
 import pytest
 from charms.saml_integrator.v0 import saml

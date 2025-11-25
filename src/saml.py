@@ -2,6 +2,7 @@
 # See LICENSE file for licensing details.
 
 """Provide the SamlApp class to encapsulate the business logic."""
+
 import base64
 import hashlib
 import logging

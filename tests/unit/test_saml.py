@@ -2,6 +2,7 @@
 # See LICENSE file for licensing details.
 
 """SAML Integrator unit tests."""
+
 # pylint: disable=pointless-statement
 from pathlib import Path
 from unittest.mock import MagicMock

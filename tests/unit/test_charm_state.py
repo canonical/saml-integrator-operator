@@ -2,6 +2,7 @@
 # See LICENSE file for licensing details.
 
 """CharmState unit tests."""
+
 import urllib
 from pathlib import Path
 from unittest.mock import MagicMock, patch
