@@ -71,6 +71,7 @@ LIBAPI = 0
 LIBPATCH = 10
 
 # pylint: disable=wrong-import-position
+# ruff: noqa: E402
 import re
 import typing
 
@@ -231,7 +232,7 @@ class SamlDataAvailableEvent(ops.RelationEvent):
     @property
     def saml_relation_data(self) -> SamlRelationData:
         """Get a SamlRelationData for the relation data."""
-        assert self.relation.app
+        assert self.relation.app  # noqa: S101
         return SamlRelationData.from_relation_data(self.relation.data[self.relation.app])
 
     @property
@@ -294,7 +295,7 @@ class SamlRequires(ops.Object):
         Args:
             event: event triggering this handler.
         """
-        assert event.relation.app
+        assert event.relation.app  # noqa: S101
         if event.relation.data[event.relation.app]:
             self.on.saml_data_available.emit(event.relation, app=event.app, unit=event.unit)
 
