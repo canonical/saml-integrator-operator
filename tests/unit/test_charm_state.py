@@ -90,4 +90,4 @@ def test_charm_state_from_charm_with_metadata_url_invalid(_):
     )
     state = CharmState.from_charm(charm)
     with pytest.raises(CharmConfigInvalidError):
-        state.metadata  # pylint: disable=pointless-statement  # noqa: B018
+        state.metadata  # noqa: B018
