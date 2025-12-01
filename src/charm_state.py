@@ -99,7 +99,7 @@ class CharmState:
         """
         if self._saml_integrator_config.metadata_url:
             try:
-                with urllib.request.urlopen(
+                with urllib.request.urlopen(  # noqa: S310
                     self._saml_integrator_config.metadata_url, timeout=10
                 ) as resource:  # nosec
                     return resource.read()
@@ -108,7 +108,7 @@ class CharmState:
                     f"Error while retrieving data from {self.metadata_url}"
                 ) from ex
         # Config will be identified as invalid is neither metadata_url nor metadata are defined.
-        assert self._saml_integrator_config.metadata  # nosec
+        assert self._saml_integrator_config.metadata  # nosec  # noqa: S101
         return self._saml_integrator_config.metadata
 
     @classmethod
