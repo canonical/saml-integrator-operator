@@ -8,6 +8,4 @@ Each revision is versioned by the date of the revision.
 
 ## 2025-12-04
 
-### Added
-
-    - Added upgrade documentation.
+- Added upgrade documentation.
