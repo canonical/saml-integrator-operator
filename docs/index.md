@@ -38,7 +38,7 @@ Thinking about using the SAML Integrator for your next project? [Get in touch](h
   3. [Upgrade](how-to/upgrade.md)
 3. [Reference](reference)
   1. [Actions](reference/actions.md)
+  1. [Charm architecture](reference/charm-architecture.md)
   2. [Configurations](reference/configurations.md)
   3. [Integrations](reference/integrations.md)
 4. [Explanation](explanation)
-  1. [Charm architecture](explanation/charm-architecture.md)
