@@ -9,7 +9,7 @@ For details on configuration options, see [this page](https://charmhub.io/saml-i
 | | |
 |--|--|
 | [Tutorials](https://charmhub.io/saml-integrator/docs/tutorial-getting-started)</br>  Get started - a hands-on introduction to using the SAML Integrator operator for new users </br> |  [How-to guides](https://charmhub.io/saml-integrator/docs/how-to-contribute) </br> Step-by-step guides covering key operations and common tasks |
-| [Reference](https://charmhub.io/saml-integrator/docs/reference-actions) </br> Technical information - specifications, APIs, architecture | [Explanation](https://charmhub.io/saml-integrator/docs/explanation-charm-architecture) </br> Concepts - discussion and clarification of key topics  |
+| [Reference](https://charmhub.io/saml-integrator/docs/reference-actions) </br> Technical information - specifications, APIs, architecture | [Explanation]() </br> Concepts - discussion and clarification of key topics  |
 
 ## Contributing to this documentation
 
@@ -38,7 +38,7 @@ Thinking about using the SAML Integrator for your next project? [Get in touch](h
   3. [Upgrade](how-to/upgrade.md)
 3. [Reference](reference)
   1. [Actions](reference/actions.md)
+  1. [Charm architecture](reference/charm-architecture.md)
   2. [Configurations](reference/configurations.md)
   3. [Integrations](reference/integrations.md)
-4. [Explanation](explanation)
-  1. [Charm architecture](explanation/charm-architecture.md)
+
