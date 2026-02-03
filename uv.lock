@@ -1728,8 +1728,7 @@ unit = [
 requires-dist = [
     { name = "lxml", specifier = "==5.4" },
     { name = "ops", specifier = "==3.5.1" },
-    { name = "pydantic", specifier = "==1.10.24" },
-    { name = "signxml", specifier = "==4.2" },
+    { name = "signxml", specifier = "==4.2.2" },
 ]
 
 [package.metadata.requires-dev]
@@ -1773,16 +1772,16 @@ unit = [
 
 [[package]]
 name = "signxml"
-version = "4.2.0"
+version = "4.2.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "certifi" },
     { name = "cryptography" },
     { name = "lxml" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/bb/3d/9dd719fda38bb2a472fb9e59a5e75e220c52ce5365303222a3bb88962832/signxml-4.2.0.tar.gz", hash = "sha256:5317b71f682d6b9ebd4a827d564eb43fe8f6edf98030fc30eb629621045441c6", size = 1610974, upload-time = "2025-08-20T05:28:45.186Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f9/f2/54c528935ff30a1097d2b07ac48f0e139e18ecd9086a73ea85f03645165a/signxml-4.2.2.tar.gz", hash = "sha256:bd2f9b739c869261a1f4edfda925f75feef95ebfc09858a080942fbfc80a7021", size = 1611966, upload-time = "2026-01-21T14:06:47.269Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b7/94/47217366b261dddfda44888608b139287c66276c931ca885db2c7d5f3712/signxml-4.2.0-py3-none-any.whl", hash = "sha256:ac66cbf8d52adaaba2dbeb734ca5a9c85177dc1558fad1255340b52d144f14b5", size = 59212, upload-time = "2025-08-20T05:28:43.467Z" },
+    { url = "https://files.pythonhosted.org/packages/55/fc/2c77fbf869227b1f828f3d3e873e184704c41f4dfe25c923d250e65cea48/signxml-4.2.2-py3-none-any.whl", hash = "sha256:005aaa037f3e925f8cc4553b3d771b52e4048e5a15bb1d9c50595a243add4ef4", size = 59781, upload-time = "2026-01-21T14:06:45.983Z" },
 ]
 
 [[package]]
