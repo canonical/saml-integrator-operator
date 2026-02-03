@@ -2,6 +2,7 @@
 # See LICENSE file for licensing details.
 
 """SAML Integrator unit tests."""
+
 # pylint: disable=pointless-statement
 from pathlib import Path
 from unittest.mock import MagicMock
@@ -41,9 +42,9 @@ def test_saml_with_invalid_metadata():
     )
     saml_integrator = SamlIntegrator(charm_state=charm_state)
     with pytest.raises(CharmConfigInvalidError):
-        saml_integrator.certificates
+        saml_integrator.certificates  # noqa: B018
     with pytest.raises(CharmConfigInvalidError):
-        saml_integrator.endpoints
+        saml_integrator.endpoints  # noqa: B018
 
 
 def test_saml_with_valid_signed_metadata():
@@ -127,7 +128,7 @@ def test_saml_with_valid_tampered_signed_metadata():
     )
     saml_integrator = SamlIntegrator(charm_state=charm_state)
     with pytest.raises(CharmConfigInvalidError):
-        saml_integrator.tree
+        saml_integrator.tree  # noqa: B018
 
 
 def test_saml_with_valid_signed_metadata_not_matching_fingerprint():
@@ -147,7 +148,7 @@ def test_saml_with_valid_signed_metadata_not_matching_fingerprint():
     )
     saml_integrator = SamlIntegrator(charm_state=charm_state)
     with pytest.raises(CharmConfigInvalidError):
-        saml_integrator.tree
+        saml_integrator.tree  # noqa: B018
 
 
 def test_saml_with_valid_unsigned_metadata():

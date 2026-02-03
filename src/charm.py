@@ -4,6 +4,7 @@
 # See LICENSE file for licensing details.
 
 """SAML Integrator Charm service."""
+
 import logging
 
 import ops

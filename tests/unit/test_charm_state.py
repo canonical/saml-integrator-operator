@@ -2,8 +2,8 @@
 # See LICENSE file for licensing details.
 
 """CharmState unit tests."""
-import urllib.error
-import urllib.request
+
+import urllib
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -90,4 +90,4 @@ def test_charm_state_from_charm_with_metadata_url_invalid(_):
     )
     state = CharmState.from_charm(charm)
     with pytest.raises(CharmConfigInvalidError):
-        state.metadata  # pylint: disable=pointless-statement
+        state.metadata  # noqa: B018
