@@ -16,9 +16,10 @@ classifiers = [
   "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
-  "lxml==5.4",
   "ops==3.5.1",
-  "pydantic==1.10.24",
+  "lxml==6.0.2",
+  "ops==3.3.1",
+  "pydantic==1.10.26",
   "signxml==4.2.2",
 ]
 
