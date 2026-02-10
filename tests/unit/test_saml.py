@@ -7,7 +7,7 @@
 from pathlib import Path
 from unittest.mock import MagicMock
 
-import pytest
+import pytest  # type: ignore[reportMissingImports]
 
 from charm_state import CharmConfigInvalidError
 from saml import SamlIntegrator
@@ -101,11 +101,11 @@ def test_saml_with_valid_signed_metadata():
     assert len(endpoints) == 2
     assert endpoints[0].name == "SingleLogoutService"
     assert endpoints[0].binding == "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
-    assert endpoints[0].url == "https://login.staging.ubuntu.com/+logout"
-    assert endpoints[0].response_url == "https://login.staging.ubuntu.com/example/"
+    assert str(endpoints[0].url) == "https://login.staging.ubuntu.com/+logout"
+    assert str(endpoints[0].response_url) == "https://login.staging.ubuntu.com/example/"
     assert endpoints[1].name == "SingleSignOnService"
     assert endpoints[1].binding == "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
-    assert endpoints[1].url == "https://login.staging.ubuntu.com/saml/"
+    assert str(endpoints[1].url) == "https://login.staging.ubuntu.com/saml/"
     assert endpoints[1].response_url is None
 
 
@@ -171,11 +171,11 @@ def test_saml_with_valid_unsigned_metadata():
     assert len(endpoints) == 2
     assert endpoints[0].name == "SingleLogoutService"
     assert endpoints[0].binding == "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Post"
-    assert endpoints[0].url == "https://login.staging.ubuntu.com/+logout"
-    assert endpoints[0].response_url == "https://login.staging.ubuntu.com/example/"
+    assert str(endpoints[0].url) == "https://login.staging.ubuntu.com/+logout"
+    assert str(endpoints[0].response_url) == "https://login.staging.ubuntu.com/example/"
     assert endpoints[1].name == "SingleSignOnService"
     assert endpoints[1].binding == "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Post"
-    assert endpoints[1].url == "https://login.staging.ubuntu.com/saml/"
+    assert str(endpoints[1].url) == "https://login.staging.ubuntu.com/saml/"
     assert endpoints[1].response_url is None
 
 
@@ -217,11 +217,11 @@ def test_saml_with_valid_unsigned_metadata_non_utf8():
     assert len(endpoints) == 2
     assert endpoints[0].name == "SingleSignOnService"
     assert endpoints[0].binding == "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
-    assert endpoints[0].url == "https://accounts.google.com/o/saml2/idp?idpid=C03oypjtr"
+    assert str(endpoints[0].url) == "https://accounts.google.com/o/saml2/idp?idpid=C03oypjtr"
     assert endpoints[0].response_url is None
     assert endpoints[1].name == "SingleSignOnService"
     assert endpoints[1].binding == "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
-    assert endpoints[1].url == "https://accounts.google.com/o/saml2/idp?idpid=C03oypjtr"
+    assert str(endpoints[1].url) == "https://accounts.google.com/o/saml2/idp?idpid=C03oypjtr"
     assert endpoints[1].response_url is None
 
 
@@ -244,9 +244,9 @@ def test_saml_with_metadata_with_default_namespaces():
     assert len(endpoints) == 2
     assert endpoints[0].name == "SingleSignOnService"
     assert endpoints[0].binding == "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
-    assert endpoints[0].url == "https://saml.canonical.test/sso"
+    assert str(endpoints[0].url) == "https://saml.canonical.test/sso"
     assert endpoints[0].response_url is None
     assert endpoints[1].name == "SingleSignOnService"
     assert endpoints[1].binding == "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
-    assert endpoints[1].url == "https://saml.canonical.test/sso"
+    assert str(endpoints[1].url) == "https://saml.canonical.test/sso"
     assert endpoints[1].response_url is None

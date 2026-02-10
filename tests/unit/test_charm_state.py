@@ -36,7 +36,7 @@ def test_charm_state_from_charm_with_metadata_url(urlopen_mock):
     )
     state = CharmState.from_charm(charm)
     assert state.entity_id == entity_id
-    assert state.metadata_url == metadata_url
+    assert str(state.metadata_url) == metadata_url
     assert state.metadata == metadata
 
 

@@ -68,7 +68,7 @@ LIBAPI = 0
 
 # Increment this PATCH version before using `charmcraft publish-lib` or reset
 # to 0 if you are raising the major API version
-LIBPATCH = 10
+LIBPATCH = 11
 
 # pylint: disable=wrong-import-position
 # ruff: noqa: E402
@@ -93,9 +93,9 @@ class SamlEndpoint(BaseModel):
     """
 
     name: str = Field(..., min_length=1)
-    url: typing.Optional[AnyHttpUrl]
+    url: typing.Optional[AnyHttpUrl] = None
     binding: str = Field(..., min_length=1)
-    response_url: typing.Optional[AnyHttpUrl]
+    response_url: typing.Optional[AnyHttpUrl] = None
 
     def to_relation_data(self) -> typing.Dict[str, str]:
         """Convert an instance of SamlEndpoint to the relation representation.

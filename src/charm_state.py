@@ -24,9 +24,9 @@ class SamlIntegratorConfig(BaseModel):  # pylint: disable=too-few-public-methods
     """
 
     entity_id: str = Field(..., min_length=1)
-    fingerprint: Optional[str]
-    metadata: Optional[str]
-    metadata_url: Optional[AnyHttpUrl]
+    fingerprint: Optional[str] = None
+    metadata: Optional[str] = None
+    metadata_url: Optional[AnyHttpUrl] = None
 
 
 class CharmConfigInvalidError(Exception):
@@ -88,7 +88,11 @@ class CharmState:
         Returns:
             str: metadata_url config.
         """
-        return self._saml_integrator_config.metadata_url
+        return (
+            str(self._saml_integrator_config.metadata_url)
+            if self._saml_integrator_config.metadata_url
+            else None
+        )
 
     @property
     def metadata(self) -> str:
@@ -100,7 +104,7 @@ class CharmState:
         if self._saml_integrator_config.metadata_url:
             try:
                 with urllib.request.urlopen(  # noqa: S310
-                    self._saml_integrator_config.metadata_url, timeout=10
+                    str(self._saml_integrator_config.metadata_url), timeout=10
                 ) as resource:  # nosec
                     return resource.read()
             except urllib.error.URLError as ex:

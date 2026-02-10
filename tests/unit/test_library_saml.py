@@ -176,6 +176,6 @@ def test_requirer_charm_emits_event(is_leader):
 
     retrieved_relation_data = harness.charm.saml.get_relation_data()
     assert retrieved_relation_data.entity_id == relation_data["entity_id"]
-    assert retrieved_relation_data.metadata_url == relation_data["metadata_url"]
+    assert str(retrieved_relation_data.metadata_url) == relation_data["metadata_url"]
     assert retrieved_relation_data.certificates == tuple(relation_data["x509certs"].split(","))
     assert retrieved_relation_data.endpoints == (slo_endpoint, sso_endpoint)
