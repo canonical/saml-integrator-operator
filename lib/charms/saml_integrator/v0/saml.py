@@ -184,10 +184,13 @@ class SamlRelationData(BaseModel):
             result.update(endpoint.to_relation_data())
         # Add single_logout_service_url for interface schema compatibility
         # This field is required by the interface schema but is semantically unclear
+        # (it's not clear why it's separate from endpoint-specific URLs)
         # We populate it with the first SingleLogoutService URL found
-        logout_endpoints = [ep for ep in self.endpoints if ep.name == "SingleLogoutService"]
-        if logout_endpoints and logout_endpoints[0].url:
-            result["single_logout_service_url"] = str(logout_endpoints[0].url)
+        logout_endpoint = next(
+            (ep for ep in self.endpoints if ep.name == "SingleLogoutService"), None
+        )
+        if logout_endpoint and logout_endpoint.url:
+            result["single_logout_service_url"] = str(logout_endpoint.url)
         return result
 
     @classmethod
