@@ -68,7 +68,7 @@ LIBAPI = 0
 
 # Increment this PATCH version before using `charmcraft publish-lib` or reset
 # to 0 if you are raising the major API version
-LIBPATCH = 11
+LIBPATCH = 12
 
 # pylint: disable=wrong-import-position
 # ruff: noqa: E402
@@ -182,6 +182,15 @@ class SamlRelationData(BaseModel):
             result["metadata_url"] = str(self.metadata_url)
         for endpoint in self.endpoints:
             result.update(endpoint.to_relation_data())
+        # Add single_logout_service_url for interface schema compatibility
+        # This field is required by the interface schema but is semantically unclear
+        # (it's not clear why it's separate from endpoint-specific URLs)
+        # We populate it with the first SingleLogoutService URL found
+        logout_endpoint = next(
+            (ep for ep in self.endpoints if ep.name == "SingleLogoutService"), None
+        )
+        if logout_endpoint and logout_endpoint.url:
+            result["single_logout_service_url"] = str(logout_endpoint.url)
         return result
 
     @classmethod

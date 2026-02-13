@@ -22,14 +22,35 @@ from charm import SamlIntegratorOperatorCharm
 # to include the new identifier/location.
 @pytest.fixture
 def interface_tester(interface_tester: InterfaceTester, monkeypatch: pytest.MonkeyPatch):
-    sso_endpoint = SamlEndpoint(
+    sso_redirect_endpoint = SamlEndpoint(
         name="SingleSignOnService",
         url="https://login.staging.ubuntu.com/saml/",
         binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
     )
+    sso_post_endpoint = SamlEndpoint(
+        name="SingleSignOnService",
+        url="https://login.staging.ubuntu.com/saml/",
+        binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Post",
+    )
+    slo_redirect_endpoint = SamlEndpoint(
+        name="SingleLogoutService",
+        url="https://login.staging.ubuntu.com/+logout",
+        binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
+        response_url="https://login.staging.ubuntu.com/example/",
+    )
+    slo_post_endpoint = SamlEndpoint(
+        name="SingleLogoutService",
+        url="https://login.staging.ubuntu.com/+logout",
+        binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Post",
+        response_url="https://login.staging.ubuntu.com/example/",
+    )
     with (
         mock.patch.object(saml.SamlIntegrator, "certificates", ["cert_content"]),
-        mock.patch.object(saml.SamlIntegrator, "endpoints", [sso_endpoint]),
+        mock.patch.object(
+            saml.SamlIntegrator,
+            "endpoints",
+            [sso_redirect_endpoint, sso_post_endpoint, slo_redirect_endpoint, slo_post_endpoint],
+        ),
     ):
         interface_tester.configure(
             charm_type=SamlIntegratorOperatorCharm,

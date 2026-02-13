@@ -106,6 +106,7 @@ def test_saml_relation_data_to_relation_data():
             "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
         ),
         "single_logout_service_redirect_response_url": "https://login.staging.ubuntu.com/+logout2",
+        "single_logout_service_url": "https://login.staging.ubuntu.com/+logout",
     }
     assert relation_data == expected_relation_data
 
