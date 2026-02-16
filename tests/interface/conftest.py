@@ -45,10 +45,10 @@ def interface_tester(interface_tester: InterfaceTester, monkeypatch: pytest.Monk
         binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST",
         response_url="https://login.staging.ubuntu.com/saml/logout/response",
     )
-    
+
     # Store the original method
     original_to_relation_data = SamlRelationData.to_relation_data
-    
+
     # Create a wrapper that adds the missing single_logout_service_url field
     # This is a workaround for a mismatch between the library naming convention
     # and the interface schema expectations
