@@ -59,7 +59,7 @@ def interface_tester(interface_tester: InterfaceTester, monkeypatch: pytest.Monk
         if "single_logout_service_redirect_url" in result:
             result["single_logout_service_url"] = result["single_logout_service_redirect_url"]
         return result
-    
+
     with (
         mock.patch.object(saml.SamlIntegrator, "certificates", ["cert_content"]),
         mock.patch.object(
