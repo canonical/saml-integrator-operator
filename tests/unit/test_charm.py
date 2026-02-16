@@ -97,10 +97,12 @@ def test_relation_joined_when_leader():
         and ep.binding == "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
     ]
     if sl_re:
-        assert data["single_logout_service_redirect_url"] == sl_re[0].url
+        assert data["single_logout_service_redirect_url"] == str(sl_re[0].url)
         assert data["single_logout_service_redirect_binding"] == sl_re[0].binding
         if sl_re[0].response_url:
-            assert data["single_logout_service_redirect_response_url"] == sl_re[0].response_url
+            assert data["single_logout_service_redirect_response_url"] == str(
+                sl_re[0].response_url
+            )
     sl_post = [
         ep
         for ep in endpoints
@@ -108,10 +110,10 @@ def test_relation_joined_when_leader():
         and ep.binding == "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Post"
     ]
     if sl_post:
-        assert data["single_logout_service_post_url"] == sl_post[0].url
+        assert data["single_logout_service_post_url"] == str(sl_post[0].url)
         assert data["single_logout_service_post_binding"] == sl_post[0].binding
         if sl_post[0].response_url:
-            assert data["single_logout_service_post_response_url"] == sl_post[0].response_url
+            assert data["single_logout_service_post_response_url"] == str(sl_post[0].response_url)
     sso_re = [
         ep
         for ep in endpoints
@@ -119,7 +121,7 @@ def test_relation_joined_when_leader():
         and ep.binding == "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
     ]
     if sso_re:
-        assert data["single_sign_on_service_redirect_url"] == sso_re[0].url
+        assert data["single_sign_on_service_redirect_url"] == str(sso_re[0].url)
         assert data["single_sign_on_service_redirect_binding"] == sso_re[0].binding
     sso_post = [
         ep
@@ -128,7 +130,7 @@ def test_relation_joined_when_leader():
         and ep.binding == "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Post"
     ]
     if sso_post:
-        assert data["single_sign_on_service_post_url"] == sso_post[0].url
+        assert data["single_sign_on_service_post_url"] == str(sso_post[0].url)
         assert data["single_sign_on_service_post_binding"] == sso_post[0].binding
 
 
