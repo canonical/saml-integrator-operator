@@ -76,8 +76,7 @@ import re
 import typing
 
 import ops
-from pydantic import AnyHttpUrl, BaseModel, Field
-from pydantic.tools import parse_obj_as
+from pydantic import AnyHttpUrl, BaseModel, Field, TypeAdapter
 
 DEFAULT_RELATION_NAME = "saml"
 
@@ -140,13 +139,13 @@ class SamlEndpoint(BaseModel):
         return cls(
             name=name,
             url=(
-                parse_obj_as(AnyHttpUrl, relation_data[f"{prefix}url"])
+                TypeAdapter(AnyHttpUrl).validate_python(relation_data[f"{prefix}url"])
                 if relation_data[f"{prefix}url"]
                 else None
             ),
             binding=relation_data[f"{prefix}binding"],
             response_url=(
-                parse_obj_as(AnyHttpUrl, relation_data[f"{prefix}response_url"])
+                TypeAdapter(AnyHttpUrl).validate_python(relation_data[f"{prefix}response_url"])
                 if f"{prefix}response_url" in relation_data
                 else None
             ),
@@ -209,7 +208,7 @@ class SamlRelationData(BaseModel):
         return cls(
             entity_id=relation_data.get("entity_id"),  # type: ignore
             metadata_url=(
-                parse_obj_as(AnyHttpUrl, relation_data.get("metadata_url"))
+                TypeAdapter(AnyHttpUrl).validate_python(relation_data.get("metadata_url"))
                 if relation_data.get("metadata_url")
                 else None
             ),  # type: ignore
