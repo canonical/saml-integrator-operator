@@ -14,7 +14,7 @@ module "saml_integrator" {
 }
 
 resource "juju_offer" "saml" {
-  model            = var.model_uuid
+  model_uuid       = var.model_uuid
   application_name = module.saml_integrator.app_name
   endpoint         = "saml"
 }
