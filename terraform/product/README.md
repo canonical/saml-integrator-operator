@@ -23,14 +23,14 @@ the bundle deployment onto any Kubernetes environment managed by [Juju][Juju].
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.7.2 |
-| <a name="requirement_juju"></a> [juju](#requirement\_juju) | >= 0.17.1 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.12 |
+| <a name="requirement_juju"></a> [juju](#requirement\_juju) | ~> 1.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_juju"></a> [juju](#provider\_juju) | >= 0.17.1 |
+| <a name="provider_juju"></a> [juju](#provider\_juju) | ~> 1.0 |
 
 ## Modules
 
@@ -44,13 +44,12 @@ the bundle deployment onto any Kubernetes environment managed by [Juju][Juju].
 |------|------|
 | [juju_access_offer.saml](https://registry.terraform.io/providers/juju/juju/latest/docs/resources/access_offer) | resource |
 | [juju_offer.saml](https://registry.terraform.io/providers/juju/juju/latest/docs/resources/offer) | resource |
-| [juju_model.saml_integrator](https://registry.terraform.io/providers/juju/juju/latest/docs/data-sources/model) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_model"></a> [model](#input\_model) | Reference to the k8s Juju model to deploy application to. | `string` | n/a | yes |
+| <a name="input_model_uuid"></a> [model\_uuid](#input\_model\_uuid) | UUID of the Juju model to deploy application to. | `string` | n/a | yes |
 | <a name="input_saml_integrator"></a> [saml\_integrator](#input\_saml\_integrator) | n/a | <pre>object({<br/>    app_name    = optional(string, "saml-integrator")<br/>    channel     = optional(string, "latest/stable")<br/>    config      = optional(map(string), {})<br/>    constraints = optional(string, "arch=amd64")<br/>    revision    = optional(number)<br/>    base        = optional(string, "ubuntu@22.04")<br/>    units       = optional(number, 1)<br/>  })</pre> | n/a | yes |
 | <a name="input_saml_offer_consumers"></a> [saml\_offer\_consumers](#input\_saml\_offer\_consumers) | List of consumers for the SAML offer. | `list(string)` | n/a | yes |
 
