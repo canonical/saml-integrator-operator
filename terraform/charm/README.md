@@ -26,7 +26,7 @@ resource "juju_model" "my_model" {
 }
 
 module "saml_integrator" {
-  source = "git::https://github.com/canonical/saml-integrator//terraform"
+  source = "git::https://github.com/canonical/saml-integrator-operator//terraform/charm"
 
   model_uuid = juju_model.my_model.uuid
   # (Customize configuration variables here if needed)
