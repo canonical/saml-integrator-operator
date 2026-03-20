@@ -19,7 +19,7 @@ dependencies = [
   "lxml==6.0.2",
   "ops==3.6.0",
   "pydantic==2.12.5",
-  "signxml==4.3.0",
+  "signxml==4.4.0",
 ]
 
 [dependency-groups]
