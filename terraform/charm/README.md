@@ -21,14 +21,14 @@ If you want to use `saml-integrator` base module as part of your Terraform modul
 like shown below:
 
 ```text
-data "juju_model" "my_model" {
-  name = var.model
+resource "juju_model" "my_model" {
+  name = var.model_name
 }
 
 module "saml_integrator" {
-  source = "git::https://github.com/canonical/saml-integrator//terraform"
-  
-  model = juju_model.my_model.name
+  source = "git::https://github.com/canonical/saml-integrator-operator//terraform/charm"
+
+  model_uuid = juju_model.my_model.uuid
   # (Customize configuration variables here if needed)
 }
 ```
