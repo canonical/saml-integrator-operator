@@ -12,7 +12,7 @@ run "basic_deploy" {
     model_uuid = run.setup_tests.model_uuid
     channel    = "latest/edge"
     # renovate: depName="saml-integrator"
-    revision = 154
+    revision = 155
   }
 
   assert {
