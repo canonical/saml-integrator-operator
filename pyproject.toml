@@ -18,7 +18,7 @@ classifiers = [
 dependencies = [
   "lxml==6.1.0",
   "ops==3.7.0",
-  "pydantic==2.13.2",
+  "pydantic==2.13.3",
   "signxml==4.4.0",
 ]
 
