@@ -10,9 +10,9 @@ For details on configuration options, see [this page](https://charmhub.io/saml-i
 |--|--|
 | **Get started** | [Getting started](https://charmhub.io/saml-integrator/docs/tutorial-getting-started) |
 | **Deployment** | [Configure SAML](https://charmhub.io/saml-integrator/docs/how-to-configure-saml) \| [Configurations](https://charmhub.io/saml-integrator/docs/reference-configurations) |
-| **Operations** | [Upgrade the charm](https://charmhub.io/saml-integrator/docs/how-to-upgrade) |
+| **Operations** | [Upgrade the charm](how-to/upgrade.md) |
 | **Integrations** | [Integrations reference](https://charmhub.io/saml-integrator/docs/reference-integrations) |
-| **Design** | [Charm architecture](https://charmhub.io/saml-integrator/docs/reference-charm-architecture) |
+| **Design** | [Charm architecture](reference/charm-architecture.md) |
 
 ## How this documentation is organized
 
