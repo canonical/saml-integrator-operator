@@ -8,8 +8,19 @@ For details on configuration options, see [this page](https://charmhub.io/saml-i
 
 | | |
 |--|--|
-| [Tutorials](https://charmhub.io/saml-integrator/docs/tutorial-getting-started)</br>  Get started - a hands-on introduction to using the SAML Integrator operator for new users </br> |  [How-to guides](https://charmhub.io/saml-integrator/docs/how-to-contribute) </br> Step-by-step guides covering key operations and common tasks |
-| [Reference](https://charmhub.io/saml-integrator/docs/reference-actions) </br> Technical information - specifications, APIs, architecture | [Explanation]() </br> Concepts - discussion and clarification of key topics  |
+| **Get started** | [Getting started](https://charmhub.io/saml-integrator/docs/tutorial-getting-started) |
+| **Deployment** | [Configure SAML](https://charmhub.io/saml-integrator/docs/how-to-configure-saml) \| [Configurations](https://charmhub.io/saml-integrator/docs/reference-configurations) |
+| **Operations** | [Upgrade the charm](https://charmhub.io/saml-integrator/docs/how-to-upgrade) |
+| **Integrations** | [Integrations reference](https://charmhub.io/saml-integrator/docs/reference-integrations) |
+| **Design** | [Charm architecture](https://charmhub.io/saml-integrator/docs/reference-charm-architecture) |
+
+## How this documentation is organized
+
+This documentation follows the [Diátaxis](https://diataxis.fr/) structure:
+
+- The [Tutorial](https://charmhub.io/saml-integrator/docs/tutorial-getting-started) takes you step-by-step through deploying the SAML Integrator charm and relating it to a consumer charm.
+- [How-to guides](https://charmhub.io/saml-integrator/docs/how-to-configure-saml) assume basic familiarity with the charm. They cover configuring the SAML endpoint, upgrading, and contributing to the documentation.
+- [Reference](https://charmhub.io/saml-integrator/docs/reference-configurations) provides technical details including configuration options, relation endpoints, and charm architecture.
 
 ## Contributing to this documentation
 
