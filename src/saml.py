@@ -83,28 +83,10 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
             # shared with the requirer, the whole contents will need to be signed.
             try:
                 signxml.XMLVerifier().verify(tree, x509_cert=self.signing_certificate)
-            except signxml.exceptions.InvalidCertificate:
-                # Retry verification with verification_time set to a time when the certificate
-                # was valid. This handles cases where the certificate has expired but was valid
-                # when the signature was created.
-                try:
-                    from datetime import datetime, timezone
-
-                    # Use a verification time in the middle of the certificate's validity period
-                    # (2023-08-09 to 2024-08-08). This allows testing with valid signatures on
-                    # expired certificates.
-                    verification_time = datetime(2024, 8, 1, tzinfo=timezone.utc)
-                    signxml.XMLVerifier().verify(
-                        tree,
-                        x509_cert=self.signing_certificate,
-                        verification_time=verification_time,
-                    )
-                except (
-                    signxml.exceptions.InvalidSignature,
-                    signxml.exceptions.InvalidCertificate,
-                ) as ex:
-                    raise CharmConfigInvalidError("The metadata has an invalid signature") from ex
-            except signxml.exceptions.InvalidSignature as ex:
+            except (
+                signxml.exceptions.InvalidSignature,
+                signxml.exceptions.InvalidCertificate,
+            ) as ex:
                 raise CharmConfigInvalidError("The metadata has an invalid signature") from ex
         return tree
 
