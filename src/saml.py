@@ -83,7 +83,10 @@ class SamlIntegrator:  # pylint: disable=import-outside-toplevel
             # shared with the requirer, the whole contents will need to be signed.
             try:
                 signxml.XMLVerifier().verify(tree, x509_cert=self.signing_certificate)
-            except signxml.exceptions.InvalidSignature as ex:
+            except (
+                signxml.exceptions.InvalidSignature,
+                signxml.exceptions.InvalidCertificate,
+            ) as ex:
                 raise CharmConfigInvalidError("The metadata has an invalid signature") from ex
         return tree
 
