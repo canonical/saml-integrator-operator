@@ -8,7 +8,7 @@ For details on configuration options, see [this page](https://charmhub.io/saml-i
 
 | | |
 |--|--|
-| **Get started** | [Getting started](https://charmhub.io/saml-integrator/docs/tutorial-getting-started) |
+| **Get started** | [Deploy the SAML integrator charm](https://charmhub.io/saml-integrator/docs/tutorial-getting-started) |
 | **Deployment** | [Configure SAML](https://charmhub.io/saml-integrator/docs/how-to-configure-saml) \| [Configurations](https://charmhub.io/saml-integrator/docs/reference-configurations) |
 | **Operations** | [Upgrade the charm](how-to/upgrade.md) |
 | **Integrations** | [Integrations reference](https://charmhub.io/saml-integrator/docs/reference-integrations) |
@@ -18,7 +18,7 @@ For details on configuration options, see [this page](https://charmhub.io/saml-i
 
 This documentation follows the [Diátaxis](https://diataxis.fr/) structure:
 
-- The [Tutorial](https://charmhub.io/saml-integrator/docs/tutorial-getting-started) takes you step-by-step through deploying the SAML Integrator charm and relating it to a consumer charm.
+- The [tutorial](https://charmhub.io/saml-integrator/docs/tutorial-getting-started) takes you step-by-step through deploying the SAML Integrator charm and relating it to a consumer charm.
 - [How-to guides](https://charmhub.io/saml-integrator/docs/how-to-configure-saml) assume basic familiarity with the charm. They cover configuring the SAML endpoint, upgrading, and contributing to the documentation.
 - [Reference](https://charmhub.io/saml-integrator/docs/reference-configurations) provides technical details including configuration options, relation endpoints, and charm architecture.
 
