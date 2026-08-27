@@ -1,9 +1,5 @@
 SAML Integrator is an integrator charm for providing SAML configuration details to consumer charms which seek to authenticate using a SAML server. Configure the SAML endpoint in the integrator charm and integrate consumer charms as needed.
 
-The code is licensed under the [Apache License, version 2](https://www.apache.org/licenses/LICENSE-2.0), and pull requests are accepted once you've signed a [Contributor License Agreement](https://en.wikipedia.org/wiki/Contributor_License_Agreement).
-
-For details on configuration options, see [this page](https://charmhub.io/saml-integrator/configure).
-
 ## In this documentation
 
 | | |
