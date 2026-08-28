@@ -5,9 +5,8 @@ SAML Integrator is an integrator charm for providing SAML configuration details 
 | | |
 |--|--|
 | **Get started** | [Deploy the SAML integrator charm](https://charmhub.io/saml-integrator/docs/tutorial-getting-started) |
-| **Deployment and operations** | [Configure SAML](https://charmhub.io/saml-integrator/docs/how-to-configure-saml) \| [Configurations](https://charmhub.io/saml-integrator/docs/reference-configurations)| [Upgrade](how-to/upgrade.md) |
-| **Integrations** | [Integrations reference](https://charmhub.io/saml-integrator/docs/reference-integrations) |
-| **Design** | [Charm architecture](reference/charm-architecture.md) |
+| **Deployment and operations** | [Configure SAML](https://charmhub.io/saml-integrator/docs/how-to-configure-saml) \| [Upgrade](how-to/upgrade.md) |
+| **Design** | [Configurations](https://charmhub.io/saml-integrator/docs/reference-configurations) \| [Integrations reference](https://charmhub.io/saml-integrator/docs/reference-integrations) \| [Charm architecture](reference/charm-architecture.md) |
 
 ## How this documentation is organized
 
