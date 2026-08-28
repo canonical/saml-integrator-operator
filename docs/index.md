@@ -1,15 +1,20 @@
-SAML Integrator is an integrator charm for providing SAML configuration details to consumer charms which seek to authenticate using a SAML server. Configure the SAML endpoint in the integrator charm and relate consumer charms as needed.
-
-The code is licensed under the [Apache License, version 2](https://www.apache.org/licenses/LICENSE-2.0), and pull requests are accepted once you've signed a [Contributor License Agreement](https://en.wikipedia.org/wiki/Contributor_License_Agreement).
-
-For details on configuration options, see [this page](https://charmhub.io/saml-integrator/configure).
+SAML Integrator is an integrator charm for providing SAML configuration details to consumer charms which seek to authenticate using a SAML server. Configure the SAML endpoint in the integrator charm and integrate consumer charms as needed.
 
 ## In this documentation
 
 | | |
 |--|--|
-| [Tutorials](https://charmhub.io/saml-integrator/docs/tutorial-getting-started)</br>  Get started - a hands-on introduction to using the SAML Integrator operator for new users </br> |  [How-to guides](https://charmhub.io/saml-integrator/docs/how-to-contribute) </br> Step-by-step guides covering key operations and common tasks |
-| [Reference](https://charmhub.io/saml-integrator/docs/reference-actions) </br> Technical information - specifications, APIs, architecture | [Explanation](https://charmhub.io/saml-integrator/docs/explanation-charm-architecture) </br> Concepts - discussion and clarification of key topics  |
+| **Get started** | [Deploy the SAML integrator charm](https://charmhub.io/saml-integrator/docs/tutorial-getting-started) |
+| **Deployment and operations** | [Configure SAML](https://charmhub.io/saml-integrator/docs/how-to-configure-saml) \| [Upgrade](how-to/upgrade.md) |
+| **Design** | [Configurations](https://charmhub.io/saml-integrator/docs/reference-configurations) \| [Integrations reference](https://charmhub.io/saml-integrator/docs/reference-integrations) \| [Charm architecture](reference/charm-architecture.md) |
+
+## How this documentation is organized
+
+This documentation follows the [Diátaxis](https://diataxis.fr/) structure:
+
+- The [tutorial](https://charmhub.io/saml-integrator/docs/tutorial-getting-started) takes you step-by-step through deploying the SAML Integrator charm and relating it to a consumer charm.
+- [How-to guides](https://charmhub.io/saml-integrator/docs/how-to-configure-saml) assume basic familiarity with the charm. They cover configuring the SAML endpoint, upgrading, and contributing to the documentation.
+- [Reference](https://charmhub.io/saml-integrator/docs/reference-configurations) provides technical details including configuration options, relation endpoints, and charm architecture.
 
 ## Contributing to this documentation
 
@@ -26,6 +31,8 @@ fixes and constructive feedback.
 * [Get support](https://discourse.charmhub.io/)
 * [Join our online chat](https://matrix.to/#/#charmhub-charmdev:ubuntu.com)
 * [Contribute](https://charmhub.io/saml-integrator/docs/how-to-contribute)
+* [Contribute](https://charmhub.io/saml-integrator/docs/how-to-contribute)
+
 Thinking about using the SAML Integrator for your next project? [Get in touch](https://matrix.to/#/#charmhub-charmdev:ubuntu.com)!
 
 # Contents
