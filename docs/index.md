@@ -31,6 +31,8 @@ fixes and constructive feedback.
 * [Get support](https://discourse.charmhub.io/)
 * [Join our online chat](https://matrix.to/#/#charmhub-charmdev:ubuntu.com)
 * [Contribute](https://charmhub.io/saml-integrator/docs/how-to-contribute)
+* [Contribute](https://charmhub.io/saml-integrator/docs/how-to-contribute)
+
 Thinking about using the SAML Integrator for your next project? [Get in touch](https://matrix.to/#/#charmhub-charmdev:ubuntu.com)!
 
 # Contents
