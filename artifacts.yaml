@@ -1,0 +1,6 @@
+version: 1
+charms:
+  - name: saml-integrator
+    charmcraft-yaml: charmcraft.yaml
+    platforms:
+      - arch: amd64

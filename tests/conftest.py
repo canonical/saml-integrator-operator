@@ -12,4 +12,5 @@ def pytest_addoption(parser: pytest.Parser):
     Args:
         parser: pytest parser.
     """
-    parser.addoption("--charm-file", action="store")
+    parser.addoption("--model", action="store", default=None)
+    parser.addoption("--keep-models", action="store_true", default=False)
