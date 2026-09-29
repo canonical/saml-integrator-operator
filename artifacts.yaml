@@ -1,0 +1,9 @@
+# Copyright 2026 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+version: 1
+charms:
+  - name: saml-integrator
+    charmcraft-yaml: charmcraft.yaml
+    platforms:
+      - arch: amd64

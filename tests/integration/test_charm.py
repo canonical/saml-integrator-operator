@@ -4,48 +4,39 @@
 
 """SAML Integrator charm integration tests."""
 
-import ops
-import pytest
-from pytest_operator.plugin import OpsTest
+import jubilant
 
 
-@pytest.mark.asyncio
-@pytest.mark.abort_on_fail
-async def test_active(ops_test: OpsTest, app: ops.Application):
+def test_active(juju: jubilant.Juju, app: str):
     """Check that the charm is active.
 
     Assume that the charm has already been built and is running.
     """
-    await app.set_config(  # type: ignore[attr-defined]
+    juju.config(
+        app,
         {
             "entity_id": "https://login.staging.ubuntu.com",
             "fingerprint": "",
             "metadata_url": "https://login.staging.ubuntu.com/saml/metadata",
-        }
+        },
     )
-    status_name = ops.ActiveStatus.name  # type: ignore[has-type]
-    assert ops_test.model
-    await ops_test.model.wait_for_idle(status=status_name, raise_on_error=True)
-    assert app.units[0].workload_status == status_name  # type: ignore
+    juju.wait(lambda status: jubilant.all_active(status, app))
+    assert juju.status().apps[app].units[f"{app}/0"].is_active
 
 
-@pytest.mark.asyncio
-@pytest.mark.abort_on_fail
-async def test_relation(ops_test: OpsTest, app: ops.Application, any_charm: ops.Application):
+def test_relation(juju: jubilant.Juju, app: str, any_charm: str):
     """Check that the charm is active once related to another charm.
 
     Assume that the charm has already been built and is running.
     """
-    relation_name = f"{app.name}:saml"
-    assert ops_test.model
-    await ops_test.model.add_relation(f"{any_charm.name}:require-saml", relation_name)
-    await app.set_config(  # type: ignore[attr-defined]
+    juju.integrate(f"{any_charm}:require-saml", f"{app}:saml")
+    juju.config(
+        app,
         {
             "entity_id": "https://login.staging.ubuntu.com",
             "fingerprint": "",
             "metadata_url": "https://login.staging.ubuntu.com/saml/metadata",
-        }
+        },
     )
-    status_name = ops.ActiveStatus.name  # type: ignore[has-type]
-    await ops_test.model.wait_for_idle(status=status_name, raise_on_error=True)
-    assert app.units[0].workload_status == status_name  # type: ignore
+    juju.wait(lambda status: jubilant.all_active(status, app, any_charm))
+    assert juju.status().apps[app].units[f"{app}/0"].is_active

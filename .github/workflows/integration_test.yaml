@@ -7,13 +7,29 @@ on:
 
 jobs:
   integration-tests:
-    uses: canonical/operator-workflows/.github/workflows/integration_test.yaml@main
+    uses: canonical/charm-ci/.github/workflows/integration-test.yml@58ae6614a3b143d4e57eff0fd1770e97d8c30fab # v1.0.1
     secrets: inherit
-    with:
-      channel: 1.35-strict/stable
-      juju-channel: 3.6/stable
-      trivy-fs-enabled: true
-      with-uv: true
+    permissions:
+      actions: read
+      contents: read
+      packages: write
+  required_status_checks:
+    name: Required Integration Test Status Checks
+    runs-on: ubuntu-latest
+    needs:
+    - integration-tests
+    if: always() && !cancelled()
+    timeout-minutes: 5
+    steps:
+    - name: Check integration-test status
+      run: |
+        RESULT="${{ needs.integration-tests.result }}"
+        if [ "$RESULT" = "success" ] || [ "$RESULT" = "skipped" ]; then
+          exit 0
+        else
+          echo "integration-test failed with status: $RESULT"
+          exit 1
+        fi
   allure-report:
     if: ${{ !cancelled() && github.event_name == 'schedule' }}
     needs:

@@ -33,7 +33,6 @@ lint = [
   "pep8-naming",
   "pytest",
   "pytest-asyncio",
-  "pytest-operator",
   "requests",
   "ruff",
   "types-mock",
@@ -59,14 +58,18 @@ interface = [
 integration = [
   "allure-pytest>=2.8.18",
   "allure-pytest-collection-report @ git+https://github.com/canonical/data-platform-workflows@v24.0.0#subdirectory=python/pytest_plugins/allure_pytest_collection_report",
+  "jubilant==1.13.0",
   "juju",
+  "opcli ; python_version >= '3.12'",
   "pytest",
   "pytest-asyncio",
-  "pytest-operator",
 ]
 
 [tool.uv]
 package = false
+
+[tool.uv.sources]
+opcli = { git = "https://github.com/canonical/charm-ci.git", tag = "v1.0.1" }
 
 [tool.ruff]
 target-version = "py310"
