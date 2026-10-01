@@ -19,7 +19,7 @@ run "basic_deploy" {
   }
 
   assert {
-    condition     = output.app_name == "saml-integrator"
-    error_message = "saml-integrator output.app_name did not match expected"
+    condition     = output.saml_integrator_app_name == "saml-integrator"
+    error_message = "saml-integrator output.saml_integrator_app_name did not match expected"
   }
 }

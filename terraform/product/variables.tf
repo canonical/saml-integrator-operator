@@ -4,6 +4,18 @@
 variable "model_uuid" {
   description = "UUID of the Juju model to deploy application to."
   type        = string
+  nullable    = false
+}
+
+variable "risk" {
+  description = "Risk level reported in the product module's metadata output. It does not override an explicitly configured saml_integrator.channel."
+  type        = string
+  default     = "stable"
+
+  validation {
+    condition     = contains(["stable", "candidate", "beta", "edge"], var.risk)
+    error_message = "risk must be one of: stable, candidate, beta, edge."
+  }
 }
 
 variable "saml_integrator" {

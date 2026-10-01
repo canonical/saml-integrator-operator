@@ -10,10 +10,10 @@ deployment onto any Kubernetes environment managed by [Juju][Juju].
 - **main.tf** - Defines the Juju application to be deployed.
 - **variables.tf** - Allows customization of the deployment. Also models the charm configuration, 
   except for exposing the deployment options (Juju model name, channel or application name).
-- **output.tf** - Integrates the module with other Terraform modules, primarily
+- **outputs.tf** - Integrates the module with other Terraform modules, primarily
   by defining potential integration endpoints (charm integrations), but also by exposing
-  the Juju application name.
-- **versions.tf** - Defines the Terraform provider version.
+  the deployed Juju application.
+- **terraform.tf** - Defines the Terraform provider version.
 
 ## Using `saml-integrator` base module in higher level modules
 
@@ -26,7 +26,7 @@ resource "juju_model" "my_model" {
 }
 
 module "saml_integrator" {
-  source = "git::https://github.com/canonical/saml-integrator-operator//terraform/charm"
+  source = "git::https://github.com/canonical/saml-integrator-operator//terraform/charm?ref=tf-1.0.0"
 
   model_uuid = juju_model.my_model.uuid
   # (Customize configuration variables here if needed)
@@ -39,8 +39,8 @@ Create integrations, for instance:
 resource "juju_integration" "saml_integrator_indico" {
   model = juju_model.my_model.name
   application {
-    name     = module.saml_integrator.app_name
-    endpoint = module.saml_integrator.provides.saml
+    name     = module.saml_integrator.application.name
+    endpoint = module.saml_integrator.provides.saml.endpoint
   }
   application {
     name     = "indico"
@@ -85,18 +85,18 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_app_name"></a> [app\_name](#input\_app\_name) | Name of the application in the Juju model. | `string` | `"saml-integrator"` | no |
-| <a name="input_base"></a> [base](#input\_base) | The operating system on which to deploy | `string` | `"ubuntu@22.04"` | no |
+| <a name="input_base"></a> [base](#input\_base) | The operating system on which to deploy. null lets the provider use the charm's default base. | `string` | `null` | no |
 | <a name="input_channel"></a> [channel](#input\_channel) | The channel to use when deploying a charm. | `string` | `"4.9/edge"` | no |
 | <a name="input_config"></a> [config](#input\_config) | Application config. Details about available options can be found at https://charmhub.io/saml-integrator/configurations. | `map(string)` | `{}` | no |
-| <a name="input_constraints"></a> [constraints](#input\_constraints) | Juju constraints to apply for this application. | `string` | `""` | no |
+| <a name="input_constraints"></a> [constraints](#input\_constraints) | Juju constraints to apply for this application. | `string` | `null` | no |
 | <a name="input_model_uuid"></a> [model\_uuid](#input\_model\_uuid) | UUID of the Juju model where the application will be deployed. | `string` | n/a | yes |
-| <a name="input_revision"></a> [revision](#input\_revision) | Revision number of the charm | `number` | `null` | no |
+| <a name="input_revision"></a> [revision](#input\_revision) | Revision number of the charm. null deploys the latest revision on the channel. | `number` | `null` | no |
 | <a name="input_units"></a> [units](#input\_units) | Number of units to deploy | `number` | `1` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| <a name="output_app_name"></a> [app\_name](#output\_app\_name) | Name of the deployed application. |
-| <a name="output_provides"></a> [provides](#output\_provides) | n/a |
+| <a name="output_application"></a> [application](#output\_application) | Full juju\_application object for the deployed SAML integrator application. |
+| <a name="output_provides"></a> [provides](#output\_provides) | Provided relations exposed by the module. |
 <!-- END_TF_DOCS -->

@@ -5,13 +5,20 @@ variable "app_name" {
   description = "Name of the application in the Juju model."
   type        = string
   default     = "saml-integrator"
+  nullable    = false
 }
 
+variable "base" {
+  description = "The operating system on which to deploy. null lets the provider use the charm's default base."
+  type        = string
+  default     = null
+}
 
 variable "channel" {
   description = "The channel to use when deploying a charm."
   type        = string
   default     = "4.9/edge"
+  nullable    = false
 }
 
 variable "config" {
@@ -23,24 +30,19 @@ variable "config" {
 variable "constraints" {
   description = "Juju constraints to apply for this application."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "model_uuid" {
   description = "UUID of the Juju model where the application will be deployed."
   type        = string
+  nullable    = false
 }
 
 variable "revision" {
-  description = "Revision number of the charm"
+  description = "Revision number of the charm. null deploys the latest revision on the channel."
   type        = number
   default     = null
-}
-
-variable "base" {
-  description = "The operating system on which to deploy"
-  type        = string
-  default     = "ubuntu@22.04"
 }
 
 variable "units" {
