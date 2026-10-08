@@ -16,9 +16,9 @@ classifiers = [
   "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
-  "lxml==6.1.1",
-  "ops==3.8.0",
-  "pydantic==2.13.4",
+  "lxml==6.1.3",
+  "ops==3.9.0",
+  "pydantic==2.14.0",
   "signxml==5.1.0",
 ]
 
@@ -58,7 +58,7 @@ interface = [
 integration = [
   "allure-pytest>=2.8.18",
   "allure-pytest-collection-report @ git+https://github.com/canonical/data-platform-workflows@v24.0.0#subdirectory=python/pytest_plugins/allure_pytest_collection_report",
-  "jubilant==1.13.0",
+  "jubilant==1.14.0",
   "juju",
   "opcli ; python_version >= '3.12'",
   "pytest",
@@ -69,7 +69,7 @@ integration = [
 package = false
 
 [tool.uv.sources]
-opcli = { git = "https://github.com/canonical/charm-ci.git", tag = "v1.0.1" }
+opcli = { git = "https://github.com/canonical/charm-ci.git", tag = "v1.0.2" }
 
 [tool.ruff]
 target-version = "py310"
