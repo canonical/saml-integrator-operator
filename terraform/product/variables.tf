@@ -8,7 +8,7 @@ variable "model_uuid" {
 }
 
 variable "risk" {
-  description = "Risk level reported in the product module's metadata output. It does not override an explicitly configured saml_integrator.channel."
+  description = "Risk level used to build the default saml_integrator.channel (\"latest/<risk>\") when saml_integrator.channel is not explicitly set, and reported in the product module's metadata output."
   type        = string
   default     = "stable"
 
@@ -21,7 +21,7 @@ variable "risk" {
 variable "saml_integrator" {
   type = object({
     app_name    = optional(string, "saml-integrator")
-    channel     = optional(string, "latest/stable")
+    channel     = optional(string)
     config      = optional(map(string), {})
     constraints = optional(string, "arch=amd64")
     revision    = optional(number)
