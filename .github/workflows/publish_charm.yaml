@@ -1,4 +1,4 @@
-name: Publish to edge
+name: Publish to CharmHub
 
 on:
   push:
@@ -14,5 +14,18 @@ jobs:
       contents: write
     with:
       integration-workflow-name: integration_test.yaml
+    secrets:
+      CHARMHUB_TOKEN: ${{ secrets.CHARMHUB_TOKEN }}
+
+  publish-track-1:
+    uses: canonical/charm-ci/.github/workflows/publish-artifacts.yml@58ae6614a3b143d4e57eff0fd1770e97d8c30fab # v1.0.1
+    permissions:
+      actions: read
+      contents: write
+    with:
+      channel: 1/edge
+      integration-workflow-name: integration_test.yaml
+      create-tags: false
+      create-release: false
     secrets:
       CHARMHUB_TOKEN: ${{ secrets.CHARMHUB_TOKEN }}
