@@ -13,7 +13,7 @@ run "basic_deploy" {
     saml_integrator = {
       channel = "latest/edge"
       # renovate: depName="saml-integrator"
-      revision = 183
+      revision = 185
     }
     saml_offer_consumers = []
   }
