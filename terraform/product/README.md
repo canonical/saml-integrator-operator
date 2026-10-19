@@ -8,10 +8,22 @@ the bundle deployment onto any Kubernetes environment managed by [Juju][Juju].
 
 ## Module structure
 
-- **main.tf** - Defines the Juju application to be deployed.
+- **main.tf** - Defines the Juju application to be deployed, plus the SAML offer and its consumers.
 - **variables.tf** - Allows customization of the deployment including Juju model name, charm's channel and configuration.
-- **output.tf** - Responsible for integrating the module with other Terraform modules, primarily by defining potential integration endpoints (charm integrations).
-- **versions.tf** - Defines the Terraform provider.
+- **outputs.tf** - Responsible for integrating the module with other Terraform modules, primarily by defining the deployed models, metadata and offers.
+- **terraform.tf** - Defines the Terraform provider.
+
+## Using `saml-integrator` product module in higher level modules
+
+```text
+module "saml_integrator_product" {
+  source = "git::https://github.com/canonical/saml-integrator-operator//terraform/product?ref=tf-1.0.0"
+
+  model_uuid            = juju_model.my_model.uuid
+  saml_offer_consumers  = ["admin"]
+  # (Customize configuration variables here if needed)
+}
+```
 
 [Terraform]: https://www.terraform.io/
 [Terraform Juju provider]: https://registry.terraform.io/providers/juju/juju/latest
@@ -50,6 +62,7 @@ the bundle deployment onto any Kubernetes environment managed by [Juju][Juju].
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_model_uuid"></a> [model\_uuid](#input\_model\_uuid) | UUID of the Juju model to deploy application to. | `string` | n/a | yes |
+| <a name="input_risk"></a> [risk](#input\_risk) | Risk level reported in the product module's metadata output. It does not override an explicitly configured saml\_integrator.channel. | `string` | `"stable"` | no |
 | <a name="input_saml_integrator"></a> [saml\_integrator](#input\_saml\_integrator) | n/a | <pre>object({<br/>    app_name    = optional(string, "saml-integrator")<br/>    channel     = optional(string, "latest/stable")<br/>    config      = optional(map(string), {})<br/>    constraints = optional(string, "arch=amd64")<br/>    revision    = optional(number)<br/>    base        = optional(string, "ubuntu@22.04")<br/>    units       = optional(number, 1)<br/>  })</pre> | n/a | yes |
 | <a name="input_saml_offer_consumers"></a> [saml\_offer\_consumers](#input\_saml\_offer\_consumers) | List of consumers for the SAML offer. | `list(string)` | n/a | yes |
 
@@ -57,6 +70,9 @@ the bundle deployment onto any Kubernetes environment managed by [Juju][Juju].
 
 | Name | Description |
 |------|-------------|
-| <a name="output_app_name"></a> [app\_name](#output\_app\_name) | Name of the deployed application. |
-| <a name="output_provides"></a> [provides](#output\_provides) | n/a |
+| <a name="output_metadata"></a> [metadata](#output\_metadata) | Metadata of the product module deployment. |
+| <a name="output_models"></a> [models](#output\_models) | Map of the model key to its model UUID and the components deployed in it. |
+| <a name="output_offers"></a> [offers](#output\_offers) | Map of the offers exposed by this product module with their URLs. |
+| <a name="output_provides"></a> [provides](#output\_provides) | Map of the provided endpoints exposed by this product module. |
+| <a name="output_saml_integrator_app_name"></a> [saml\_integrator\_app\_name](#output\_saml\_integrator\_app\_name) | Name of the deployed saml-integrator application. |
 <!-- END_TF_DOCS -->
