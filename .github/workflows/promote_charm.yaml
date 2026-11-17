@@ -8,14 +8,13 @@ on:
         description: 'Origin Channel'
         options:
         - latest/edge
+        - 1/edge
       destination-channel:
         type: choice
         description: 'Destination Channel'
         options:
         - latest/stable
-    secrets:
-      CHARMHUB_TOKEN:
-        required: true
+        - 1/stable
 
 jobs:
   promote-charm:
