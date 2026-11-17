@@ -12,7 +12,7 @@ juju config saml-integrator <configuration>=<value>
 
 The `entity_id` option identifies the IdP entity. Set it to the entity ID from the IdP metadata. It must be a URI.
 
-For example, set the entity ID to `https://login.staging.ubuntu.com`:
+Set the entity ID to `https://login.staging.ubuntu.com`:
 
 ```bash
 juju config saml-integrator entity_id=https://login.staging.ubuntu.com
@@ -22,7 +22,7 @@ juju config saml-integrator entity_id=https://login.staging.ubuntu.com
 
 The `metadata_url` option is the URL from which the charm retrieves the IdP metadata. The URL must be reachable from the charm.
 
-For example, set the metadata URL to `https://login.staging.ubuntu.com/saml/metadata`:
+Set the metadata URL to `https://login.staging.ubuntu.com/saml/metadata`:
 
 ```bash
 juju config saml-integrator metadata_url=https://login.staging.ubuntu.com/saml/metadata
@@ -32,7 +32,7 @@ juju config saml-integrator metadata_url=https://login.staging.ubuntu.com/saml/m
 
 The `metadata` option contains the IdP metadata as an XML string. Use it when the metadata is not available at a URL or when you want to provide it directly. If you previously configured `metadata_url`, reset it first because `metadata_url` takes precedence.
 
-For example, reset `metadata_url` and then set `metadata` from a local XML file:
+To use a local XML file, reset `metadata_url` and set `metadata`:
 
 ```bash
 juju config saml-integrator --reset metadata_url
@@ -45,7 +45,7 @@ juju config saml-integrator metadata="$(cat /path/to/metadata.xml)"
 
 The optional `fingerprint` option checks the SHA256 fingerprint of the signing certificate in the metadata against a trusted value obtained from your identity provider. If unset, the charm skips this fingerprint comparison.
 
-For example, set the fingerprint to the SHA256 fingerprint of your IdP signing certificate:
+Set the fingerprint to the SHA256 fingerprint of your IdP signing certificate:
 
 ```bash
 juju config saml-integrator fingerprint="<sha256-fingerprint>"
