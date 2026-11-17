@@ -1,5 +1,5 @@
 version = 1
-revision = 5
+revision = 3
 requires-python = ">=3.10"
 resolution-markers = [
     "python_full_version >= '3.12'",
@@ -1428,17 +1428,13 @@ wheels = [
 
 [[package]]
 name = "pytest-interface-tester"
-version = "3.4.0"
-source = { registry = "https://pypi.org/simple" }
+version = "3.4.1"
+source = { git = "https://github.com/canonical/pytest-interface-tester?rev=ec9e76ef74b423cd1309a8ca1c5615da13bacc97#ec9e76ef74b423cd1309a8ca1c5615da13bacc97" }
 dependencies = [
     { name = "ops-scenario" },
     { name = "pydantic" },
     { name = "pytest" },
     { name = "typer" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/90/af/aeefdd291b46d81eeb25bea826bd47941b718f123ff7a5cc4779621855b7/pytest_interface_tester-3.4.0.tar.gz", hash = "sha256:932a1811f8e3fc09607156018dd959bf29c235e75c47514cc252d7dbf5b83b21", size = 27939, upload-time = "2025-10-09T07:49:29.902Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/f0/a9/908cb5b464d3296a524d4538ffe3da202825bf10171e4ce5543ddb66e1c7/pytest_interface_tester-3.4.0-py3-none-any.whl", hash = "sha256:8f16c6070fb7f7813e12a7b82f2fadc80675bedbca8344f9b041cfb6c1d5bd43", size = 22188, upload-time = "2025-10-09T07:49:28.761Z" },
 ]
 
 [[package]]
@@ -1694,7 +1690,7 @@ integration = [
 interface = [
     { name = "ops-scenario" },
     { name = "pytest" },
-    { name = "pytest-interface-tester" },
+    { name = "pytest-interface-tester", git = "https://github.com/canonical/pytest-interface-tester?rev=ec9e76ef74b423cd1309a8ca1c5615da13bacc97" },
 ]
 lint = [
     { name = "codespell" },

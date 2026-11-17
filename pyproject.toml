@@ -53,7 +53,7 @@ static = [
 interface = [
   "ops-scenario",
   "pytest",
-  "pytest-interface-tester",
+  "pytest-interface-tester @ git+https://github.com/canonical/pytest-interface-tester@ec9e76ef74b423cd1309a8ca1c5615da13bacc97",
 ]
 integration = [
   "allure-pytest>=2.8.18",
