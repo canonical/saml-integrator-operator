@@ -32,7 +32,7 @@ juju config saml-integrator metadata_url=https://login.staging.ubuntu.com/saml/m
 
 The `metadata` option contains the IdP metadata as an XML string. Use it when the metadata is not available at a URL or when you want to provide it directly. If you previously configured `metadata_url`, reset it first because `metadata_url` takes precedence.
 
-The example below resets `metadata_url` and set `metadata` from a local XML file:
+To supply metadata from a local XML file, reset `metadata_url` and set `metadata` as shown below:
 
 ```bash
 juju config saml-integrator --reset metadata_url
@@ -45,13 +45,11 @@ Replace `/path/to/metadata.xml` with the path to your metadata file on the machi
 
 The optional `fingerprint` option checks the SHA256 fingerprint of the signing certificate in the metadata against a trusted value obtained from your identity provider. If unset, the charm skips this fingerprint comparison.
 
-Example juju command to set the fingerprint to the SHA256 fingerprint of your IdP signing certificate:
+Set the fingerprint using the following command, replacing `<sha256-fingerprint>` with your IdP signing certificate fingerprint:
 
 ```bash
 juju config saml-integrator fingerprint="<sha256-fingerprint>"
 ```
-
-Replace `<sha256-fingerprint>` with your IdP signing certificate fingerprint.
 
 ## Verify the configuration
 
