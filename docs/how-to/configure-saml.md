@@ -22,7 +22,7 @@ juju config saml-integrator entity_id=https://login.staging.ubuntu.com
 
 The `metadata_url` option is the URL from which the charm retrieves the IdP metadata. The URL must be reachable from the charm.
 
-For example, set the metadata URL to `https://login.staging.ubuntu.com/saml/metadata`:
+Set `metadata_url` to your IdP metadata URL, using the following command as an example:
 
 ```bash
 juju config saml-integrator metadata_url=https://login.staging.ubuntu.com/saml/metadata
